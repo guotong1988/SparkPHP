@@ -1,6 +1,9 @@
 <?php
-require("php_call_java.php");
-require("conf.php");
+$temp = __FILE__;
+$spark_php_home = substr($temp,0,strrpos($temp,"/")-3);
+require($spark_php_home . "src/conf.php");
+require($spark_php_home . "src/php_call_java.php");
+
 class context {
 
     var $jvm;#就是php_call_java
@@ -15,6 +18,7 @@ class context {
     }
 
     function do_init(){
+
         $this->conf =new conf(null,$this);
         $this->jsc = $this->initialize_context($this->conf->jconf);
     }

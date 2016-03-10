@@ -1,8 +1,8 @@
 <?php
-require("../src/context.php");#TODO spark/php/example$ ../../bin/spark-submit pi.php
+$SPARK_HOME = "/home/gt/spark/";
+require($SPARK_HOME . "/php/src/context.php");
 
 $sc = new context();
-
 
 $data = range(1,10);
 $sc->parallelize($data,2);
