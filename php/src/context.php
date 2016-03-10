@@ -3,34 +3,31 @@ require("php_call_java.php");
 require("conf.php");
 class context {
 
-    var $php_call_java;#类似pyspark里的gateway
-    var $jvm;
+    var $jvm;#就是php_call_java
     var $jsc;#JavaSparkContext
     var $conf;
 
     function context(){
-        echo "context构造方法";
+        echo "context构造方法（开始）";
         $this->ensure_initialized();
         $this->do_init();
-
-        $this->jsc = $this->initialize_context($this->conf->jconf);
+        echo "context构造方法（结束）";
     }
 
-
     function do_init(){
-        $this->conf =new conf($this->jvm,null);
+        $this->conf =new conf(null,$this);
+        $this->jsc = $this->initialize_context($this->conf->jconf);
     }
 
     function ensure_initialized(){
         #TODO synchronized
-        if($this->php_call_java==null) {
-            $this->php_call_java =new php_call_java();
-            $this->jvm = $this->php_call_java->jvm;
+        if($this->jvm==null) {
+            $this->jvm = new php_call_java();
         }
     }
 
     function initialize_context($jconf){
-        return $this->jvm->JavaSparkContext($jconf);
+        return $this->jvm->JavaSparkContext->set($jconf);
     }
 
     function parallelize($data, $numSlices){

@@ -7,8 +7,8 @@ class php_call_java {
     function php_call_java()
     {
         echo "php_call_java构造方法（开始）";
-        $this->JavaSparkContext = new java("org.apache.spark.api.java.JavaSparkContext");
         $this->SparkConf = new java("org.apache.spark.SparkConf");
+        $this->JavaSparkContext = new java("org.apache.spark.api.java.JavaSparkContext");
         echo "php_call_java构造方法（结束）";
     }
 }
