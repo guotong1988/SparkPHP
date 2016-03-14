@@ -1,0 +1,17 @@
+/home/gt/spark-1.6.0/core/src/test/java/org/apache/spark/unsafe/map/BytesToBytesMapOnHeapSuite.java
+/home/gt/spark-1.6.0/core/src/test/java/org/apache/spark/memory/TaskMemoryManagerSuite.java
+/home/gt/spark-1.6.0/core/src/test/java/test/org/apache/spark/JavaTaskContextCompileCheck.java
+/home/gt/spark-1.6.0/core/src/test/java/org/apache/spark/util/collection/unsafe/sort/UnsafeExternalSorterSuite.java
+/home/gt/spark-1.6.0/core/src/test/java/org/apache/spark/shuffle/sort/ShuffleInMemorySorterSuite.java
+/home/gt/spark-1.6.0/core/src/test/java/org/apache/spark/shuffle/sort/PackedRecordPointerSuite.java
+/home/gt/spark-1.6.0/core/src/test/java/org/apache/spark/launcher/SparkLauncherSuite.java
+/home/gt/spark-1.6.0/core/src/test/java/org/apache/spark/JavaJdbcRDDSuite.java
+/home/gt/spark-1.6.0/core/src/test/java/org/apache/spark/JavaAPISuite.java
+/home/gt/spark-1.6.0/core/src/test/java/org/apache/spark/unsafe/map/AbstractBytesToBytesMapSuite.java
+/home/gt/spark-1.6.0/core/src/test/java/org/apache/spark/unsafe/map/BytesToBytesMapOffHeapSuite.java
+/home/gt/spark-1.6.0/core/src/test/java/org/apache/spark/shuffle/sort/UnsafeShuffleWriterSuite.java
+/home/gt/spark-1.6.0/core/src/test/java/org/apache/spark/util/collection/TestTimSort.java
+/home/gt/spark-1.6.0/core/src/test/java/org/apache/spark/util/collection/unsafe/sort/UnsafeInMemorySorterSuite.java
+/home/gt/spark-1.6.0/core/src/test/java/org/apache/spark/serializer/TestJavaSerializerImpl.java
+/home/gt/spark-1.6.0/core/src/test/java/org/apache/spark/memory/TestMemoryConsumer.java
+/home/gt/spark-1.6.0/core/src/test/java/test/org/apache/spark/JavaTaskCompletionListenerImpl.java
