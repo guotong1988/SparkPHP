@@ -1,5 +1,0 @@
-/home/gt/spark-1.6.0/launcher/src/test/java/org/apache/spark/launcher/LauncherServerSuite.java
-/home/gt/spark-1.6.0/launcher/src/test/java/org/apache/spark/launcher/BaseSuite.java
-/home/gt/spark-1.6.0/launcher/src/test/java/org/apache/spark/launcher/CommandBuilderUtilsSuite.java
-/home/gt/spark-1.6.0/launcher/src/test/java/org/apache/spark/launcher/SparkSubmitOptionParserSuite.java
-/home/gt/spark-1.6.0/launcher/src/test/java/org/apache/spark/launcher/SparkSubmitCommandBuilderSuite.java
