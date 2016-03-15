@@ -3,26 +3,17 @@
 class sock_input_stream {
     private $sock = null;
 
-    /**
-     * 构造函数
-     *
-     * @param stream of fopen .. $in
-     */
     public function __construct( $in ){
         $this->sock = $in;
     }
 
-    /**
-     * 析构函数
-     *
-     */
     public function __destruct(){
     }
 
     /**
      * 读取字节
      *
-     * @param int sizeof you want to read $len
+     * @param $len 想要读的字节数
      * @return string
      */
     private function read( $len=1 ){

@@ -16,4 +16,12 @@ class php_call_java {
         $this->PhpRDD = new java("org.apache.spark.api.php.PhpRDD");
         echo "php_call_java构造方法（结束）";
     }
+
+    function new_java_list(){
+        return new java("java.util.ArrayList");
+    }
+
+    function new_java_map(){
+        return new java("java.util.HashMap");
+    }
 }

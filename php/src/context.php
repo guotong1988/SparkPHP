@@ -46,6 +46,7 @@ class context {
         }
         $HadoopRDD = $this->jsc->textFile($filePath, $minPartitions);
         $serializers = new utf8_deserializer($use_unicode);
+        #echo $HadoopRDD->rdd();#就是取RDD类
         return new rdd($HadoopRDD, $this, $serializers);
     }
 

@@ -148,8 +148,26 @@ class rdd {
     }
 
 
+    function convert_list($php_list,$sc)
+    {
+        $jlist = $sc->jvm->new_java_list();
+        foreach ($php_list as $key => $value) {
+            $jlist->add($value);
+        }
+        return $jlist;
+    }
 
-    function _prepare_for_python_RDD($sc, $command, $obj=null){
+
+    function convert_map($php_map,$sc)
+    {
+        $jmap = $sc->jvm->new_java_map();
+        foreach ($php_map as $key => $value) {
+            $jmap[$key]->put($key,$value);
+        }
+        return $jmap;
+    }
+
+    function prepare_for_python_RDD($sc, $command, $obj=null){
         # the serialized command will be compressed by broadcast
         $pickled_command = serialize($command);
         if(strlen($pickled_command) > (1 << 20)) {  # 1M
@@ -157,6 +175,15 @@ class rdd {
             $broadcast = $sc -> broadcast($pickled_command);
             $pickled_command = serialize($broadcast);
         }
+
+        $temp = array();
+        for($i=0;$i<sizeof($sc->pickled_broadcast_vars);$i++){
+            array_push($temp,$sc->pickled_broadcast_vars[$i]);
+        }
+        $broadcast_vars = $this->convert_list($temp,$sc);
+        $sc->pickled_broadcast_vars->clear();
+        $env = $this->convert_map($sc->environment,$sc);
+        $includes =$this-> convert_list($sc->python_includes, $sc);
         return array($pickled_command, $broadcast_vars, $env, $includes);
     }
 }
@@ -223,7 +250,7 @@ class pipelined_rdd extends rdd{
         $command[1] = $profiler;
         $command[2] = $this->prev_jrdd_deserializer;
         $command[3] = $this->jrdd_deserializer;
-        $tempArray = _prepare_for_python_RDD($this->ctx, $command, $this);
+        $tempArray = $this->prepare_for_python_RDD($this->ctx, $command, $this);
         $pickled_cmd= $tempArray[0];
         $bvars= $tempArray[1];
         $env= $tempArray[2];
@@ -237,11 +264,10 @@ class pipelined_rdd extends rdd{
                 $bvars,
                 $this->ctx->javaAccumulator);
         $this->jrdd_val = $python_rdd->asJavaRDD();
-
         if($profiler) {
             $this->id = $this->jrdd_val->id();
             $this->ctx->profiler_collector->add_profiler($this->id, $profiler);
-        return $this->jrdd_val;
+            return $this->jrdd_val;
         }
     }
 
