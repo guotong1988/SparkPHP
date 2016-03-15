@@ -146,12 +146,107 @@ class rdd {
             throw new Exception("Can not reduce() empty RDD");
         }
     }
+
+
+
+    function _prepare_for_python_RDD($sc, $command, $obj=null){
+        # the serialized command will be compressed by broadcast
+        $pickled_command = serialize($command);
+        if(strlen($pickled_command) > (1 << 20)) {  # 1M
+            # The broadcast will have same life cycle as created PythonRDD
+            $broadcast = $sc -> broadcast($pickled_command);
+            $pickled_command = serialize($broadcast);
+        }
+        return array($pickled_command, $broadcast_vars, $env, $includes);
+    }
 }
 
 class pipelined_rdd extends rdd{
 
-    function  pipelined_rdd($prev_rdd,callable $func, $preservesPartitioning=False) {
+    var $func;
+    var $preservesPartitioning;
+    var $prev_jrdd;
+    var $prev_jrdd_deserializer;
+    var $prev_func;
+    var $ctx;
+    var $jrdd_val;
+    var $jrdd_deserializer;
+    var $bypass_serializer;
+    var $partitioner;
+    var $jrdd;
+    function pipeline_func($split, $iterator){
+        return func($split, $this->prev_func($split, $iterator));
+    }
+    function  pipelined_rdd(rdd $prev_rdd,callable $func, $preservesPartitioning=False) {
+        if(!($prev_rdd instanceof pipelined_rdd) || !$prev_rdd.is_pipelinable()) {
+            # This transformation is the first in its stage:
+            $this->func = $func;
+            $this->preservesPartitioning = $preservesPartitioning;
+            $this->prev_jrdd = $prev_rdd->jrdd;
+            $this->prev_jrdd_deserializer = $prev_rdd->jrdd_deserializer;
+        }else {
+            $this->prev_func = $prev_rdd->func;
+            $this->func = 'pipeline_func';
+            $this->preservesPartitioning = $prev_rdd->preservesPartitioning && $preservesPartitioning;
+            $this->prev_jrdd = $prev_rdd->prev_jrdd; # maintain the pipeline
+            $this->prev_jrdd_deserializer = $prev_rdd->prev_jrdd_deserializer;
+        }
+        $this -> is_cached = False;
+        $this -> is_checkpointed = False;
+        $this -> ctx = $prev_rdd -> ctx;
+        $this -> prev_jrdd = $prev_rdd;
+        $this -> jrdd_val = null;
+        $this -> id = null;
+        $this -> jrdd_deserializer = $this -> ctx -> serializer;
+        $this -> bypass_serializer = False;
+        if($this->preservesPartitioning){
+            $this -> partitioner = $prev_rdd->partitioner;
+        }else {
+            $this -> partitioner = null;
+        }
 
+
+        if($this->jrdd_val){
+            $this->jrdd = $this->jrdd_val;
+        }
+        if($this->bypass_serializer) {
+#            $this->jrdd_deserializer = new NoOpSerializer();
+        }
+        $profiler=null;
+        if($this->ctx->profiler_collector){
+            $profiler = $this->ctx->profiler_collector->new_profiler($this->ctx);
+        } else {
+            $profiler = null;
+        }
+        $command = array();
+        $command[0] = $this-> func;
+        $command[1] = $profiler;
+        $command[2] = $this->prev_jrdd_deserializer;
+        $command[3] = $this->jrdd_deserializer;
+        $tempArray = _prepare_for_python_RDD($this->ctx, $command, $this);
+        $pickled_cmd= $tempArray[0];
+        $bvars= $tempArray[1];
+        $env= $tempArray[2];
+        $includes = $tempArray[3];
+        $python_rdd = $this->ctx->jvm->PythonRDD(
+                $this->prev_jrdd->rdd(),
+                $pickled_cmd,
+                $env, $includes, $this->preservesPartitioning,
+                $this->ctx->pythonExec,
+                $this->ctx->pythonVer,
+                $bvars,
+                $this->ctx->javaAccumulator);
+        $this->jrdd_val = $python_rdd->asJavaRDD();
+
+        if($profiler) {
+            $this->id = $this->jrdd_val->id();
+            $this->ctx->profiler_collector->add_profiler($this->id, $profiler);
+        return $this->jrdd_val;
+        }
+    }
+
+    function is_pipelinable(){
+        return !($this->is_cached || $this->is_checkpointed);
     }
 }
 

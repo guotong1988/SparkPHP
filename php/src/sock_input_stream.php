@@ -72,7 +72,7 @@ class sock_input_stream {
      * @return string
      */
     public function readUTF(){
-        $len = $this->readInt();
+        $len = $this->readShort();
         return $this->read($len);
     }
 
