@@ -9,5 +9,5 @@ $rdd = $sc->text_file("/home/gt/wordcount.txt",2);
 $iter = $rdd->collect();
 foreach($iter as $element) {
     echo $element;
-    echo "\n";
+    echo "!!!\n";
 }
