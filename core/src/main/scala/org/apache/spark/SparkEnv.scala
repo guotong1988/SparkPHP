@@ -27,6 +27,7 @@ import akka.actor.ActorSystem
 import com.google.common.collect.MapMaker
 
 import org.apache.spark.annotation.DeveloperApi
+import org.apache.spark.api.php.PhpWorkerFactory
 import org.apache.spark.api.python.PythonWorkerFactory
 import org.apache.spark.broadcast.BroadcastManager
 import org.apache.spark.metrics.MetricsSystem
@@ -79,6 +80,8 @@ class SparkEnv (
   private[spark] var isStopped = false
   private val pythonWorkers = mutable.HashMap[(String, Map[String, String]), PythonWorkerFactory]()
 
+  private val phpWorkers = mutable.HashMap[(String, Map[String, String]), PhpWorkerFactory]()
+
   // A general, soft-reference map for metadata needed during HadoopRDD split computation
   // (e.g., HadoopFileRDD uses this to cache JobConfs and InputFormats).
   private[spark] val hadoopJobMetadata = new MapMaker().softValues().makeMap[String, Any]()
@@ -90,6 +93,7 @@ class SparkEnv (
     if (!isStopped) {
       isStopped = true
       pythonWorkers.values.foreach(_.stop())
+      phpWorkers.values.foreach(_.stop());
       mapOutputTracker.stop()
       shuffleManager.stop()
       broadcastManager.stop()
@@ -136,6 +140,14 @@ class SparkEnv (
   }
 
   private[spark]
+  def createPhpWorker(phpExec: String, envVars: Map[String, String]): java.net.Socket = {
+    synchronized {
+      val key = (phpExec, envVars)
+      phpWorkers.getOrElseUpdate(key, new PhpWorkerFactory(phpExec, envVars)).create()
+    }
+  }
+
+  private[spark]
   def destroyPythonWorker(pythonExec: String, envVars: Map[String, String], worker: Socket) {
     synchronized {
       val key = (pythonExec, envVars)
@@ -148,6 +160,22 @@ class SparkEnv (
     synchronized {
       val key = (pythonExec, envVars)
       pythonWorkers.get(key).foreach(_.releaseWorker(worker))
+    }
+  }
+
+  private[spark]
+  def destroyPhpWorker(phpExec: String, envVars: Map[String, String], worker: Socket) {
+    synchronized {
+      val key = (phpExec, envVars)
+      phpWorkers.get(key).foreach(_.stopWorker(worker))
+    }
+  }
+
+  private[spark]
+  def releasePhpWorker(phpExec: String, envVars: Map[String, String], worker: Socket) {
+    synchronized {
+      val key = (phpExec, envVars)
+      phpWorkers.get(key).foreach(_.releaseWorker(worker))
     }
   }
 }

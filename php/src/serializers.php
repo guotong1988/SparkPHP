@@ -2,7 +2,6 @@
 
 
 
-
 class serializers {
     function dump_stream($iterator, $stream){}
     function load_stream($stream){
@@ -32,7 +31,7 @@ class utf8_deserializer extends serializers{
 #        }elseif($length_of_line == $this->NULL) {
 #            return null;
 #        }
-        $string = $stream->readUTF();
+        $string = $stream->read_utf();
         if ($this->use_unicode==True){
             return $string;
         }else{
@@ -53,4 +52,70 @@ class utf8_deserializer extends serializers{
             return $item_array;
         }
     }
+}
+
+
+
+class batched_serializer extends serializers
+{
+    #  Serializes a stream of objects in batches by calling its wrapped
+    #  Serializer with streams of objects.
+    var $UNLIMITED_BATCH_SIZE = -1;
+    var $UNKNOWN_BATCH_SIZE = 0;
+    var $serializer;
+    var $batch_size;
+
+    function __construct($serializer, $batch_size = UNLIMITED_BATCH_SIZE)
+    {
+        $this->serializer = $serializer;
+        $this->batch_size = $batch_size;
+    }
+
+    function batched(my_iterator $iterator)
+    {
+        if ($this->batch_size == $this->UNLIMITED_BATCH_SIZE) {
+            return $iterator;
+        }
+        #TODO
+    }
+
+    function dump_stream($iterator, $stream)
+    {
+        $this->serializer->dump_stream($this->batched($iterator), $stream);
+    }
+
+    function load_stream($stream)
+    {
+        #TODO
+    }
+
+    function _load_stream_without_unbatching($stream)
+    {
+        return $this->serializer->load_stream($stream);
+    }
+
+}
+
+
+
+class auto_batched_serializer extends batched_serializer
+{
+    #   Choose the size of batch automatically based on the size of object
+    var $best_size;
+
+    function __construct($serializer, $best_size = 1 << 16)
+    {
+        parent::__construct($serializer, $this . $this->UNKNOWN_BATCH_SIZE);
+        $this->best_size = $best_size;
+    }
+
+    function dump_stream($iterator, $stream)
+    {
+        $batch = 1;
+        $best = $this->best_size;
+        while (True) {
+            #TODO
+        }
+    }
+
 }

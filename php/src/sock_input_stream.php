@@ -3,8 +3,8 @@
 class sock_input_stream {
     private $sock = null;
 
-    public function __construct( $in ){
-        $this->sock = $in;
+    public function __construct( $sock ){
+        $this->sock = $sock;
     }
 
     public function __destruct(){
@@ -35,7 +35,7 @@ class sock_input_stream {
      *
      * @return int
      */
-    public function readByte(){
+    public function read_byte(){
         return hexdec(bin2hex($this->read(1)));
     }
 
@@ -44,7 +44,7 @@ class sock_input_stream {
      *
      * @return int
      */
-    public function readShort(){
+    public function read_short(){
         return hexdec(bin2hex($this->read(2)));
     }
 
@@ -53,7 +53,7 @@ class sock_input_stream {
      *
      * @return int
      */
-    public function readInt(){
+    public function read_int(){
         return hexdec(bin2hex($this->read(4)));
     }
 
@@ -62,7 +62,7 @@ class sock_input_stream {
      *
      * @return string
      */
-    public function readUTF(){
+    public function read_utf(){
         $len = $this->readInt();
         return $this->read($len);
     }
@@ -72,7 +72,7 @@ class sock_input_stream {
      *
      * @param int $len
      */
-    public function readFully( $len ) {
+    public function read_fully( $len ) {
         return $this->read( $len );
     }
 
@@ -80,7 +80,7 @@ class sock_input_stream {
      * readUTF的别名
      *
      */
-    public function readString(){
+    public function read_string(){
         return $this->readUTF();
     }
 
@@ -88,7 +88,7 @@ class sock_input_stream {
      * 长整形.
      *
      */
-    public function readLong(){
+    public function read_long(){
         return hexdec(bin2hex($this->read(8)));
     }
 }

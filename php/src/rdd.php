@@ -5,6 +5,9 @@ $temp = __FILE__;
 $spark_php_home = substr($temp,0,strrpos($temp,"/")-3);
 require($spark_php_home . "src/my_iterator.php");
 require($spark_php_home . "src/sock_input_stream.php");
+require 'vendor/autoload.php';
+use SuperClosure\Serializer;
+
 class rdd {
 
     var $jrdd;
@@ -14,14 +17,20 @@ class rdd {
     var $deserializer;
     var $id;
     var $partitioner;
+    var $s;
     function rdd($jrdd,$ctx,$deserializer) {
         $this->jrdd = $jrdd;
         $this->is_cached = False;
         $this->is_checkpointed = False;
         $this->ctx = $ctx;
         $this->deserializer = $deserializer;
-        $this->id = $jrdd->id();
+        $this->id = $jrdd->setName("!!!");
         $this->partitioner = null;
+        $this->s=new Serializer();
+    }
+
+    function id(){
+        return $this->id;
     }
 
     function f0($iterator){
@@ -34,22 +43,36 @@ class rdd {
 
     function count()
     {
-        $function_name='f0';
-        return $this->mapPartitions($function_name)->sum();
+
+        return $this->mapPartitions(
+
+            function ($iterator){
+                $count = 0;
+                foreach($iterator as $element) {
+                    $count++;
+                }
+                return $count;
+            }
+
+        )->sum();
     }
+
+    var $mapPartitions_f;
 
     function f1($split, $iterator){
         $f = $this->mapPartitions_f;
         return $f($iterator);
     }
 
-    var $mapPartitions_f;
-
     function mapPartitions(callable $f, $preservesPartitioning=False)
     {
-        $function_name='f1';
-        $this->$mapPartitions_f=$f;
-        return $this->mapPartitionsWithIndex($function_name, $preservesPartitioning);
+        return $this->mapPartitionsWithIndex(
+
+            function ($split, $iterator) use ($f){
+                return $f($iterator);
+            }
+
+            , $preservesPartitioning);
     }
 
     function mapPartitionsWithIndex(callable $f, $preservesPartitioning=False)
@@ -169,8 +192,22 @@ class rdd {
 
     function prepare_for_python_RDD($sc, $command, $obj=null){
         # the serialized command will be compressed by broadcast
-        $pickled_command = serialize($command);
-        if(strlen($pickled_command) > (1 << 20)) {  # 1M
+        if($this->s==null) {
+            $this->s=new Serializer();
+        }
+        $pickled_command=null;#就是已经序列化的command
+        if(is_array($command)){
+            $pickled_command[0]=$this->s->serialize($command[0]);
+            if($command[1]!=null)
+            $pickled_command[1]=$this->s->serialize($command[1]);
+            if($command[2]!=null)
+            $pickled_command[2]=$this->s->serialize($command[2]);
+            if($command[3]!=null)
+            $pickled_command[3]=$this->s->serialize($command[3]);
+        } else {
+            $pickled_command = $this->s->serialize($command);
+        }
+        if(strlen($pickled_command[0]) > (1 << 20)) {  # 1M
             # The broadcast will have same life cycle as created PythonRDD
             $broadcast = $sc -> broadcast($pickled_command);
             $pickled_command = serialize($broadcast);
@@ -181,7 +218,7 @@ class rdd {
             array_push($temp,$sc->pickled_broadcast_vars[$i]);
         }
         $broadcast_vars = $this->convert_list($temp,$sc);
-        $sc->pickled_broadcast_vars->clear();
+        unset($sc->pickled_broadcast_vars);
         $env = $this->convert_map($sc->environment,$sc);
         $includes =$this-> convert_list($sc->python_includes, $sc);
         return array($pickled_command, $broadcast_vars, $env, $includes);
@@ -193,6 +230,7 @@ class pipelined_rdd extends rdd{
     var $func;
     var $preservesPartitioning;
     var $prev_jrdd;
+    var $prev_rdd;
     var $prev_jrdd_deserializer;
     var $prev_func;
     var $ctx;
@@ -204,14 +242,17 @@ class pipelined_rdd extends rdd{
     function pipeline_func($split, $iterator){
         return func($split, $this->prev_func($split, $iterator));
     }
-    function  pipelined_rdd(rdd $prev_rdd,callable $func, $preservesPartitioning=False) {
+    function  pipelined_rdd($prev_rdd,callable $func, $preservesPartitioning=False) {
+        $this->s = new Serializer();
+        $this->s->serialize($func);
         if(!($prev_rdd instanceof pipelined_rdd) || !$prev_rdd.is_pipelinable()) {
-            # This transformation is the first in its stage:
+            echo "不是pipedrdd";
             $this->func = $func;
             $this->preservesPartitioning = $preservesPartitioning;
             $this->prev_jrdd = $prev_rdd->jrdd;
             $this->prev_jrdd_deserializer = $prev_rdd->jrdd_deserializer;
         }else {
+            echo "是pipedrdd";
             $this->prev_func = $prev_rdd->func;
             $this->func = 'pipeline_func';
             $this->preservesPartitioning = $prev_rdd->preservesPartitioning && $preservesPartitioning;
@@ -221,7 +262,7 @@ class pipelined_rdd extends rdd{
         $this -> is_cached = False;
         $this -> is_checkpointed = False;
         $this -> ctx = $prev_rdd -> ctx;
-        $this -> prev_jrdd = $prev_rdd;
+        $this -> prev_rdd = $prev_rdd;
         $this -> jrdd_val = null;
         $this -> id = null;
         $this -> jrdd_deserializer = $this -> ctx -> serializer;
@@ -252,15 +293,26 @@ class pipelined_rdd extends rdd{
         $command[3] = $this->jrdd_deserializer;
         $tempArray = $this->prepare_for_python_RDD($this->ctx, $command, $this);
         $pickled_cmd= $tempArray[0];
+
+
         $bvars= $tempArray[1];
         $env= $tempArray[2];
         $includes = $tempArray[3];
-        $python_rdd = $this->ctx->jvm->PythonRDD(
-                $this->prev_jrdd->rdd(),
+
+
+        echo "序列化的".gettype($pickled_cmd);
+
+
+
+
+        $python_rdd = $this->ctx->jvm->phpRDD(
+                $this->prev_jrdd,
                 $pickled_cmd,
-                $env, $includes, $this->preservesPartitioning,
-                $this->ctx->pythonExec,
-                $this->ctx->pythonVer,
+                $env,
+                $includes,
+                $this->preservesPartitioning,
+                $this->ctx->phpExec,
+                $this->ctx->phpVer,
                 $bvars,
                 $this->ctx->javaAccumulator);
         $this->jrdd_val = $python_rdd->asJavaRDD();
