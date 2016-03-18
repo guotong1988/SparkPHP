@@ -9,6 +9,7 @@ class php_call_java {
     var $SparkConf;
     var $PhpRDD;
     var $Byte;
+    var $PhpAccumulatorParam;
     function php_call_java()
     {
         echo "php_call_java构造方法（开始）";
@@ -18,6 +19,16 @@ class php_call_java {
 
         echo "php_call_java构造方法（结束）";
     }
+
+    function php_accumulator_param($host,$port){
+        $this->PhpAccumulatorParam = new java("org.apache.spark.api.php.PhpAccumulatorParam",$host,$port);
+        return $this->PhpAccumulatorParam;
+    }
+
+    function new_java_string($php_string){
+        return new java("java.lang.String",$php_string);
+    }
+
 
     function new_java_list(){
         return new java("java.util.ArrayList");
@@ -37,19 +48,20 @@ class php_call_java {
                 $phpVer,
                 $bvars,
                 $javaAccumulator){
-        $temp = array();
+
+        $temp_string = "";
         foreach($serialized_cmd as $key=>$value){
-            $this->Byte = new java("java.lang.Byte",$value);
-            $temp[$key]=$this->Byte;
+            $temp_string+="##"+$value;
         }
+        $temp_byte_array = unpack('C*', $temp_string);
 
         $preservesPartitioning = new java("java.lang.Boolean",$preservesPartitioning);
-
-        echo gettype($temp);
+        $phpExec=$this->new_java_string($phpExec);
+        $phpVer= $this->new_java_string($phpVer);
 
         $this->PhpRDD = new java("org.apache.spark.api.php.PhpRDD",
             $prev_jrdd,
-            $temp,
+            $temp_byte_array,
             $env,
             $includes,
             $preservesPartitioning,

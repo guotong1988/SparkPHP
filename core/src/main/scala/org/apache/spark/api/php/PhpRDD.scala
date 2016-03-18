@@ -24,7 +24,7 @@ import org.apache.spark.input.PortableDataStream
 import org.apache.spark.rdd.RDD
 import org.apache.spark.util.{SerializableConfiguration, Utils}
 
-private[spark] class PhpRDD(var parent: RDD[_],
+class PhpRDD(var parent: RDD[_],
                             var command: Array[Byte],
                             var envVars: JMap[String, String],
                             var phpIncludes: JList[String],
@@ -38,6 +38,10 @@ private[spark] class PhpRDD(var parent: RDD[_],
 
   val bufferSize = conf.getInt("spark.buffer.size", 65536)
   val reuse_worker = conf.getBoolean("spark.php.worker.reuse", true)
+
+  def getJavaRDD:JavaRDD[Array[Byte]]={
+    return asJavaRDD
+  }
 
   val asJavaRDD: JavaRDD[Array[Byte]] = JavaRDD.fromRDD(this)
 

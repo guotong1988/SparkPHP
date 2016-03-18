@@ -6,4 +6,3 @@ scala这边修改的类（新加的类以及spark-submit相关的类就不列了
 
 SparkEnv.scala加了php相关
 
-RDD.scala加了getId方法,加了this()

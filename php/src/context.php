@@ -7,7 +7,7 @@ require($spark_php_home . "src/rdd.php");
 require($spark_php_home . "src/serializers.php");
 class context {
 
-    var $jvm;#就是php_call_java
+    var $php_call_java;#就是php_call_java
     var $jsc;#JavaSparkContext
     var $conf;
     var $pickled_broadcast_vars;
@@ -21,6 +21,7 @@ class context {
     var $spark_home;
     var $php_exec;
     var $php_ver;
+    var $java_accumulator;
 
     function context( $master=null, $app_name=null, $spark_home=null, $phpFiles=null,
                       $environment=null, $batchSize=0, $serializer=null, $conf=null,
@@ -107,11 +108,14 @@ class context {
 
         # Create a single Accumulator in Java that we'll send all our updates through;
         # they will be passed back to us through a TCP server
-        #$this->accumulatorServer = $accumulators._start_update_server();
-        #(host, port) = self._accumulatorServer.server_address
-        #self._javaAccumulator = self._jsc.accumulator(
-        #        self._jvm.java.util.ArrayList(),
-        #        self._jvm.PythonAccumulatorParam(host, port))
+     #TODO   $accumulators =new AccumulatorServer();
+     #TODO   $this->accumulator_server = $accumulators->_start_update_server();
+     #TODO   $temp = $this->accumulator_server->server_address;
+        $host ='127.0.0.1';#TODO
+        $port =0;#TODO
+        $this->java_accumulator = $this->jsc->accumulator(
+                $this->php_call_java->new_java_list(),
+                $this->php_call_java->php_accumulator_param($host, $port));
 
         $this->php_exec = "php";
         $this->php_ver = "5.6";#TODO
@@ -124,14 +128,14 @@ class context {
 
     function ensure_initialized(){
         #TODO synchronized
-        if($this->jvm==null) {
-            $this->jvm = new php_call_java();
+        if($this->php_call_java==null) {
+            $this->php_call_java = new php_call_java();
         }
     }
 
     function initialize_context($jconf){
-        $this->jvm->JavaSparkContext->set($jconf);
-        return $this->jvm->JavaSparkContext;
+        $this->php_call_java->JavaSparkContext->set($jconf);
+        return $this->php_call_java->JavaSparkContext;
     }
 
     function parallelize($data, $numSlices){

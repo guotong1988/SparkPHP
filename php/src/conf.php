@@ -2,13 +2,14 @@
 
 class conf {
     var $jconf;
-
+    var $ctx;
     function conf($jconf,$php_context)
     {
+        $this->ctx=$php_context;
         if ($jconf != null) {
             $this->jconf = $jconf;
         } else {
-            $this->jconf = $php_context->jvm->SparkConf;
+            $this->jconf = $php_context->php_call_java->SparkConf;
          }
     }
 
@@ -45,6 +46,7 @@ class conf {
 
     function get($key, $defaultValue=null)
     {
+        $key = $this->ctx->php_call_java->new_java_string($key);
         if($defaultValue==null) {
             if (!$this->jconf->contains($key)) {
                 return null;
@@ -57,9 +59,12 @@ class conf {
 
     function set_if_missing($key, $value)
     {
-        if($this->get($key)==null) {
-            $this->set($key, $value);
-        }
+        $key = $this->ctx->php_call_java->new_java_string($key);
+        try {
+            if (!$this->contains($key)) {
+                $this->set($key, $value);
+            }
+        }catch (Exception $e){}
         return $this;
     }
 
@@ -68,5 +73,10 @@ class conf {
         $pairs = array();
         #TODO
         return $pairs;
+    }
+
+    function contains($key)
+    {
+        return $this->jconf->contains($key);
     }
 }

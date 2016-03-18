@@ -38,7 +38,7 @@ object PhpRunner {
     val phpFiles = args(1)
     val otherArgs = args.slice(2, args.length)
     val phpExec =
-      sys.env.getOrElse("SPARKPHP_DRIVER_PHP", sys.env.getOrElse("SPARKPHP_PYTHON", "php"))
+      sys.env.getOrElse("SPARKPHP_DRIVER_PHP", sys.env.getOrElse("SPARKPHP_PHP", "php"))
 
     val formattedPythonFile = formatPath(phpFile)
     val formattedPyFiles = formatPaths(phpFiles)

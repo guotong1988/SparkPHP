@@ -88,9 +88,12 @@ class rdd {
 #        输出6.0
     function sum()
     {
-        $function_name='f2';
         global $ADD;
-        return $this->mapPartitions($function_name)->fold(0, $ADD);
+        return $this->mapPartitions(
+            function($iterator){
+                return array_sum($iterator);
+            }
+        )->fold(0, $ADD);
     }
 
     function f3($iterator,$zeroValue=0,$operator=1){
@@ -107,8 +110,22 @@ class rdd {
     }
 
     function fold($zeroValue, $op){
-        $function_name='f3';
-        $temp = $this->mapPartitions($function_name)->collect();
+        $temp = $this->mapPartitions(
+
+            function ($iterator) use($zeroValue,$op){
+                $acc = $zeroValue;
+                foreach($iterator as $element) {
+                    global $ADD;
+                    if($op==$ADD) {
+                        $acc = $element + $acc;
+                    }
+                }
+                $temp = array();
+                array_push($temp,$acc);
+                return new my_iterator($temp);
+            }
+
+        )->collect();
         global $ADD;
         if($op == $ADD){
             $op = 'add_function';
@@ -123,7 +140,7 @@ class rdd {
     function collect()
     {
     #    with SCCallSiteSync(self . context) as css:
-        $port = $this->ctx->jvm->PhpRDD->collectAndServe($this->jrdd->rdd());
+        $port = $this->ctx->php_call_java->PhpRDD->collectAndServe($this->jrdd->rdd());
         return $this->load_from_socket($port,$this->deserializer);
     }
 
@@ -173,7 +190,7 @@ class rdd {
 
     function convert_list($php_list,$sc)
     {
-        $jlist = $sc->jvm->new_java_list();
+        $jlist = $sc->php_call_java->new_java_list();
         foreach ($php_list as $key => $value) {
             $jlist->add($value);
         }
@@ -183,7 +200,7 @@ class rdd {
 
     function convert_map($php_map,$sc)
     {
-        $jmap = $sc->jvm->new_java_map();
+        $jmap = $sc->php_call_java->new_java_map();
         foreach ($php_map as $key => $value) {
             $jmap[$key]->put($key,$value);
         }
@@ -197,15 +214,19 @@ class rdd {
         }
         $pickled_command=null;#就是已经序列化的command
         if(is_array($command)){
-            $pickled_command[0]=$this->s->serialize($command[0]);
+            if(is_string($command[0])){
+                echo ">>>>>>".$command[0];
+            }
+            $pickled_command[0] = $this->s->serialize($command[0]);
+
             if($command[1]!=null)
-            $pickled_command[1]=$this->s->serialize($command[1]);
+            $pickled_command[1]=serialize($command[1]);
             if($command[2]!=null)
-            $pickled_command[2]=$this->s->serialize($command[2]);
+            $pickled_command[2]=serialize($command[2]);
             if($command[3]!=null)
-            $pickled_command[3]=$this->s->serialize($command[3]);
+            $pickled_command[3]=serialize($command[3]);
         } else {
-            $pickled_command = $this->s->serialize($command);
+            $pickled_command = serialize($command);
         }
         if(strlen($pickled_command[0]) > (1 << 20)) {  # 1M
             # The broadcast will have same life cycle as created PythonRDD
@@ -223,6 +244,7 @@ class rdd {
         $includes =$this-> convert_list($sc->python_includes, $sc);
         return array($pickled_command, $broadcast_vars, $env, $includes);
     }
+
 }
 
 class pipelined_rdd extends rdd{
@@ -239,13 +261,10 @@ class pipelined_rdd extends rdd{
     var $bypass_serializer;
     var $partitioner;
     var $jrdd;
-    function pipeline_func($split, $iterator){
-        return func($split, $this->prev_func($split, $iterator));
-    }
+
     function  pipelined_rdd($prev_rdd,callable $func, $preservesPartitioning=False) {
         $this->s = new Serializer();
-        $this->s->serialize($func);
-        if(!($prev_rdd instanceof pipelined_rdd) || !$prev_rdd.is_pipelinable()) {
+        if(!($prev_rdd instanceof pipelined_rdd) || !$prev_rdd->is_pipelinable()) {
             echo "不是pipedrdd";
             $this->func = $func;
             $this->preservesPartitioning = $preservesPartitioning;
@@ -254,7 +273,10 @@ class pipelined_rdd extends rdd{
         }else {
             echo "是pipedrdd";
             $this->prev_func = $prev_rdd->func;
-            $this->func = 'pipeline_func';
+            $temp_prev_func =  $prev_rdd->func;
+            $this->func = function ($split, $iterator) use ($func,$temp_prev_func){
+                return $func($split, $temp_prev_func($split, $iterator));
+            };
             $this->preservesPartitioning = $prev_rdd->preservesPartitioning && $preservesPartitioning;
             $this->prev_jrdd = $prev_rdd->prev_jrdd; # maintain the pipeline
             $this->prev_jrdd_deserializer = $prev_rdd->prev_jrdd_deserializer;
@@ -291,7 +313,11 @@ class pipelined_rdd extends rdd{
         $command[1] = $profiler;
         $command[2] = $this->prev_jrdd_deserializer;
         $command[3] = $this->jrdd_deserializer;
+
+
         $tempArray = $this->prepare_for_python_RDD($this->ctx, $command, $this);
+
+
         $pickled_cmd= $tempArray[0];
 
 
@@ -299,28 +325,23 @@ class pipelined_rdd extends rdd{
         $env= $tempArray[2];
         $includes = $tempArray[3];
 
-
-        echo "序列化的".gettype($pickled_cmd);
-
-
-
-
-        $python_rdd = $this->ctx->jvm->phpRDD(
-                $this->prev_jrdd,
+        $python_rdd = $this->ctx->php_call_java->phpRDD(
+                $this->prev_jrdd->rdd(),
                 $pickled_cmd,
                 $env,
                 $includes,
                 $this->preservesPartitioning,
-                $this->ctx->phpExec,
-                $this->ctx->phpVer,
+                $this->ctx->php_exec,
+                $this->ctx->php_ver,
                 $bvars,
-                $this->ctx->javaAccumulator);
-        $this->jrdd_val = $python_rdd->asJavaRDD();
+                $this->ctx->java_accumulator);
+        $this->jrdd_val = $python_rdd->getJavaRDD();
         if($profiler) {
             $this->id = $this->jrdd_val->id();
             $this->ctx->profiler_collector->add_profiler($this->id, $profiler);
             return $this->jrdd_val;
         }
+        $this->jrdd = $this->jrdd_val;
     }
 
     function is_pipelinable(){

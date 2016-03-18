@@ -105,7 +105,7 @@ class auto_batched_serializer extends batched_serializer
 
     function __construct($serializer, $best_size = 1 << 16)
     {
-        parent::__construct($serializer, $this . $this->UNKNOWN_BATCH_SIZE);
+        parent::__construct($serializer, $this->UNKNOWN_BATCH_SIZE);
         $this->best_size = $best_size;
     }
 
