@@ -40,7 +40,7 @@ private[spark] class PhpWorkerFactory(phpExec: String, envVars: Map[String, Stri
     sys.env.getOrElse("PHPPATH", ""))
 
   def create(): Socket = {
-    if (useDaemon) {
+    if (false) {
       synchronized {
         if (idleWorkers.size > 0) {
           return idleWorkers.dequeue()
@@ -96,10 +96,16 @@ private[spark] class PhpWorkerFactory(phpExec: String, envVars: Map[String, Stri
       serverSocket = new ServerSocket(0, 1, InetAddress.getByAddress(Array(127, 0, 0, 1)))
 
       // Create and start the worker
-      val pb = new ProcessBuilder(Arrays.asList(phpExec, "-m", "src.worker"))
+      val commands = new java.util.ArrayList[String]();
+      commands.add("php");
+      commands.add("worker.php");
+      val pb = new ProcessBuilder()
+      pb.command(commands);
+      val tempPhpPath=new java.io.File(sys.env.get("SPARK_HOME").toString.replace("Some(","").replace(")","")+"/php/src/");
+      pb.directory(tempPhpPath);
       val workerEnv = pb.environment()
       workerEnv.putAll(envVars.asJava)
-      workerEnv.put("PHPPATH", phpPath)
+      workerEnv.put("PHPPATH", tempPhpPath.toString)
       workerEnv.put("PHPUNBUFFERED", "YES")
       val worker = pb.start()
 

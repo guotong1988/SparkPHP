@@ -44,7 +44,7 @@ class utf8_deserializer extends serializers{
     {
         $item_array= array();
         try {
-            for($i=0;$i<10;$i++){
+            for($i=0;$i<10;$i++){#TODO
 #            while(True){
                 array_push($item_array, $this->loads($stream));
             }

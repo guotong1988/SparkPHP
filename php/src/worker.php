@@ -13,14 +13,18 @@ $stdin = fopen('php://stdin','r');
 $jvm_worker_port = fgets($stdin);
 $sock = socket_create ( AF_INET, SOCK_STREAM, SOL_TCP );
 if ($sock == false) {
+    file_put_contents($spark_php_home."php_worker.txt", "socket_create()失败:" . socket_strerror(socket_last_error($sock)) . "\n");
     echo "socket_create()失败:" . socket_strerror(socket_last_error($sock)) . "\n";
 }else {
+    file_put_contents($spark_php_home."php_worker.txt", "socket_create()成功\n");
     echo "socket_create()成功\n";
 }
 $result =socket_connect ( $sock, '127.0.0.1', (int)$jvm_worker_port );
 if ($result == false) {
+    file_put_contents($spark_php_home."php_worker.txt","socket_connect()失败:" . socket_strerror(socket_last_error($sock)) . "\n", FILE_APPEND);
     echo "socket_connect()失败:" . socket_strerror(socket_last_error($sock)) . "\n";
 }else {
+    file_put_contents($spark_php_home."php_worker.txt", "socket_connect()成功\n", FILE_APPEND);
     echo "socket_connect()成功\n";
 }
 
@@ -36,12 +40,18 @@ $NULL = -5;
 $in_stream = new sock_input_stream($sock);
 $out_stream = new sock_output_stream($sock);
 $split_index =$in_stream-> read_int();
+
+file_put_contents($spark_php_home."php_worker.txt", "首次read_int()成功".$split_index."\n", FILE_APPEND);
+
 if($split_index == -1) {  # for unit tests
 }
 $utf8_deserializer = new utf8_deserializer();
 $version = $utf8_deserializer->loads($in_stream);
 if($version != ""){
 }
+
+file_put_contents($spark_php_home."php_worker.txt", "首次read_utf()成功".$version."\n", FILE_APPEND);
+
 $shuffle = new shuffle();
 $shuffle -> DiskBytesSpilled = 0;
 $shuffle -> MemoryBytesSpilled = 0;
@@ -58,6 +68,7 @@ for($i=0;$i<$num_python_includes;$i++){
     #add_path(os.path.join(spark_files_dir, filename))
 }
 
+
 $broadcast = new broadcast();
 $num_broadcast_variables = $in_stream->read_int();
 for($i=0;$i<$num_broadcast_variables;$i++) {
@@ -72,13 +83,19 @@ for($i=0;$i<$num_broadcast_variables;$i++) {
 }
 unset($accumulator->accumulatorRegistry);
 $temp_length = $in_stream->read_int();
+
+file_put_contents($spark_php_home."php_worker.txt", "here\n", FILE_APPEND);
+
 $command = unserialize($in_stream->read_fully($temp_length));#unserialize方法参数是serialized的string
+
+file_put_contents($spark_php_home."php_worker.txt", "here\n", FILE_APPEND);
+
 if($command instanceof broadcast) {
     $command = unserialize($command->value);
 }
-$func = $command[0];
+$func = $command[0];#"就是func"
 $profiler = $command[1];
-$deserializer = $command[2];
+$deserializer = new utf8_deserializer();#$command[2];
 $serializer = $command[3];
 
 
@@ -90,7 +107,7 @@ function process()
     global $out_stream;
     global $split_index;
     $iterator = $deserializer->load_stream($in_stream);
-    #$serializer -> dump_stream(func(split_index, iterator), $out_stream);
+    #$serializer -> dump_stream(func(split_index, iterator), $out_stream);#显然是返回计算结果
 }
 
 if($profiler) {

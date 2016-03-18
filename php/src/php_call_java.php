@@ -49,12 +49,13 @@ class php_call_java {
                 $bvars,
                 $javaAccumulator){
 
-        $temp_string = "";
-        foreach($serialized_cmd as $key=>$value){
-            $temp_string+="##"+$value;
-        }
-        $temp_byte_array = unpack('C*', $temp_string);
-
+        echo gettype($serialized_cmd)."!!!!!";
+       # $temp_string = "";
+       # foreach($serialized_cmd as $key=>$value){
+       #     $temp_string+="##"+$value;
+       # }
+        $temp_byte_array = unpack('C*', $serialized_cmd);#string转byte
+        echo gettype($temp_byte_array)."?????";
         $preservesPartitioning = new java("java.lang.Boolean",$preservesPartitioning);
         $phpExec=$this->new_java_string($phpExec);
         $phpVer= $this->new_java_string($phpVer);

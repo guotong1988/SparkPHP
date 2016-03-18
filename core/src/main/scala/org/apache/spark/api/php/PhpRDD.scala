@@ -24,7 +24,7 @@ import org.apache.spark.input.PortableDataStream
 import org.apache.spark.rdd.RDD
 import org.apache.spark.util.{SerializableConfiguration, Utils}
 
-class PhpRDD(var parent: RDD[_],
+class PhpRDD(               var parent: RDD[_],
                             var command: Array[Byte],
                             var envVars: JMap[String, String],
                             var phpIncludes: JList[String],
@@ -110,6 +110,7 @@ private[spark] class PhpRunner4worker(
         val obj = _nextObj
         if (hasNext) {
           _nextObj = read()
+          logInfo(_nextObj.toString+"!!!!!!!!!!!!!!!!!!");
         }
         obj
       }

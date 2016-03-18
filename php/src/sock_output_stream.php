@@ -32,7 +32,7 @@ class sock_output_stream {
 
     function write_string($value) {
         $len = strlen($value);
-        writeInt($this->$sock, $len);
+        $this->write_int($len);
         socket_write($this->$sock, $value, $len);
     }
 }

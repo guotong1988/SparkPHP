@@ -1,0 +1,4 @@
+socket_create()成功
+socket_connect()成功
+首次read_int()成功1
+首次read_utf()成功5.6

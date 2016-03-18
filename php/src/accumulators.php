@@ -19,7 +19,7 @@ class Accumulator
     }
 
 
-    function __construct($aid, $value, $accum_param)
+    function __construct($aid=null, $value=null, $accum_param=null)
     {
         $this->aid = $aid;
         $this->accum_param = $accum_param;

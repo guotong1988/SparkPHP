@@ -228,6 +228,7 @@ class rdd {
         } else {
             $pickled_command = serialize($command);
         }
+
         if(strlen($pickled_command[0]) > (1 << 20)) {  # 1M
             # The broadcast will have same life cycle as created PythonRDD
             $broadcast = $sc -> broadcast($pickled_command);
@@ -318,7 +319,9 @@ class pipelined_rdd extends rdd{
         $tempArray = $this->prepare_for_python_RDD($this->ctx, $command, $this);
 
 
-        $pickled_cmd= $tempArray[0];
+        $all4cmd = $tempArray[0];
+        $fff = $all4cmd[0];
+        #TODO $profiler $prev_jrdd_deserializer $jrdd_deserializer 没有传
 
 
         $bvars= $tempArray[1];
@@ -327,7 +330,7 @@ class pipelined_rdd extends rdd{
 
         $python_rdd = $this->ctx->php_call_java->phpRDD(
                 $this->prev_jrdd->rdd(),
-                $pickled_cmd,
+                $fff,
                 $env,
                 $includes,
                 $this->preservesPartitioning,
