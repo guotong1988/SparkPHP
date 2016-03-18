@@ -1,4 +1,6 @@
 socket_create()成功
 socket_connect()成功
+here2256
 首次read_int()成功1
 首次read_utf()成功5.6
+here2256

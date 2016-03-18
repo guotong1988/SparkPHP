@@ -145,7 +145,7 @@ class rdd {
     }
 
 
-    function load_from_socket($port,serializers $deserializer)
+    function load_from_socket($port,$deserializer)
     {
         $sock = socket_create ( AF_INET, SOCK_STREAM, SOL_TCP );
         if ($sock == false) {

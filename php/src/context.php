@@ -4,7 +4,7 @@ $spark_php_home = substr($temp,0,strrpos($temp,"/")-3);
 require($spark_php_home . "src/conf.php");
 require($spark_php_home . "src/php_call_java.php");
 require($spark_php_home . "src/rdd.php");
-require($spark_php_home . "src/serializers.php");
+require($spark_php_home . "src/serializer.php");
 class context {
 
     var $php_call_java;#就是php_call_java
@@ -148,9 +148,9 @@ class context {
             $minPartitions=1;
         }
         $HadoopRDD = $this->jsc->textFile($filePath, $minPartitions);
-        $serializers = new utf8_deserializer($use_unicode);
+        $serializer = new utf8_deserializer($use_unicode);
         #echo $HadoopRDD->rdd();#就是取RDD类
-        return new rdd($HadoopRDD, $this, $serializers);
+        return new rdd($HadoopRDD, $this, $serializer);
     }
 
 

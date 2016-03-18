@@ -3,11 +3,15 @@ $temp = __FILE__;
 $spark_php_home = substr($temp,0,strrpos($temp,"/")-3);
 require($spark_php_home . "src/sock_output_stream.php");
 require($spark_php_home . "src/sock_input_stream.php");
-require($spark_php_home . "src/serializers.php");
+require($spark_php_home . "src/serializer.php");
 require($spark_php_home . "src/shuffle.php");
 require($spark_php_home . "src/accumulators.php");
 require($spark_php_home . "src/files.php");
 require($spark_php_home . "src/broadcast.php");
+
+require 'vendor/autoload.php';
+use SuperClosure\Serializer;
+
 
 $stdin = fopen('php://stdin','r');
 $jvm_worker_port = fgets($stdin);
@@ -84,11 +88,12 @@ for($i=0;$i<$num_broadcast_variables;$i++) {
 unset($accumulator->accumulatorRegistry);
 $temp_length = $in_stream->read_int();
 
-file_put_contents($spark_php_home."php_worker.txt", "here\n", FILE_APPEND);
+file_put_contents($spark_php_home."php_worker.txt", "here".$temp_length."\n", FILE_APPEND);
 
-$command = unserialize($in_stream->read_fully($temp_length));#unserialize方法参数是serialized的string
+$s=new Serializer();
+$command = $s->unserialize($in_stream->read_fully($temp_length));#unserialize方法参数是serialized的string
 
-file_put_contents($spark_php_home."php_worker.txt", "here\n", FILE_APPEND);
+file_put_contents($spark_php_home."php_worker.txt", "here".gettype($command)."\n", FILE_APPEND);
 
 if($command instanceof broadcast) {
     $command = unserialize($command->value);

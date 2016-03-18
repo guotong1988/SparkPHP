@@ -15,7 +15,7 @@ class php_call_java {
         echo "php_call_java构造方法（开始）";
         $this->SparkConf = new java("org.apache.spark.SparkConf");
         $this->JavaSparkContext = new java("org.apache.spark.api.java.JavaSparkContext");
-
+        $this->PhpRDD = new java("org.apache.spark.api.php.PhpRDD");
 
         echo "php_call_java构造方法（结束）";
     }
