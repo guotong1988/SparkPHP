@@ -10,29 +10,34 @@ class sock_output_stream {
     public function __destruct(){
     }
 
-#    function readInt($socket) {
-#        $n = socket_read($socket, 4);
-#        $unpacked = unpack("N", $n);
-#        return $unpacked[1];
-#    }
-
-    function write_int($value) {
-        socket_write($this->$sock, pack("N", $value), 4);
+    function write_int($value)
+    {
+        $data = pack('N', $value);
+        socket_write($this->sock, $data);
     }
 
-
-    function write_long($value) {
-        socket_write($this->$sock, pack("N", $value), 8);
+    function write_long($value)
+    {
+        $data = pack('J', $value);
+        socket_write($this->sock, $data);
     }
 
-#    function readString($socket) {
-#        $n = readInt($socket);
-#        return socket_read($socket, $n);
-#    }
-
-    function write_string($value) {
-        $len = strlen($value);
-        $this->write_int($len);
-        socket_write($this->$sock, $value, $len);
+    function write_short($value)
+    {
+        $data = pack('n', $value);
+        socket_write($this->sock, $data);
     }
+
+    function write_utf($value)
+    {
+        $this->write_short(strlen($value));
+        socket_write($this->sock,$value);
+    }
+
+    function write_utf2($value)
+    {
+        $this->write_int(strlen($value));
+        socket_write($this->sock,$value);
+    }
+
 }

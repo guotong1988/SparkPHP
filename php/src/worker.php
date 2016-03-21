@@ -8,6 +8,7 @@ require($spark_php_home . "src/shuffle.php");
 require($spark_php_home . "src/accumulators.php");
 require($spark_php_home . "src/files.php");
 require($spark_php_home . "src/broadcast.php");
+require($spark_php_home . "src/my_iterator.php");
 
 require 'vendor/autoload.php';
 use SuperClosure\Serializer;
@@ -17,10 +18,10 @@ $stdin = fopen('php://stdin','r');
 $jvm_worker_port = fgets($stdin);
 $sock = socket_create ( AF_INET, SOCK_STREAM, SOL_TCP );
 if ($sock == false) {
-    file_put_contents($spark_php_home."php_worker.txt", "socket_create()失败:" . socket_strerror(socket_last_error($sock)) . "\n");
+    file_put_contents($spark_php_home."php_worker.txt", "socket_create()失败:" . socket_strerror(socket_last_error($sock)) . "\n",FILE_APPEND);
     echo "socket_create()失败:" . socket_strerror(socket_last_error($sock)) . "\n";
 }else {
-    file_put_contents($spark_php_home."php_worker.txt", "socket_create()成功\n");
+    file_put_contents($spark_php_home."php_worker.txt", "socket_create()成功\n",FILE_APPEND);
     echo "socket_create()成功\n";
 }
 $result =socket_connect ( $sock, '127.0.0.1', (int)$jvm_worker_port );
@@ -32,7 +33,6 @@ if ($result == false) {
     echo "socket_connect()成功\n";
 }
 
-
 #special_lengths
 $END_OF_DATA_SECTION = -1;
 $PHP_EXCEPTION_THROWN = -2;
@@ -40,6 +40,16 @@ $TIMING_DATA = -3;
 $END_OF_STREAM = -4;
 $NULL = -5;
 
+function report_times(sock_output_stream $out_stream, $boot, $init, $finish)
+{
+    global $TIMING_DATA;
+    $out_stream->write_int($TIMING_DATA);
+    $out_stream->write_long((int)(1000 * $boot));
+    $out_stream->write_long((int)(1000 * $init));
+    $out_stream->write_long((int)(1000 * $finish));
+
+    file_put_contents("/home/gt/php_worker.txt", "成功".$boot."\n",FILE_APPEND);
+}
 
 $in_stream = new sock_input_stream($sock);
 $out_stream = new sock_output_stream($sock);
@@ -49,8 +59,7 @@ file_put_contents($spark_php_home."php_worker.txt", "首次read_int()成功".$sp
 
 if($split_index == -1) {  # for unit tests
 }
-$utf8_deserializer = new utf8_deserializer();
-$version = $utf8_deserializer->loads($in_stream);
+$version = $in_stream->read_utf();
 if($version != ""){
 }
 
@@ -61,24 +70,24 @@ $shuffle -> DiskBytesSpilled = 0;
 $shuffle -> MemoryBytesSpilled = 0;
 $accumulator = new Accumulator();
 unset($accumulator->accumulatorRegistry);
-$spark_files_dir = $utf8_deserializer->loads($in_stream);
+$spark_files_dir = $in_stream->read_utf();
 $spark_files= new spark_files();
 $spark_files->is_running_on_worker=True;
 $spark_files->root_directory=$spark_files_dir;
 #  add_path(spark_files_dir)
 $num_python_includes = $in_stream->read_int();
 for($i=0;$i<$num_python_includes;$i++){
-    $filename = $utf8_deserializer->loads($in_stream);
+    $filename = $in_stream->read_utf();
     #add_path(os.path.join(spark_files_dir, filename))
 }
 
-
+file_put_contents($spark_php_home."php_worker.txt", "here1\n", FILE_APPEND);
 $broadcast = new broadcast();
 $num_broadcast_variables = $in_stream->read_int();
 for($i=0;$i<$num_broadcast_variables;$i++) {
      $bid = $in_stream->read_long();
      if($bid >= 0) {
-          $path = $utf8_deserializer->loads($in_stream);
+          $path = $in_stream->read_utf();
           $broadcast0->broadcastRegistry[$bid] = new broadcast(null,null,$path);
      }else{
           $bid = -$bid - 1;
@@ -86,22 +95,21 @@ for($i=0;$i<$num_broadcast_variables;$i++) {
      }
 }
 unset($accumulator->accumulatorRegistry);
-$temp_length = $in_stream->read_int();
 
-file_put_contents($spark_php_home."php_worker.txt", "here".$temp_length."\n", FILE_APPEND);
+file_put_contents($spark_php_home."php_worker.txt", "here2\n", FILE_APPEND);
+$s = new Serializer();
+$str = $in_stream->read_utf();
+file_put_contents($spark_php_home."php_worker.txt", "here3".$str."\n", FILE_APPEND);
+$func = $s->unserialize($str);#unserialize方法参数是serialized的string
 
-$s=new Serializer();
-$command = $s->unserialize($in_stream->read_fully($temp_length));#unserialize方法参数是serialized的string
 
-file_put_contents($spark_php_home."php_worker.txt", "here".gettype($command)."\n", FILE_APPEND);
+file_put_contents($spark_php_home."php_worker.txt", "here4".gettype($func)."\n", FILE_APPEND);
 
-if($command instanceof broadcast) {
-    $command = unserialize($command->value);
-}
-$func = $command[0];#"就是func"
-$profiler = $command[1];
-$deserializer = new utf8_deserializer();#$command[2];
-$serializer = $command[3];
+
+$profiler = null;
+$deserializer = new utf8_deserializer();
+$serializer = new utf8_serializer();
+
 
 
 function process()
@@ -111,26 +119,46 @@ function process()
     global $serializer;
     global $out_stream;
     global $split_index;
-    $iterator = $deserializer->load_stream($in_stream);
-    #$serializer -> dump_stream(func(split_index, iterator), $out_stream);#显然是返回计算结果
+    global $func;
+    global $spark_php_home;
+    file_put_contents($spark_php_home."php_worker.txt", "here5a\n", FILE_APPEND);
+
+
+    $iterator = new my_iterator($deserializer->load_stream($in_stream));
+
+
+    foreach($iterator as $element) {
+        file_put_contents($spark_php_home."php_worker.txt", "here6".$element."\n", FILE_APPEND);
+    }
+
+    $serializer -> dump_stream($func($split_index, $iterator), $out_stream);#显然是返回计算结果
 }
 
 if($profiler) {
     $func_name = 'process';
     $profiler->profile($func_name);
 }else {
-    process();
+    file_put_contents($spark_php_home."php_worker.txt", "here5\n", FILE_APPEND);
+    $iterator = new my_iterator($deserializer->load_stream($in_stream));
+
+   # $temp2 = $in_stream->read_utf2();
+   # file_put_contents($spark_php_home."php_worker.txt", "here5b ".$temp2."\n", FILE_APPEND);
+    foreach($iterator as $element) {
+        file_put_contents($spark_php_home."php_worker.txt", "here6".$element."\n", FILE_APPEND);
+    }
+    $temp3 = $func($split_index, $iterator);
+
+    file_put_contents($spark_php_home."php_worker.txt", "here7 ".gettype($temp3)."\n", FILE_APPEND);
+
+    foreach($temp3 as $element) {
+        file_put_contents($spark_php_home."php_worker.txt", "here7b ".$element."\n", FILE_APPEND);
+    }
+
+    $serializer -> dump_stream($temp3, $out_stream);#显然是返回计算结果
 }
 
 
-function report_times(sock_output_stream $out_stream, $boot, $init, $finish)
-{
-    global $TIMING_DATA;
-    $out_stream->write_int($TIMING_DATA);
-    $out_stream->write_long(int(1000 * $boot));
-    $out_stream->write_long(int(1000 * $init));
-    $out_stream->write_long(int(1000 * $finish));
-}
+
 
 report_times($out_stream,time(),time(),time());
 
@@ -146,7 +174,7 @@ foreach($accumulator->accumulatorRegistry as $aid=>$accum){
        $temp[0]=$aid;
        $temp[1]=$accum;
        $temp2 = serialize($temp);
-       $out_stream->write_string($temp2);
+       $out_stream->write_utf($temp2);
 }
     # check end of stream
 if($in_stream->read_int() == $END_OF_STREAM){

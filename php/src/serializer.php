@@ -16,22 +16,39 @@ class serializer {
 
 }
 
+
+
+class utf8_serializer extends serializer{
+    var $use_unicode;
+    function utf8_serializer($use_unicode=True){
+        $this->use_unicode = $use_unicode;
+    }
+    function dump_stream($iterator, sock_output_stream $stream){
+        foreach($iterator as $element)
+        {
+            $stream->write_utf2($element);
+        }
+    }
+}
+
+
 class utf8_deserializer extends serializer{
     var $use_unicode;
-    function UTF8Deserializer($use_unicode=True){
+    function utf8_deserializer($use_unicode=True){
         $this->use_unicode=$use_unicode;
     }
 
     function loads(sock_input_stream $stream)
     {
-#        $length_of_line = $stream->readInt();
-#        echo $length_of_line."!!!!\n";
-#        if($length_of_line == $this->END_OF_DATA_SECTION){
-#            throw new Exception();
-#        }elseif($length_of_line == $this->NULL) {
-#            return null;
-#        }
-        $string = $stream->read_utf();
+        $length_of_line = $stream->read_int();
+        file_put_contents("/home/gt/php_worker.txt", "here>>>".$length_of_line."\n",FILE_APPEND);
+        if($length_of_line == 4294967295){
+            throw new Exception("end of data");
+        }elseif($length_of_line == $this->NULL) {
+            return null;
+        }
+        $string = $stream->read_fully($length_of_line);
+        file_put_contents("/home/gt/php_worker.txt", "here???".$string."\n",FILE_APPEND);
         if ($this->use_unicode==True){
             return $string;
         }else{
@@ -44,14 +61,16 @@ class utf8_deserializer extends serializer{
     {
         $item_array= array();
         try {
-            for($i=0;$i<10;$i++){#TODO
-#            while(True){
-                array_push($item_array, $this->loads($stream));
+            while(True){
+                $temp2 = $this->loads($stream);
+                array_push($item_array,$temp2);
             }
         }catch (Exception $e){
+            file_put_contents("/home/gt/php_worker.txt", "here!!!\n",FILE_APPEND);
             return $item_array;
         }
     }
+
 }
 
 

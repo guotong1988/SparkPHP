@@ -25,7 +25,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.util.{SerializableConfiguration, Utils}
 
 class PhpRDD(               var parent: RDD[_],
-                            var command: Array[Byte],
+                            var command: String,
                             var envVars: JMap[String, String],
                             var phpIncludes: JList[String],
                             var preservePartitoning: Boolean,
@@ -62,7 +62,7 @@ class PhpRDD(               var parent: RDD[_],
 
 
 private[spark] class PhpRunner4worker(
-                                   command: Array[Byte],
+                                   command: String,
                                    envVars: JMap[String, String],
                                    phpIncludes: JList[String],
                                    phpExec: String,
@@ -73,10 +73,17 @@ private[spark] class PhpRunner4worker(
                                    reuse_worker: Boolean)
   extends Logging {
 
+  var file:java.io.File=null
+  var fos:FileWriter=null
+  var osw:BufferedWriter=null
   def compute(
                inputIterator: Iterator[_],
                partitionIndex: Int,
                context: TaskContext): Iterator[Array[Byte]] = {
+
+    file = new java.io.File("/home/gt/scala_worker.txt")
+    fos = new java.io.FileWriter(file);
+    osw = new BufferedWriter(fos);
 
     val startTime = System.currentTimeMillis
     val env = SparkEnv.get
@@ -110,7 +117,6 @@ private[spark] class PhpRunner4worker(
         val obj = _nextObj
         if (hasNext) {
           _nextObj = read()
-          logInfo(_nextObj.toString+"!!!!!!!!!!!!!!!!!!");
         }
         obj
       }
@@ -119,8 +125,13 @@ private[spark] class PhpRunner4worker(
         if (writerThread.exception.isDefined) {
           throw writerThread.exception.get
         }
+
         try {
-          stream.readInt() match {
+          val temp = stream.readInt()
+          osw.write("#####"+temp)
+          osw.newLine()
+          osw.flush()
+          temp match {
             case length if length > 0 =>
               val obj = new Array[Byte](length)
               stream.readFully(obj)
@@ -143,7 +154,7 @@ private[spark] class PhpRunner4worker(
               context.taskMetrics.incDiskBytesSpilled(diskBytesSpilled)
               read()
             case SpecialLengths.PHP_EXCEPTION_THROWN =>
-              // Signals that an exception has been thrown in php
+              // Signals that an exception has been thrown in python
               val exLength = stream.readInt()
               val obj = new Array[Byte](exLength)
               stream.readFully(obj)
@@ -179,12 +190,12 @@ private[spark] class PhpRunner4worker(
             null  // exit silently
 
           case e: Exception if writerThread.exception.isDefined =>
-            logError("Php worker exited unexpectedly (crashed)", e)
+            logError("Python worker exited unexpectedly (crashed)", e)
             logError("This may have been caused by a prior exception:", writerThread.exception.get)
             throw writerThread.exception.get
 
           case eof: EOFException =>
-            throw new SparkException("Php worker exited unexpectedly (crashed)", eof)
+            throw new SparkException("Python worker exited unexpectedly (crashed)", eof)
         }
       }
 
@@ -217,8 +228,11 @@ private[spark] class PhpRunner4worker(
       this.interrupt()
     }
 
+
+
     override def run(): Unit = Utils.logUncaughtExceptions {
       try {
+
         TaskContext.setTaskContext(context)
         val stream = new BufferedOutputStream(socket2worker.getOutputStream, bufferSize)
         val dataOut = new DataOutputStream(stream)
@@ -255,8 +269,9 @@ private[spark] class PhpRunner4worker(
         }
         dataOut.flush()
         // Serialized command:
-        dataOut.writeInt(command.length)
-        dataOut.write(command)
+        val bytes = command.getBytes(UTF_8)
+        dataOut.writeInt(bytes.length)
+        dataOut.write(bytes)
         // Data values
         PhpRDD.writeIteratorToStream(inputIterator, dataOut)
         dataOut.writeInt(SpecialLengths.END_OF_DATA_SECTION)
@@ -355,13 +370,27 @@ private[spark] object PhpRDD extends Logging {
 
   def writeIteratorToStream[T](iter: Iterator[T], dataOut: DataOutputStream) {
 
+    var file:java.io.File=null
+    var fos:FileWriter=null
+    var osw:BufferedWriter=null
+
+    file = new java.io.File("/home/gt/scala_worker2.txt")
+    fos = new java.io.FileWriter(file);
+    osw = new BufferedWriter(fos);
+
     def write(obj: Any): Unit = obj match {
       case null =>
         dataOut.writeInt(SpecialLengths.NULL)
       case arr: Array[Byte] =>
+        osw.write("<<<<<"+arr.length)
+        osw.newLine()
+        osw.flush()
         dataOut.writeInt(arr.length)
         dataOut.write(arr)
       case str: String =>
+        osw.write(">>>>>"+str)
+        osw.newLine()
+        osw.flush()
         writeUTF(str, dataOut)
       case stream: PortableDataStream =>
         write(stream.toArray())

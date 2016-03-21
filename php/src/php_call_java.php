@@ -49,20 +49,20 @@ class php_call_java {
                 $bvars,
                 $javaAccumulator){
 
-        echo gettype($serialized_cmd)."!!!!!";
+       # echo gettype($serialized_cmd)."!!!!!";
        # $temp_string = "";
        # foreach($serialized_cmd as $key=>$value){
        #     $temp_string+="##"+$value;
        # }
-        $temp_byte_array = unpack('C*', $serialized_cmd);#string转byte
-        echo gettype($temp_byte_array)."?????";
+       # $temp_byte_array = unpack('C*', $serialized_cmd);#string转byte
+       # echo gettype($temp_byte_array)."?????";
         $preservesPartitioning = new java("java.lang.Boolean",$preservesPartitioning);
         $phpExec=$this->new_java_string($phpExec);
         $phpVer= $this->new_java_string($phpVer);
 
         $this->PhpRDD = new java("org.apache.spark.api.php.PhpRDD",
             $prev_jrdd,
-            $temp_byte_array,
+            $serialized_cmd,
             $env,
             $includes,
             $preservesPartitioning,

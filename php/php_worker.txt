@@ -1,6 +1,126 @@
 socket_create()成功
 socket_connect()成功
-here2256
-首次read_int()成功1
+首次read_int()成功0
 首次read_utf()成功5.6
-here2256
+here1
+here2
+here3C:32:"SuperClosure\SerializableClosure":2205:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
+    return $func($split, $temp_prev_func($split, $iterator));
+};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":649:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
+    return $f($iterator);
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":426:{a:5:{s:4:"code";s:290:"function ($iterator) use($zeroValue, $op) {
+    $acc = $zeroValue;
+    foreach ($iterator as $element) {
+        $ADD = 1;
+        if ($op == $ADD) {
+            $acc = $element + $acc;
+        }
+    }
+    $temp = array();
+    array_push($temp, $acc);
+    return new \my_iterator($temp);
+};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":1193:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
+    return $func($split, $temp_prev_func($split, $iterator));
+};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":383:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
+    return $f($iterator);
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":160:{a:5:{s:4:"code";s:58:"function ($iterator) {
+    return array_sum($iterator);
+};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":448:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
+    return $f($iterator);
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":225:{a:5:{s:4:"code";s:122:"function ($iterator) {
+    $count = 0;
+    foreach ($iterator as $element) {
+        $count++;
+    }
+    return $count;
+};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
+here4object
+here5
+here6test test test test try try try 
+here6do do do 
+here7 object
+here7b 0
+socket_create()成功
+socket_connect()成功
+首次read_int()成功0
+首次read_utf()成功5.6
+here1
+here2
+here3C:32:"SuperClosure\SerializableClosure":2205:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
+    return $func($split, $temp_prev_func($split, $iterator));
+};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":649:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
+    return $f($iterator);
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":426:{a:5:{s:4:"code";s:290:"function ($iterator) use($zeroValue, $op) {
+    $acc = $zeroValue;
+    foreach ($iterator as $element) {
+        $ADD = 1;
+        if ($op == $ADD) {
+            $acc = $element + $acc;
+        }
+    }
+    $temp = array();
+    array_push($temp, $acc);
+    return new \my_iterator($temp);
+};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":1193:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
+    return $func($split, $temp_prev_func($split, $iterator));
+};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":383:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
+    return $f($iterator);
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":160:{a:5:{s:4:"code";s:58:"function ($iterator) {
+    return array_sum($iterator);
+};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":448:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
+    return $f($iterator);
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":225:{a:5:{s:4:"code";s:122:"function ($iterator) {
+    $count = 0;
+    foreach ($iterator as $element) {
+        $count++;
+    }
+    return $count;
+};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
+here4object
+here5
+here6test test test test try try try 
+here6do do do 
+here7 object
+here7b 0
+socket_create()成功
+socket_connect()成功
+首次read_int()成功0
+首次read_utf()成功5.6
+here1
+here2
+here3C:32:"SuperClosure\SerializableClosure":2205:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
+    return $func($split, $temp_prev_func($split, $iterator));
+};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":649:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
+    return $f($iterator);
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":426:{a:5:{s:4:"code";s:290:"function ($iterator) use($zeroValue, $op) {
+    $acc = $zeroValue;
+    foreach ($iterator as $element) {
+        $ADD = 1;
+        if ($op == $ADD) {
+            $acc = $element + $acc;
+        }
+    }
+    $temp = array();
+    array_push($temp, $acc);
+    return new \my_iterator($temp);
+};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":1193:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
+    return $func($split, $temp_prev_func($split, $iterator));
+};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":383:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
+    return $f($iterator);
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":160:{a:5:{s:4:"code";s:58:"function ($iterator) {
+    return array_sum($iterator);
+};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":448:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
+    return $f($iterator);
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":225:{a:5:{s:4:"code";s:122:"function ($iterator) {
+    $count = 0;
+    foreach ($iterator as $element) {
+        $count++;
+    }
+    return $count;
+};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
+here4object
+here5
+here6test test test test try try try 
+here6do do do 
+here7 object
+here7b 1
