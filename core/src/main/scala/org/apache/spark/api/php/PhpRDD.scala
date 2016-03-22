@@ -340,8 +340,33 @@ private[spark] object PhpRDD extends Logging {
     }
   }
 
+
+  def readRDDFromFile(sc: JavaSparkContext, filename: String, parallelism: Int):
+  JavaRDD[Array[Byte]] = {
+    val file = new DataInputStream(new FileInputStream(filename))
+    try {
+      val objs = new collection.mutable.ArrayBuffer[Array[Byte]]
+      try {
+        while (true) {
+          val length = file.readInt()
+          val obj = new Array[Byte](length)
+          file.readFully(obj)
+          objs.append(obj)
+        }
+      } catch {
+        case eof: EOFException => {}
+      }
+      JavaRDD.fromRDD(sc.sc.parallelize(objs, parallelism))
+    } finally {
+      file.close()
+    }
+  }
+
+
   def serveIterator[T](items: Iterator[T], threadName: String): Int = {
-    val serverSocket = new ServerSocket(18081)
+    val r = new java.util.Random();
+    val port = 18082 + r.nextInt(10000)
+    val serverSocket = new ServerSocket(port)
     // Close the socket if no connection in 3 seconds
     serverSocket.setSoTimeout(3000)
 
@@ -365,7 +390,7 @@ private[spark] object PhpRDD extends Logging {
       }
     }.start()
 
-    serverSocket.getLocalPort
+    port
   }
 
   def writeIteratorToStream[T](iter: Iterator[T], dataOut: DataOutputStream) {

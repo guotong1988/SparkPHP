@@ -13,6 +13,25 @@ require($spark_php_home . "src/my_iterator.php");
 require 'vendor/autoload.php';
 use SuperClosure\Serializer;
 
+error_reporting(E_ERROR | E_WARNING | E_PARSE);
+set_error_handler('displayErrorHandler');
+function displayErrorHandler($error, $error_string, $filename, $line, $symbols)
+{
+    $error_no_arr = array(1=>'ERROR', 2=>'WARNING', 4=>'PARSE', 8=>'NOTICE', 16=>'CORE_ERROR', 32=>'CORE_WARNING', 64=>'COMPILE_ERROR', 128=>'COMPILE_WARNING', 256=>'USER_ERROR', 512=>'USER_WARNING', 1024=>'USER_NOTICE', 2047=>'ALL', 2048=>'STRICT');
+    if(in_array($error,array(1,2,4)))
+    {
+        $msg=$error_string;
+        dieByError($msg);
+    }
+}
+
+//显示错误信息
+function dieByError($msg)
+{
+    file_put_contents("/home/gt/php_worker4.txt", $msg. "\n",FILE_APPEND);
+
+ #   exit();
+}
 
 $stdin = fopen('php://stdin','r');
 $jvm_worker_port = fgets($stdin);
@@ -21,7 +40,7 @@ if ($sock == false) {
     file_put_contents($spark_php_home."php_worker.txt", "socket_create()失败:" . socket_strerror(socket_last_error($sock)) . "\n",FILE_APPEND);
     echo "socket_create()失败:" . socket_strerror(socket_last_error($sock)) . "\n";
 }else {
-    file_put_contents($spark_php_home."php_worker.txt", "socket_create()成功\n",FILE_APPEND);
+    file_put_contents($spark_php_home."php_worker.txt", "socket_create()成功".$jvm_worker_port."\n",FILE_APPEND);
     echo "socket_create()成功\n";
 }
 $result =socket_connect ( $sock, '127.0.0.1', (int)$jvm_worker_port );
@@ -146,7 +165,12 @@ if($profiler) {
     foreach($iterator as $element) {
         file_put_contents($spark_php_home."php_worker.txt", "here6".$element."\n", FILE_APPEND);
     }
-    $temp3 = $func($split_index, $iterator);
+
+    try {
+        $temp3 = $func($split_index, $iterator);
+    }catch(Exception $e){
+        file_put_contents($spark_php_home."php_worker.txt", "here6b ".$e->getMessage()."\n", FILE_APPEND);
+    }
 
     file_put_contents($spark_php_home."php_worker.txt", "here7 ".gettype($temp3)."\n", FILE_APPEND);
 

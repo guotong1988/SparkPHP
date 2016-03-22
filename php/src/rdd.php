@@ -66,10 +66,6 @@ class rdd {
         return new pipelined_rdd($this, $f, $preservesPartitioning);
     }
 
-    function f2($iterator){
-        return array_sum($iterator);
-    }
-
 #        >>> sc.parallelize([1.0, 2.0, 3.0]).sum()
 #        输出6.0
     function sum()
@@ -77,7 +73,10 @@ class rdd {
         $ADD = 1;
         return $this->mapPartitions(
             function($iterator){
-                return array_sum($iterator);
+                file_put_contents("/home/gt/php_worker5.txt", "here1 ".$iterator->get_array()[0]."\n", FILE_APPEND);
+                file_put_contents("/home/gt/php_worker5.txt", "here2 ".$iterator->get_array()[1]."\n", FILE_APPEND);
+                file_put_contents("/home/gt/php_worker5.txt", "here3 ".$iterator->get_array()[2]."\n", FILE_APPEND);
+                return new my_iterator(array(array_sum($iterator->get_array())));
             }
         )->fold(0, $ADD);
     }
@@ -87,11 +86,13 @@ class rdd {
 
             function ($iterator) use($zeroValue,$op){
                 $acc = $zeroValue;
+                file_put_contents("/home/gt/php_worker3.txt", "here1 ".gettype($iterator)."\n", FILE_APPEND);
                 foreach($iterator as $element) {
                     $ADD = 1;
-                    if($op==$ADD) {
+               #     if($op==$ADD) {
                         $acc = $element + $acc;
-                    }
+                        file_put_contents("/home/gt/php_worker3.txt", "here2 ".$element."\n", FILE_APPEND);
+                #    }
                 }
                 $temp = array();
                 array_push($temp,$acc);
@@ -130,7 +131,13 @@ class rdd {
         }else {
             echo "socket_create()成功\n";
         }
-        $result =socket_connect ( $sock, '127.0.0.1',18081);
+
+
+        file_put_contents("/home/gt/php_worker2.txt", "here2 ".$port->intValue()."\n", FILE_APPEND);
+        $port = $port->intValue()."";
+        file_put_contents("/home/gt/php_worker2.txt", "here2 ".gettype($port)."\n", FILE_APPEND);
+
+        $result =socket_connect ( $sock, '127.0.0.1',intval($port));
         if ($result == false) {
             echo "socket_connect()失败:" . socket_strerror(socket_last_error($sock)) . "\n";
         }else {

@@ -139,8 +139,14 @@ class context {
     }
 
     function parallelize($data, $numSlices){
-        if(is_array($data)){
+        $my_file = fopen("/home/gt/php_master.txt", "w");
+        for($i=0;$i<sizeof($data);$i++) {
+            fwrite($my_file,strlen($data[$i]));
+            fwrite($my_file,$data[$i]);
         }
+        fclose($my_file);
+        $jrdd = $this->php_call_java->PhpRDD->readRDDFromFile($this->jsc, "/home/gt/php_master.txt", $numSlices);;
+        return new rdd($jrdd,$this,null);
     }
 
     function text_file($filePath,$minPartitions=null,$use_unicode=True){

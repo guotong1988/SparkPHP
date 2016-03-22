@@ -29,6 +29,7 @@ class utf8_serializer extends serializer{
             $stream->write_utf2($element);
         }
     }
+
 }
 
 
