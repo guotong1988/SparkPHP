@@ -84,9 +84,9 @@ if($version != ""){
 
 file_put_contents($spark_php_home."php_worker.txt", "首次read_utf()成功".$version."\n", FILE_APPEND);
 
-$shuffle = new shuffle();
-$shuffle -> DiskBytesSpilled = 0;
-$shuffle -> MemoryBytesSpilled = 0;
+shuffle::$DiskBytesSpilled = 0;
+shuffle::$MemoryBytesSpilled = 0;
+
 $accumulator = new Accumulator();
 unset($accumulator->accumulatorRegistry);
 $spark_files_dir = $in_stream->read_utf();
@@ -186,8 +186,8 @@ if($profiler) {
 
 report_times($out_stream,time(),time(),time());
 
-$out_stream->write_long($shuffle->MemoryBytesSpilled);
-$out_stream->write_long($shuffle->DiskBytesSpilled);
+$out_stream->write_long(shuffle::$MemoryBytesSpilled);
+$out_stream->write_long(shuffle::$DiskBytesSpilled);
 
 $out_stream->write_int($END_OF_DATA_SECTION);
 $out_stream->write_int(sizeof($accumulator->accumulatorRegistry));

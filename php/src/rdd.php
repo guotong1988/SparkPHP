@@ -5,10 +5,12 @@ $temp = __FILE__;
 $spark_php_home = substr($temp,0,strrpos($temp,"/")-3);
 require($spark_php_home . "src/my_iterator.php");
 require($spark_php_home . "src/sock_input_stream.php");
+require($spark_php_home . "src/shuffle.php");
 require 'vendor/autoload.php';
 use SuperClosure\Serializer;
 
-class rdd {
+class rdd
+{
 
     var $jrdd;
     var $is_cached;
@@ -18,7 +20,9 @@ class rdd {
     var $id;
     var $partitioner;
     var $s;
-    function rdd($jrdd,$ctx,$deserializer) {
+
+    function rdd($jrdd, $ctx, $deserializer)
+    {
         $this->jrdd = $jrdd;
         $this->is_cached = False;
         $this->is_checkpointed = False;
@@ -26,21 +30,22 @@ class rdd {
         $this->deserializer = $deserializer;
         $this->id = $jrdd->setName("!!!");
         $this->partitioner = null;
-        $this->s=new Serializer();
+        $this->s = new Serializer();
     }
 
-    function id(){
+    function id()
+    {
         return $this->id;
     }
 
     function count()
     {
 
-        return  $this->mapPartitions(
+        return $this->mapPartitions(
 
-            function ($iterator){
+            function ($iterator) {
                 $count = 0;
-                foreach($iterator as $element) {
+                foreach ($iterator as $element) {
                     $count++;
                 }
                 return $count;
@@ -50,18 +55,43 @@ class rdd {
 
     }
 
-    function mapPartitions(callable $f, $preservesPartitioning=False)
+    function flatMap(callable $f, $preservesPartitioning = False)
+    {
+
+        return self . mapPartitionsWithIndex(
+
+            function ($split, $iterator) use ($f) {
+                return new my_iterator(array_map($f, $iterator->get_array()));
+            },
+
+            $preservesPartitioning);
+    }
+
+    function map(callable $f, $preservesPartitioning = False)
+    {
+
+        return $this->mapPartitionsWithIndex(
+
+            function ($any, $iterator) use ($f) {
+                return new my_iterator(array_map($f, $iterator->get_array()));
+            }
+
+            , $preservesPartitioning);
+    }
+
+
+    function mapPartitions(callable $f, $preservesPartitioning = False)
     {
         return $this->mapPartitionsWithIndex(
 
-            function ($split, $iterator) use ($f){
+            function ($split, $iterator) use ($f) {
                 return $f($iterator);
             }
 
             , $preservesPartitioning);
     }
 
-    function mapPartitionsWithIndex(callable $f, $preservesPartitioning=False)
+    function mapPartitionsWithIndex(callable $f, $preservesPartitioning = False)
     {
         return new pipelined_rdd($this, $f, $preservesPartitioning);
     }
@@ -72,79 +102,79 @@ class rdd {
     {
         $ADD = 1;
         return $this->mapPartitions(
-            function($iterator){
-                file_put_contents("/home/gt/php_worker5.txt", "here1 ".$iterator->get_array()[0]."\n", FILE_APPEND);
-                file_put_contents("/home/gt/php_worker5.txt", "here2 ".$iterator->get_array()[1]."\n", FILE_APPEND);
-                file_put_contents("/home/gt/php_worker5.txt", "here3 ".$iterator->get_array()[2]."\n", FILE_APPEND);
+            function ($iterator) {
+                file_put_contents("/home/gt/php_worker5.txt", "here1 " . $iterator->get_array()[0] . "\n", FILE_APPEND);
+                file_put_contents("/home/gt/php_worker5.txt", "here2 " . $iterator->get_array()[1] . "\n", FILE_APPEND);
+                file_put_contents("/home/gt/php_worker5.txt", "here3 " . $iterator->get_array()[2] . "\n", FILE_APPEND);
                 return new my_iterator(array(array_sum($iterator->get_array())));
             }
         )->fold(0, $ADD);
     }
 
-    function fold($zeroValue, $op){
+    function fold($zeroValue, $op)
+    {
         $temp = $this->mapPartitions(
 
-            function ($iterator) use($zeroValue,$op){
+            function ($iterator) use ($zeroValue, $op) {
                 $acc = $zeroValue;
-                file_put_contents("/home/gt/php_worker3.txt", "here1 ".gettype($iterator)."\n", FILE_APPEND);
-                foreach($iterator as $element) {
+                file_put_contents("/home/gt/php_worker3.txt", "here1 " . gettype($iterator) . "\n", FILE_APPEND);
+                foreach ($iterator as $element) {
                     $ADD = 1;
-               #     if($op==$ADD) {
-                        $acc = $element + $acc;
-                        file_put_contents("/home/gt/php_worker3.txt", "here2 ".$element."\n", FILE_APPEND);
-                #    }
+                    #     if($op==$ADD) {
+                    $acc = $element + $acc;
+                    file_put_contents("/home/gt/php_worker3.txt", "here2 " . $element . "\n", FILE_APPEND);
+                    #    }
                 }
                 $temp = array();
-                array_push($temp,$acc);
+                array_push($temp, $acc);
                 return new my_iterator($temp);
             }
 
         )->collect();
         $ADD = 1;
-        if($op == $ADD){
+        if ($op == $ADD) {
             $op = 'add_function';
         }
         return array_reduce($temp->get_array(),
 
-            function ($v0,$v1){
-                return $v0+$v1;
+            function ($v0, $v1) {
+                return $v0 + $v1;
             }
 
-            ,$zeroValue);
+            , $zeroValue);
     }
-
 
 
     function collect()
     {
-    #    with SCCallSiteSync(self . context) as css:
+        #    with SCCallSiteSync(self . context) as css:
         $port = $this->ctx->php_call_java->PhpRDD->collectAndServe($this->jrdd->rdd());
-        return $this->load_from_socket($port,$this->deserializer);
+        return $this->load_from_socket($port, $this->deserializer);
     }
 
 
-    function load_from_socket($port,$deserializer)
+    function load_from_socket($port, $deserializer)
     {
-        $sock = socket_create ( AF_INET, SOCK_STREAM, SOL_TCP );
+        $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         if ($sock == false) {
             echo "socket_create()失败:" . socket_strerror(socket_last_error($sock)) . "\n";
-        }else {
+        } else {
             echo "socket_create()成功\n";
         }
 
 
-        file_put_contents("/home/gt/php_worker2.txt", "here2 ".$port->intValue()."\n", FILE_APPEND);
-        $port = $port->intValue()."";
-        file_put_contents("/home/gt/php_worker2.txt", "here2 ".gettype($port)."\n", FILE_APPEND);
+        file_put_contents("/home/gt/php_worker2.txt", "here2 " . $port->intValue() . "\n", FILE_APPEND);
+        $port = $port->intValue() . "";
+        file_put_contents("/home/gt/php_worker2.txt", "here2 " . gettype($port) . "\n", FILE_APPEND);
 
-        $result =socket_connect ( $sock, '127.0.0.1',intval($port));
+        $result = socket_connect($sock, '127.0.0.1', intval($port));
         if ($result == false) {
             echo "socket_connect()失败:" . socket_strerror(socket_last_error($sock)) . "\n";
-        }else {
+        } else {
             echo "socket_connect()成功\n";
         }
         $stream = new sock_input_stream($sock);
-        if($deserializer==null){
+        if ($deserializer == null) {
             $deserializer = new utf8_deserializer();
         }
         $item_array = $deserializer->load_stream($stream);
@@ -152,16 +182,64 @@ class rdd {
         return new my_iterator($item_array);
     }
 
-    function f4(my_iterator $iterator,$f){
-        try {
-            $initial = $iterator->first();
-        }catch(Exception $e) {
-            return null;
-        }
-        return array_reduce($iterator->get_array(),$f,$initial);
+    function memory_limit(){
+        return 512;#TODO
     }
 
-    var $reduce_f;
+    function reduceByKey($func, $numPartitions=null, $partitionFunc=null)
+    {
+        if($partitionFunc==null){
+            $partitionFunc=function ($x) {
+                if ($x == null) {
+                    return 0;
+                }
+                $h = null;
+                if (is_array($x)) {
+                    #TODO
+                }
+                return hash("md5", $x);
+            };
+        }
+
+        return $this->combineByKey(
+            function ($x){
+                return $x;
+            }
+            ,$func, $func, $numPartitions, $partitionFunc);
+    }
+
+    # TODO: add control over map-side aggregation
+    function combineByKey($createCombiner, $mergeValue, $mergeCombiners,
+        $numPartitions=null, $partitionFunc=null)
+    {
+        if($numPartitions==null) {
+            $numPartitions = 2; #TODO $this->defaultReducePartitions();
+        }
+
+        $serializer = $this->ctx->serializer;
+
+        $memory =  $this->memory_limit();
+
+
+        $agg = new Aggregator($createCombiner, $mergeValue, $mergeCombiners);
+
+        $combineLocally = function ($iterator) use ($agg,$memory,$serializer){
+            $merger = new ExternalMerger($agg, $memory * 0.9, $serializer);
+            $merger -> mergeValues($iterator);
+            return $merger->items();
+        };
+
+        $locally_combined = $this->mapPartitions($combineLocally, True);
+        $shuffled = $locally_combined->partitionBy($numPartitions, $partitionFunc);
+
+        $mergeCombiners = function ($iterator)use ($agg,$memory,$serializer){
+            $merger = new ExternalMerger($agg, $memory, $serializer);
+            $merger -> mergeCombiners($iterator);
+            return $merger->items();
+        };
+
+        return $shuffled->mapPartitions($mergeCombiners, True);
+    }
 
     function reduce($f){
         $temp = $this->mapPartitions(
