@@ -3,7 +3,6 @@ require 'vendor/autoload.php';
 use SuperClosure\Serializer;
 $temp = __FILE__;
 $spark_php_home = substr($temp,0,strrpos($temp,"/")-3);
-require($spark_php_home . "src/my_iterator.php");
 
 
 function mapPartitions(callable $f, $preservesPartitioning=False)
@@ -30,7 +29,7 @@ function fold($zeroValue, $op)
             }
             $temp = array();
             array_push($temp, $acc);
-            return new my_iterator($temp);
+            return $temp;
         });
 
 }
@@ -46,7 +45,7 @@ array_push($a,3);
 
 $iter = new my_iterator($a);
 $temp = fold(0,1);
-$result = $temp(new my_iterator($a));
+$result = $temp($a);
 foreach($result as $ele){
     echo $ele;
     echo "\n";

@@ -260,7 +260,7 @@ class ExternalMerger extends Merger{
     function items(){
     #    """ Return all merged items as iterator """
         if($this->pdata==null && $this->spill==null) {
-            return new my_iterator($this -> data -> items());
+            return $this -> data -> items();
         }
         return $this->external_items();
     }

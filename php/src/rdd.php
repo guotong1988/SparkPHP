@@ -3,7 +3,6 @@
 
 $temp = __FILE__;
 $spark_php_home = substr($temp,0,strrpos($temp,"/")-3);
-require($spark_php_home . "src/my_iterator.php");
 require($spark_php_home . "src/sock_input_stream.php");
 require($spark_php_home . "src/shuffle.php");
 require 'vendor/autoload.php';
@@ -58,12 +57,40 @@ class rdd
     function flatMap(callable $f, $preservesPartitioning = False)
     {
 
-        return self . mapPartitionsWithIndex(
+        return $this->mapPartitionsWithIndex(
 
             function ($split, $iterator) use ($f) {
-                return new my_iterator(array_map($f, $iterator->get_array()));
-            },
 
+                $sub_is_array = False;
+                foreach($iterator as $key=>$value){
+                    $temp = $f($value);
+                    if(is_array($temp)){
+                        $sub_is_array = Ture;
+                        break;
+                    }
+                }
+
+                if($sub_is_array){
+                    $result = array();
+                    file_put_contents("/home/gt/php_worker7.txt", "here1\n", FILE_APPEND);
+                    foreach($iterator as $key=>$value){
+                        $temp = $f($value);
+                        if(is_array($temp)){
+                            foreach($temp as $e){
+                                array_push($result,$e);
+                            }
+                        }
+                    }
+                    return $result;
+                }else{
+                    $result = array();
+                    foreach($iterator as $key=>$value){
+                        $temp = $f($value);
+                        array_push($result,$temp);
+                    }
+                    return $result;
+                }
+            },
             $preservesPartitioning);
     }
 
@@ -73,7 +100,7 @@ class rdd
         return $this->mapPartitionsWithIndex(
 
             function ($any, $iterator) use ($f) {
-                return new my_iterator(array_map($f, $iterator->get_array()));
+                return array_map($f, $iterator);
             }
 
             , $preservesPartitioning);
@@ -103,10 +130,7 @@ class rdd
         $ADD = 1;
         return $this->mapPartitions(
             function ($iterator) {
-                file_put_contents("/home/gt/php_worker5.txt", "here1 " . $iterator->get_array()[0] . "\n", FILE_APPEND);
-                file_put_contents("/home/gt/php_worker5.txt", "here2 " . $iterator->get_array()[1] . "\n", FILE_APPEND);
-                file_put_contents("/home/gt/php_worker5.txt", "here3 " . $iterator->get_array()[2] . "\n", FILE_APPEND);
-                return new my_iterator(array(array_sum($iterator->get_array())));
+                return array(array_sum($iterator));
             }
         )->fold(0, $ADD);
     }
@@ -127,7 +151,7 @@ class rdd
                 }
                 $temp = array();
                 array_push($temp, $acc);
-                return new my_iterator($temp);
+                return $temp;
             }
 
         )->collect();
@@ -135,7 +159,7 @@ class rdd
         if ($op == $ADD) {
             $op = 'add_function';
         }
-        return array_reduce($temp->get_array(),
+        return array_reduce($temp,
 
             function ($v0, $v1) {
                 return $v0 + $v1;
@@ -179,7 +203,7 @@ class rdd
         }
         $item_array = $deserializer->load_stream($stream);
         socket_close($sock);
-        return new my_iterator($item_array);
+        return $item_array;
     }
 
     function memory_limit(){
@@ -220,7 +244,6 @@ class rdd
 
         $memory =  $this->memory_limit();
 
-
         $agg = new Aggregator($createCombiner, $mergeValue, $mergeCombiners);
 
         $combineLocally = function ($iterator) use ($agg,$memory,$serializer){
@@ -241,21 +264,139 @@ class rdd
         return $shuffled->mapPartitions($mergeCombiners, True);
     }
 
+
+    function defaultReducePartitions()
+    {
+        if($this->ctx->conf->contains("spark.default.parallelism")){
+            return $this->ctx->defaultParallelism;
+        } else {
+            return $this->getNumPartitions();
+        }
+    }
+
+    function partitionBy($numPartitions,callable $partitionFunc=null)
+    {
+        if ($partitionFunc == null) {
+            #TODO
+
+        }
+
+        if ($numPartitions == null) {
+            $numPartitions = $this->defaultReducePartitions();
+        }
+
+        $partitioner = new Partitioner($numPartitions, $partitionFunc);
+        if(serialize($this->partitioner) == serialize($partitioner)) {
+            return $this;
+        }
+        $outputSerializer = $this->ctx->unbatched_serializer;#TODO check
+
+        $limit=256;
+
+        $add_shuffle_key =function($iterator)use($numPartitions,$partitionFunc,$limit,$outputSerializer){
+            $buckets = array();
+            $c=0;
+            $batch=min(10*$numPartitions,1000);
+
+
+            foreach($iterator as $key=>$value){
+                $buckets[$partitionFunc($key) % $numPartitions]=array();
+                $buckets[$partitionFunc($key) % $numPartitions][$key]=$value;
+                $c++;
+
+                if ($c % 1000 == 0 && memory_get_usage()/1024/1024 > $limit || $c > $batch) {
+                    $n = sizeof($buckets);
+                    $size = 0;
+                    $result = array();
+                    foreach($buckets as $key2 => $value2) { #value是一个array
+
+                        array_push($result,serialize($key2));
+                        $d = serialize($value2);
+                        unset($value2);
+                        array_push($result,$d);
+                        $size += strlen($d);
+                    }
+
+                    $avg = intval($size / $n) >> 20;
+                        # let 1M < avg < 10M
+                    if($avg < 1){
+                        $batch *= 1.5;
+                    } elseif($avg > 10){
+                        $batch = max(intval($batch / 1.5), 1);
+                    }
+                    $c = 0;
+
+                    return $result;
+                }
+            }
+            $result = array();
+            foreach($buckets as $key => $value) {
+
+                array_push($result,serialize($key));
+                array_push($result,serialize($value));
+            }
+            return $result;
+        };
+
+
+        $keyed = $this->mapPartitionsWithIndex($add_shuffle_key, True);
+        $keyed->bypass_serializer = True;
+
+        
+      #TODO  with SCCallSiteSync(self.context) as css:
+        $pairRDD = $this->ctx->php_call_java->PairwiseRDD(
+                    $keyed->jrdd->rdd())->asJavaPairRDD();
+        $jpartitioner = $this->ctx->php_call_java->php_partitioner($numPartitions,
+            intval(spl_object_hash($partitionFunc)));#TODO long
+        $jrdd = $this->ctx->php_call_java->PhpRDD->valueOfPair($pairRDD->partitionBy($jpartitioner));
+        $rdd = new rdd($jrdd, $this->ctx,$outputSerializer);#TODO $outputSerializer
+        $rdd->partitioner = $partitioner;
+        return $rdd;
+
+    }
+
+
+    function getNumPartitions()
+    {
+        return $this-> jrdd -> partitions() -> size();
+    }
+
+    function glom()
+    {
+        /*
+        Return an RDD created by coalescing all elements within each partition
+        into a list.
+
+        >>> rdd = sc.parallelize([1, 2, 3, 4], 2)
+        >>> sorted(rdd.glom().collect())
+        [[1, 2], [3, 4]]
+        */
+
+        $func = function ($iterator){
+            $result = array();
+            foreach($iterator as $key => $value){
+                array_push($result,$value);
+            }
+            return $result;
+        };
+        return $this->mapPartitions($func);
+    }
+
     function reduce($f){
         $temp = $this->mapPartitions(
 
-            function (my_iterator $iterator) use ($f){
+            function ($iterator) use ($f){
                 try {
                     $initial = $iterator->first();
                 }catch(Exception $e) {
                     return null;
                 }
-                return array_reduce($iterator->get_array(),$f,$initial);
+                return array_reduce($iterator,$f,$initial);
             }
 
         )->collect();
         if($temp!=null){
-            return array_reduce($temp->get_array(),$f);
+            return array_reduce($temp,$f);
         } else {
             throw new Exception("Can not reduce() empty RDD");
         }
@@ -424,5 +565,18 @@ class pipelined_rdd extends rdd{
     function is_pipelinable(){
         return !($this->is_cached || $this->is_checkpointed);
     }
+}
+
+class Partitioner{
+
+    var $numPartitions;
+    var $partitionFunc;
+
+    function __construct($numPartitions,$partitionFunc){
+        $this->numPartitions = $numPartitions;
+        $this->partitionFunc = $partitionFunc;
+    }
+
+    #TODO   def __call__(self, k):
 }
 

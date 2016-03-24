@@ -1,952 +1,172 @@
-socket_create()成功51261
+socket_create()成功37928
 
 socket_connect()成功
 首次read_int()成功1
 首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1579:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":383:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":160:{a:5:{s:4:"code";s:58:"function ($iterator) {
-    return array_sum($iterator);
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here7 object
-here7b 0
-socket_create()成功49344
+socket_create()成功42673
 
 socket_connect()成功
 首次read_int()成功0
 首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1579:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
+here3C:32:"SuperClosure\SerializableClosure":633:{a:5:{s:4:"code";s:221:"function ($split, $iterator) use($f) {
+    foreach ($iterator as $key => $value) {
+        file_put_contents('/home/gt/php_worker7.txt', 'here1 ' . $value . '
 ', FILE_APPEND);
     }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":383:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":160:{a:5:{s:4:"code";s:58:"function ($iterator) {
-    return array_sum($iterator);
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
+    return array_map($f, $iterator);
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":255:{a:5:{s:4:"code";s:160:"function ($line) {
+    $temp = explode(' ', $line);
+    file_put_contents('/home/gt/php_worker6.txt', 'here1 ' . $temp . '
+', FILE_APPEND);
+    return $temp;
+};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";N;s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
 here5
-here61 2 3
-here7 object
-here7b 0
-socket_create()成功56522
-
-socket_connect()成功
-首次read_int()成功1
-首次read_utf()成功5.6
-here1
-here2
-socket_create()成功56454
-
-socket_connect()成功
-首次read_int()成功0
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1587:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":842:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":619:{a:5:{s:4:"code";s:483:"function ($split, $iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
+here6do do do 
+here7 array
+here7a array
+here7b do
+here7b do
+here7b do
+here7b 
+here8  Array
+here3C:32:"SuperClosure\SerializableClosure":633:{a:5:{s:4:"code";s:221:"function ($split, $iterator) use($f) {
+    foreach ($iterator as $key => $value) {
+        file_put_contents('/home/gt/php_worker7.txt', 'here1 ' . $value . '
 ', FILE_APPEND);
     }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":383:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":160:{a:5:{s:4:"code";s:58:"function ($iterator) {
-    return array_sum($iterator);
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here3C:32:"SuperClosure\SerializableClosure":1587:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":842:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":619:{a:5:{s:4:"code";s:483:"function ($split, $iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
+    return array_map($f, $iterator);
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":255:{a:5:{s:4:"code";s:160:"function ($line) {
+    $temp = explode(' ', $line);
+    file_put_contents('/home/gt/php_worker6.txt', 'here1 ' . $temp . '
 ', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":383:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":160:{a:5:{s:4:"code";s:58:"function ($iterator) {
-    return array_sum($iterator);
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here61 2 3
-here7 object
-here7b 0
-here4object
-here5
-here7 object
-here7b 0
-socket_create()成功41386
-
-socket_connect()成功
-首次read_int()成功0
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1538:{a:5:{s:4:"code";s:99:"function ($iterator) use($func, $temp_prev_func) {
-    return $func($temp_prev_func($iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":826:{a:5:{s:4:"code";s:59:"function ($iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":375:{a:5:{s:4:"code";s:59:"function ($iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":160:{a:5:{s:4:"code";s:58:"function ($iterator) {
-    return array_sum($iterator);
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-socket_create()成功35298
-
-here61 2 3
-here7 object
-here7b 0
-socket_connect()成功
-首次read_int()成功1
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1538:{a:5:{s:4:"code";s:99:"function ($iterator) use($func, $temp_prev_func) {
-    return $func($temp_prev_func($iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":826:{a:5:{s:4:"code";s:59:"function ($iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":375:{a:5:{s:4:"code";s:59:"function ($iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":160:{a:5:{s:4:"code";s:58:"function ($iterator) {
-    return array_sum($iterator);
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here7 object
-here7b 0
-socket_create()成功54004
-
-socket_connect()成功
-首次read_int()成功1
-首次read_utf()成功5.6
-here1
-here2
-socket_create()成功50932
-
-socket_connect()成功
-here3C:32:"SuperClosure\SerializableClosure":1538:{a:5:{s:4:"code";s:99:"function ($iterator) use($func, $temp_prev_func) {
-    return $func($temp_prev_func($iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":826:{a:5:{s:4:"code";s:59:"function ($iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":375:{a:5:{s:4:"code";s:59:"function ($iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":160:{a:5:{s:4:"code";s:58:"function ($iterator) {
-    return array_sum($iterator);
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here7 object
-here7b 0
-首次read_int()成功0
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1538:{a:5:{s:4:"code";s:99:"function ($iterator) use($func, $temp_prev_func) {
-    return $func($temp_prev_func($iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":826:{a:5:{s:4:"code";s:59:"function ($iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":375:{a:5:{s:4:"code";s:59:"function ($iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":160:{a:5:{s:4:"code";s:58:"function ($iterator) {
-    return array_sum($iterator);
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here61 2 3
-here7 object
-here7b 0
-socket_create()成功46411
-
-socket_connect()成功
-首次read_int()成功0
-首次read_utf()成功5.6
-here1
-here2
-socket_create()成功35727
-
-socket_connect()成功
-here3C:32:"SuperClosure\SerializableClosure":1579:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":383:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":160:{a:5:{s:4:"code";s:58:"function ($iterator) {
-    return array_sum($iterator);
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here61 2 3
-here7 object
-here7b 0
-首次read_int()成功1
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1579:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":383:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":160:{a:5:{s:4:"code";s:58:"function ($iterator) {
-    return array_sum($iterator);
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here7 object
-here7b 0
-socket_create()成功48705
-
-socket_connect()成功
-首次read_int()成功0
-首次read_utf()成功5.6
-here1
-here2
-socket_create()成功36776
-
-socket_connect()成功
-首次read_int()成功1
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1592:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":396:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":173:{a:5:{s:4:"code";s:71:"function ($iterator) {
-    return array_sum($iterator->get_array());
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here3C:32:"SuperClosure\SerializableClosure":1592:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":396:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":173:{a:5:{s:4:"code";s:71:"function ($iterator) {
-    return array_sum($iterator->get_array());
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here7 object
-here7b 0
-here4object
-here5
-here61 2 3
-here7 object
-here7b 0
-socket_create()成功44331
-
-socket_connect()成功
-首次read_int()成功1
-首次read_utf()成功5.6
-here1
-here2
-socket_create()成功46178
-
-socket_connect()成功
-首次read_int()成功0
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1617:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":421:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":198:{a:5:{s:4:"code";s:96:"function ($iterator) {
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here7 object
-here7b 0
-here3C:32:"SuperClosure\SerializableClosure":1617:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":421:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":198:{a:5:{s:4:"code";s:96:"function ($iterator) {
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here61 2 3
-here7 object
-here7b 1
-socket_create()成功48431
-
-socket_connect()成功
-首次read_int()成功0
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1942:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here61 2 3
-here7 object
-here7b 1
-socket_create()成功43266
-
-socket_connect()成功
-首次read_int()成功1
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1942:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here7 object
-here7b 0
-socket_create()成功35421
-
-socket_connect()成功
-socket_create()成功58312
-
-socket_connect()成功
-首次read_int()成功0
-首次read_utf()成功5.6
-here1
-here2
-首次read_int()成功1
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1942:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here3C:32:"SuperClosure\SerializableClosure":1942:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here61
-here62
-here4object
-here5
-here7 object
-here7b 3
-here63
-here7 object
-here7b 3
-socket_create()成功53181
-
-socket_connect()成功
-首次read_int()成功0
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":2753:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":1556:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":448:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":225:{a:5:{s:4:"code";s:122:"function ($iterator) {
-    $count = 0;
-    foreach ($iterator as $element) {
-        $count++;
-    }
-    return $count;
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
+    return $temp;
+};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";N;s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
 here5
 here6test test test test try try try 
-here6do do do 
-socket_create()成功59694
-
-socket_connect()成功
-首次read_int()成功0
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":2753:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":1556:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":448:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":225:{a:5:{s:4:"code";s:122:"function ($iterator) {
-    $count = 0;
-    foreach ($iterator as $element) {
-        $count++;
-    }
-    return $count;
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here6test test test test try try try 
-here6do do do 
-socket_create()成功59429
-
-socket_connect()成功
-首次read_int()成功0
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":2753:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":1556:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":448:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":225:{a:5:{s:4:"code";s:122:"function ($iterator) {
-    $count = 0;
-    foreach ($iterator as $element) {
-        $count++;
-    }
-    return $count;
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here6test test test test try try try 
-here6do do do 
-socket_create()成功38985
-
-socket_connect()成功
-首次read_int()成功0
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":2753:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":1556:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":448:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":225:{a:5:{s:4:"code";s:122:"function ($iterator) {
-    $count = 0;
-    foreach ($iterator as $element) {
-        $count++;
-    }
-    return $count;
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here6test test test test try try try 
-here6do do do 
-socket_create()成功47982
-
-socket_connect()成功
-首次read_int()成功0
-首次read_utf()成功5.6
-here1
-here2
-socket_create()成功49107
+here7 array
+here7a array
+here7b test
+here7b test
+here7b test
+here7b test
+here7b try
+here7b try
+here7b try
+here7b 
+here8  Array
+socket_create()成功55435
 
 socket_connect()成功
 首次read_int()成功1
 首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1942:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
+socket_create()成功38672
+
+here3C:32:"SuperClosure\SerializableClosure":1159:{a:5:{s:4:"code";s:836:"function ($split, $iterator) use($f) {
+    $sub_is_array = False;
+    foreach ($iterator as $key => $value) {
+        $temp = $f($value);
+        if (is_array($temp)) {
+            $sub_is_array = Ture;
+            break;
+        }
     }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
+    if ($sub_is_array) {
+        $result = array();
+        file_put_contents('/home/gt/php_worker7.txt', 'here1
 ', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here3C:32:"SuperClosure\SerializableClosure":1942:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
+        foreach ($iterator as $key => $value) {
+            $temp = $f($value);
+            if (is_array($temp)) {
+                foreach ($temp as $e) {
+                    array_push($result, $e);
+                }
+            }
+        }
+        return $result;
+    } else {
+        $result = array();
+        foreach ($iterator as $key => $value) {
+            $temp = $f($value);
+            array_push($result, $temp);
+        }
+        return $result;
     }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":166:{a:5:{s:4:"code";s:72:"function ($line) {
+    $temp = explode(' ', $line);
+    return $temp;
+};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";N;s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+socket_connect()成功
 here5
-here61
-here62
-here4object
+here6do do do 
+here7 array
+here7a string
+here7a string
+here7a string
+here7a string
+here8  Array
+首次read_int()成功0
+首次read_utf()成功5.6
+here3C:32:"SuperClosure\SerializableClosure":1159:{a:5:{s:4:"code";s:836:"function ($split, $iterator) use($f) {
+    $sub_is_array = False;
+    foreach ($iterator as $key => $value) {
+        $temp = $f($value);
+        if (is_array($temp)) {
+            $sub_is_array = Ture;
+            break;
+        }
+    }
+    if ($sub_is_array) {
+        $result = array();
+        file_put_contents('/home/gt/php_worker7.txt', 'here1
+', FILE_APPEND);
+        foreach ($iterator as $key => $value) {
+            $temp = $f($value);
+            if (is_array($temp)) {
+                foreach ($temp as $e) {
+                    array_push($result, $e);
+                }
+            }
+        }
+        return $result;
+    } else {
+        $result = array();
+        foreach ($iterator as $key => $value) {
+            $temp = $f($value);
+            array_push($result, $temp);
+        }
+        return $result;
+    }
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":166:{a:5:{s:4:"code";s:72:"function ($line) {
+    $temp = explode(' ', $line);
+    return $temp;
+};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";N;s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
 here5
-here63
-here7 object
-here7b 3
-here7 object
-here7b 3
-socket_create()成功33632
+here6test test test test try try try 
+here7 array
+here7a string
+here7a string
+here7a string
+here7a string
+here7a string
+here7a string
+here7a string
+here7a string
+here8  Array
+socket_create()成功37839
 
 socket_connect()成功
-socket_create()成功49149
+socket_create()成功55983
 
 socket_connect()成功
 首次read_int()成功1
 首次read_utf()成功5.6
-here1
-here2
 首次read_int()成功0
 首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1942:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
+here3C:32:"SuperClosure\SerializableClosure":1568:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
     return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
+};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":816:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
     return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":593:{a:5:{s:4:"code";s:457:"function ($iterator) use($zeroValue, $op) {
     $acc = $zeroValue;
     file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
 ', FILE_APPEND);
@@ -959,29 +179,23 @@ here3C:32:"SuperClosure\SerializableClosure":1942:{a:5:{s:4:"code";s:123:"functi
     }
     $temp = array();
     array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
+    return $temp;
+};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":390:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
     return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":167:{a:5:{s:4:"code";s:65:"function ($iterator) {
+    return array(array_sum($iterator));
 };";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
 here5
 here64
 here65
-here7 object
-here7b 9
-here3C:32:"SuperClosure\SerializableClosure":1942:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
+here7 array
+here7a integer
+here8  Array
+here3C:32:"SuperClosure\SerializableClosure":1568:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
     return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
+};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":816:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
     return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":593:{a:5:{s:4:"code";s:457:"function ($iterator) use($zeroValue, $op) {
     $acc = $zeroValue;
     file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
 ', FILE_APPEND);
@@ -994,192 +208,16 @@ here3C:32:"SuperClosure\SerializableClosure":1942:{a:5:{s:4:"code";s:123:"functi
     }
     $temp = array();
     array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
+    return $temp;
+};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":390:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
     return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
+};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":167:{a:5:{s:4:"code";s:65:"function ($iterator) {
+    return array(array_sum($iterator));
 };";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
 here5
 here61
 here62
 here63
-here7 object
-here7b 6
-socket_create()成功34697
-
-socket_connect()成功
-首次read_int()成功0
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1942:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here61
-here62
-here63
-here7 object
-here7b 6
-socket_create()成功43255
-
-socket_connect()成功
-首次read_int()成功1
-首次read_utf()成功5.6
-here1
-here2
-here3C:32:"SuperClosure\SerializableClosure":1942:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here64
-here65
-here7 object
-here7b 9
-socket_create()成功57690
-
-socket_connect()成功
-首次read_int()成功0
-首次read_utf()成功5.6
-here1
-here2
-socket_create()成功57789
-
-socket_connect()成功
-here3C:32:"SuperClosure\SerializableClosure":1942:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here61
-here62
-首次read_int()成功1
-here63
-首次read_utf()成功5.6
-here1
-here2
-here7 object
-here7b 6
-here3C:32:"SuperClosure\SerializableClosure":1942:{a:5:{s:4:"code";s:123:"function ($split, $iterator) use($func, $temp_prev_func) {
-    return $func($split, $temp_prev_func($split, $iterator));
-};";s:7:"context";a:2:{s:4:"func";C:32:"SuperClosure\SerializableClosure":834:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":611:{a:5:{s:4:"code";s:475:"function ($iterator) use($zeroValue, $op) {
-    $acc = $zeroValue;
-    file_put_contents('/home/gt/php_worker3.txt', 'here1 ' . gettype($iterator) . '
-', FILE_APPEND);
-    foreach ($iterator as $element) {
-        $ADD = 1;
-        #     if($op==$ADD) {
-        $acc = $element + $acc;
-        file_put_contents('/home/gt/php_worker3.txt', 'here2 ' . $element . '
-', FILE_APPEND);
-    }
-    $temp = array();
-    array_push($temp, $acc);
-    return new \my_iterator($temp);
-};";s:7:"context";a:2:{s:9:"zeroValue";i:0;s:2:"op";i:1;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}s:14:"temp_prev_func";C:32:"SuperClosure\SerializableClosure":746:{a:5:{s:4:"code";s:67:"function ($split, $iterator) use($f) {
-    return $f($iterator);
-};";s:7:"context";a:1:{s:1:"f";C:32:"SuperClosure\SerializableClosure":523:{a:5:{s:4:"code";s:420:"function ($iterator) {
-    file_put_contents('/home/gt/php_worker5.txt', 'here1 ' . $iterator->get_array()[0] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here2 ' . $iterator->get_array()[1] . '
-', FILE_APPEND);
-    file_put_contents('/home/gt/php_worker5.txt', 'here3 ' . $iterator->get_array()[2] . '
-', FILE_APPEND);
-    return new \my_iterator(array(array_sum($iterator->get_array())));
-};";s:7:"context";a:0:{}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}}s:7:"binding";N;s:5:"scope";s:13:"pipelined_rdd";s:8:"isStatic";b:0;}}
-here4object
-here5
-here64
-here65
-here7 object
-here7b 9
+here7 array
+here7a integer
+here8  Array

@@ -8,7 +8,6 @@ require($spark_php_home . "src/shuffle.php");
 require($spark_php_home . "src/accumulators.php");
 require($spark_php_home . "src/files.php");
 require($spark_php_home . "src/broadcast.php");
-require($spark_php_home . "src/my_iterator.php");
 
 require 'vendor/autoload.php';
 use SuperClosure\Serializer;
@@ -100,7 +99,6 @@ for($i=0;$i<$num_python_includes;$i++){
     #add_path(os.path.join(spark_files_dir, filename))
 }
 
-file_put_contents($spark_php_home."php_worker.txt", "here1\n", FILE_APPEND);
 $broadcast = new broadcast();
 $num_broadcast_variables = $in_stream->read_int();
 for($i=0;$i<$num_broadcast_variables;$i++) {
@@ -115,14 +113,11 @@ for($i=0;$i<$num_broadcast_variables;$i++) {
 }
 unset($accumulator->accumulatorRegistry);
 
-file_put_contents($spark_php_home."php_worker.txt", "here2\n", FILE_APPEND);
 $s = new Serializer();
 $str = $in_stream->read_utf();
 file_put_contents($spark_php_home."php_worker.txt", "here3".$str."\n", FILE_APPEND);
 $func = $s->unserialize($str);#unserialize方法参数是serialized的string
 
-
-file_put_contents($spark_php_home."php_worker.txt", "here4".gettype($func)."\n", FILE_APPEND);
 
 
 $profiler = null;
@@ -140,15 +135,8 @@ function process()
     global $split_index;
     global $func;
     global $spark_php_home;
-    file_put_contents($spark_php_home."php_worker.txt", "here5a\n", FILE_APPEND);
 
-
-    $iterator = new my_iterator($deserializer->load_stream($in_stream));
-
-
-    foreach($iterator as $element) {
-        file_put_contents($spark_php_home."php_worker.txt", "here6".$element."\n", FILE_APPEND);
-    }
+    $iterator = $deserializer->load_stream($in_stream);
 
     $serializer -> dump_stream($func($split_index, $iterator), $out_stream);#显然是返回计算结果
 }
@@ -158,7 +146,7 @@ if($profiler) {
     $profiler->profile($func_name);
 }else {
     file_put_contents($spark_php_home."php_worker.txt", "here5\n", FILE_APPEND);
-    $iterator = new my_iterator($deserializer->load_stream($in_stream));
+    $iterator = $deserializer->load_stream($in_stream);
 
    # $temp2 = $in_stream->read_utf2();
    # file_put_contents($spark_php_home."php_worker.txt", "here5b ".$temp2."\n", FILE_APPEND);
@@ -166,17 +154,20 @@ if($profiler) {
         file_put_contents($spark_php_home."php_worker.txt", "here6".$element."\n", FILE_APPEND);
     }
 
-    try {
-        $temp3 = $func($split_index, $iterator);
-    }catch(Exception $e){
-        file_put_contents($spark_php_home."php_worker.txt", "here6b ".$e->getMessage()."\n", FILE_APPEND);
-    }
+
+    $temp3 = $func($split_index, $iterator);
+
 
     file_put_contents($spark_php_home."php_worker.txt", "here7 ".gettype($temp3)."\n", FILE_APPEND);
 
     foreach($temp3 as $element) {
-        file_put_contents($spark_php_home."php_worker.txt", "here7b ".$element."\n", FILE_APPEND);
+        file_put_contents($spark_php_home."php_worker.txt", "here7a ".gettype($element)."\n", FILE_APPEND);
+        foreach ($element as $e){
+            file_put_contents($spark_php_home."php_worker.txt", "here7b ".$e."\n", FILE_APPEND);
+        }
     }
+
+    file_put_contents($spark_php_home."php_worker.txt", "here8  ".$temp3."\n", FILE_APPEND);
 
     $serializer -> dump_stream($temp3, $out_stream);#显然是返回计算结果
 }

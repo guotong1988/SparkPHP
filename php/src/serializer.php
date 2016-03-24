@@ -42,14 +42,12 @@ class utf8_deserializer extends serializer{
     function loads(sock_input_stream $stream)
     {
         $length_of_line = $stream->read_int();
-        file_put_contents("/home/gt/php_worker.txt", "here>>>".$length_of_line."\n",FILE_APPEND);
         if($length_of_line == 4294967295){
-            throw new Exception("end of data");
+            throw new Exception("end of data");#TODO -1
         }elseif($length_of_line == $this->NULL) {
             return null;
         }
         $string = $stream->read_fully($length_of_line);
-        file_put_contents("/home/gt/php_worker.txt", "here???".$string."\n",FILE_APPEND);
         if ($this->use_unicode==True){
             return $string;
         }else{
@@ -67,7 +65,6 @@ class utf8_deserializer extends serializer{
                 array_push($item_array,$temp2);
             }
         }catch (Exception $e){
-            file_put_contents("/home/gt/php_worker.txt", "here!!!\n",FILE_APPEND);
             return $item_array;
         }
     }
@@ -91,7 +88,7 @@ class batched_serializer extends serializer
         $this->batch_size = $batch_size;
     }
 
-    function batched(my_iterator $iterator)
+    function batched($iterator)
     {
         if ($this->batch_size == $this->UNLIMITED_BATCH_SIZE) {
             return $iterator;

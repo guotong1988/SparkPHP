@@ -23,6 +23,8 @@ class context {
     var $php_ver;
     var $java_accumulator;
 
+    var $defaultParallelism;
+
     function context( $master=null, $app_name=null, $spark_home=null, $phpFiles=null,
                       $environment=null, $batchSize=0, $serializer=null, $conf=null,
                       $gateway=null, $jsc=null, $profiler_cls=null){
@@ -31,6 +33,10 @@ class context {
         $this->do_init($master, $app_name, $spark_home, $phpFiles, $environment, $batchSize, $serializer,
             $conf, $jsc, $profiler_cls);
         echo "context构造方法（结束）";
+
+
+        $this->defaultParallelism=$this->jsc->sc()->defaultParallelism();
+
     }
 
     function do_init($master, $app_name, $spark_home, $phpFiles, $environment, $batch_size, $serializer,
