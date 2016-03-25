@@ -16,21 +16,9 @@ error_reporting(E_ERROR | E_WARNING | E_PARSE);
 set_error_handler('displayErrorHandler');
 function displayErrorHandler($error, $error_string, $filename, $line, $symbols)
 {
-    $error_no_arr = array(1=>'ERROR', 2=>'WARNING', 4=>'PARSE', 8=>'NOTICE', 16=>'CORE_ERROR', 32=>'CORE_WARNING', 64=>'COMPILE_ERROR', 128=>'COMPILE_WARNING', 256=>'USER_ERROR', 512=>'USER_WARNING', 1024=>'USER_NOTICE', 2047=>'ALL', 2048=>'STRICT');
-    if(in_array($error,array(1,2,4)))
-    {
-        $msg=$error_string;
-        dieByError($msg);
-    }
+    file_put_contents("/home/gt/php_worker4.txt", $error." ".$filename." ".$line." ".$error_string. "\n",FILE_APPEND);
 }
 
-//显示错误信息
-function dieByError($msg)
-{
-    file_put_contents("/home/gt/php_worker4.txt", $msg. "\n",FILE_APPEND);
-
- #   exit();
-}
 
 $stdin = fopen('php://stdin','r');
 $jvm_worker_port = fgets($stdin);
@@ -136,7 +124,7 @@ function process()
     global $func;
     global $spark_php_home;
 
-    $iterator = $deserializer->load_stream($in_stream);
+    $iterator = $deserializer->load_stream2($in_stream);
 
     $serializer -> dump_stream($func($split_index, $iterator), $out_stream);#显然是返回计算结果
 }
@@ -146,7 +134,7 @@ if($profiler) {
     $profiler->profile($func_name);
 }else {
     file_put_contents($spark_php_home."php_worker.txt", "here5\n", FILE_APPEND);
-    $iterator = $deserializer->load_stream($in_stream);
+    $iterator = $deserializer->load_stream2($in_stream);
 
    # $temp2 = $in_stream->read_utf2();
    # file_put_contents($spark_php_home."php_worker.txt", "here5b ".$temp2."\n", FILE_APPEND);

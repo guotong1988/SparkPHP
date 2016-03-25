@@ -3,21 +3,26 @@ require 'vendor/autoload.php';
 use SuperClosure\Serializer;
 $temp = __FILE__;
 $spark_php_home = substr($temp,0,strrpos($temp,"/")-3);
-
+require($spark_php_home . "src/shuffle.php");
 
 function mapPartitions(callable $f, $preservesPartitioning=False)
 {
-    return function ($iterator) use ($f){
+    $temp = new Aggregator($f,$f,$f);
+    return function ($iterator) use ($f,$temp){
             return $f($iterator);
         };
 }
 
 
-function fold($zeroValue, $op)
+$fold = function ($zeroValue, $op)
 {
 
+      $f = function ($x1,$x2) {
+        return $x1+$x2;
+      };
+      $temp = new Aggregator($f,$f,$f);
       return  mapPartitions(
-          function ($iterator) use ($zeroValue, $op) {
+          function ($iterator) use ($zeroValue, $op,$temp) {
      #     echo "!!!".$iterator->get_array()[1];
 
             $acc = $zeroValue;
@@ -32,21 +37,7 @@ function fold($zeroValue, $op)
             return $temp;
         });
 
-}
+};
 
 $s=new Serializer();
-
-echo $s->serialize(fold(0,1));
-echo "\n";
-$a = array();
-array_push($a,1);
-array_push($a,2);
-array_push($a,3);
-
-$iter = new my_iterator($a);
-$temp = fold(0,1);
-$result = $temp($a);
-foreach($result as $ele){
-    echo $ele;
-    echo "\n";
-}
+echo "!!!!!".$s->serialize($fold)."!!!!!";

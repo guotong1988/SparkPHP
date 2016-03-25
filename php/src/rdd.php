@@ -8,6 +8,7 @@ require($spark_php_home . "src/shuffle.php");
 require 'vendor/autoload.php';
 use SuperClosure\Serializer;
 
+
 class rdd
 {
 
@@ -22,6 +23,7 @@ class rdd
 
     function rdd($jrdd, $ctx, $deserializer)
     {
+
         $this->jrdd = $jrdd;
         $this->is_cached = False;
         $this->is_checkpointed = False;
@@ -65,14 +67,14 @@ class rdd
                 foreach($iterator as $key=>$value){
                     $temp = $f($value);
                     if(is_array($temp)){
-                        $sub_is_array = Ture;
+                        $sub_is_array = True;
                         break;
                     }
                 }
 
                 if($sub_is_array){
                     $result = array();
-                    file_put_contents("/home/gt/php_worker7.txt", "here1\n", FILE_APPEND);
+
                     foreach($iterator as $key=>$value){
                         $temp = $f($value);
                         if(is_array($temp)){
@@ -141,12 +143,10 @@ class rdd
 
             function ($iterator) use ($zeroValue, $op) {
                 $acc = $zeroValue;
-                file_put_contents("/home/gt/php_worker3.txt", "here1 " . gettype($iterator) . "\n", FILE_APPEND);
                 foreach ($iterator as $element) {
-                    $ADD = 1;
+                    $ADD = 1;#TODO
                     #     if($op==$ADD) {
                     $acc = $element + $acc;
-                    file_put_contents("/home/gt/php_worker3.txt", "here2 " . $element . "\n", FILE_APPEND);
                     #    }
                 }
                 $temp = array();
@@ -210,31 +210,36 @@ class rdd
         return 512;#TODO
     }
 
-    function reduceByKey($func, $numPartitions=null, $partitionFunc=null)
+    function reduceByKey(callable $func, $numPartitions=null,callable $partitionFunc=null)
     {
         if($partitionFunc==null){
-            $partitionFunc=function ($x) {
-                if ($x == null) {
-                    return 0;
-                }
-                $h = null;
-                if (is_array($x)) {
-                    #TODO
-                }
-                return hash("md5", $x);
-            };
+            #TODO $partitionFunc=
         }
 
         return $this->combineByKey(
             function ($x){
                 return $x;
             }
-            ,$func, $func, $numPartitions, $partitionFunc);
+
+            ,$func, $func, $numPartitions,
+
+                function ($x) {
+                    if ($x == null) {
+                        return 0;
+                    }
+                    $h = null;
+                    if (is_array($x)) {
+                        #TODO
+                    }
+                    return hash("md5", $x);
+                }
+
+            );
     }
 
     # TODO: add control over map-side aggregation
-    function combineByKey($createCombiner, $mergeValue, $mergeCombiners,
-        $numPartitions=null, $partitionFunc=null)
+    function combineByKey(callable $createCombinerFunc, callable $mergeValueFunc, callable $mergeCombinersFunc,
+        $numPartitions=null, callable $partitionFunc=null)
     {
         if($numPartitions==null) {
             $numPartitions = 2; #TODO $this->defaultReducePartitions();
@@ -244,24 +249,32 @@ class rdd
 
         $memory =  $this->memory_limit();
 
-        $agg = new Aggregator($createCombiner, $mergeValue, $mergeCombiners);
 
-        $combineLocally = function ($iterator) use ($agg,$memory,$serializer){
-            $merger = new ExternalMerger($agg, $memory * 0.9, $serializer);
-            $merger -> mergeValues($iterator);
-            return $merger->items();
-        };
 
-        $locally_combined = $this->mapPartitions($combineLocally, True);
+        $locally_combined = $this->mapPartitions(
+
+            function ($iterator) use ($memory,$serializer,$createCombinerFunc, $mergeValueFunc, $mergeCombinersFunc){
+
+                $agg = new aggregator($createCombinerFunc, $mergeValueFunc, $mergeCombinersFunc);
+                $merger = new ExternalMerger($agg, $memory * 0.9, $serializer);
+                $merger -> mergeValues($iterator);
+
+                return $merger->items();
+            },
+
+            True);
         $shuffled = $locally_combined->partitionBy($numPartitions, $partitionFunc);
+        file_put_contents("/home/gt/php_worker11.txt", "here\n", FILE_APPEND);
+        return $shuffled->mapPartitions(
 
-        $mergeCombiners = function ($iterator)use ($agg,$memory,$serializer){
-            $merger = new ExternalMerger($agg, $memory, $serializer);
-            $merger -> mergeCombiners($iterator);
-            return $merger->items();
-        };
+            function ($iterator)use ($memory,$serializer,$createCombinerFunc, $mergeValueFunc, $mergeCombinersFunc){
+                $agg = new aggregator($createCombinerFunc, $mergeValueFunc, $mergeCombinersFunc);
+                $merger = new ExternalMerger($agg, $memory, $serializer);
+                $merger -> mergeCombiners($iterator);
+                return $merger->items();
+            }
 
-        return $shuffled->mapPartitions($mergeCombiners, True);
+            , True);
     }
 
 
@@ -286,65 +299,73 @@ class rdd
         }
 
         $partitioner = new Partitioner($numPartitions, $partitionFunc);
-        if(serialize($this->partitioner) == serialize($partitioner)) {
+        if($this->partitioner != null && serialize($this->partitioner) == serialize($partitioner)) {
             return $this;
         }
         $outputSerializer = $this->ctx->unbatched_serializer;#TODO check
 
         $limit=256;
 
-        $add_shuffle_key =function($iterator)use($numPartitions,$partitionFunc,$limit,$outputSerializer){
-            $buckets = array();
-            $c=0;
-            $batch=min(10*$numPartitions,1000);
+        $keyed = $this->mapPartitionsWithIndex(
+
+            function($split,$iterator)use($numPartitions,$partitionFunc,$limit,$outputSerializer){
+                $buckets = array();
+                $c=0;
+                $batch=min(10*$numPartitions,1000);
 
 
-            foreach($iterator as $key=>$value){
-                $buckets[$partitionFunc($key) % $numPartitions]=array();
-                $buckets[$partitionFunc($key) % $numPartitions][$key]=$value;
-                $c++;
 
-                if ($c % 1000 == 0 && memory_get_usage()/1024/1024 > $limit || $c > $batch) {
-                    $n = sizeof($buckets);
-                    $size = 0;
-                    $result = array();
-                    foreach($buckets as $key2 => $value2) { #value是一个array
 
-                        array_push($result,serialize($key2));
-                        $d = serialize($value2);
-                        unset($value2);
-                        array_push($result,$d);
-                        $size += strlen($d);
-                    }
+                foreach($iterator as $key=>$value){#wordcount为例，这是word=>count
+                    file_put_contents("/home/gt/php_worker9.txt", "here0 ".$key." ".$value."\n", FILE_APPEND);
+                    $buckets[$partitionFunc($key) % $numPartitions]=array();
+                    $buckets[$partitionFunc($key) % $numPartitions][$key]=$value;
+                    $c++;
 
-                    $avg = intval($size / $n) >> 20;
+                    if ($c % 1000 == 0 && memory_get_usage()/1024/1024 > $limit || $c > $batch) {
+                        $n = sizeof($buckets);
+                        $size = 0;
+                        $result = array();
+                        foreach($buckets as $key2 => $value2) { #value是一个array
+
+                            array_push($result,serialize($key2));
+                            $d = serialize($value2);
+                            unset($value2);
+                            array_push($result,$d);
+                            $size += strlen($d);
+                        }
+
+                        $avg = intval($size / $n) >> 20;
                         # let 1M < avg < 10M
-                    if($avg < 1){
-                        $batch *= 1.5;
-                    } elseif($avg > 10){
-                        $batch = max(intval($batch / 1.5), 1);
+                        if($avg < 1){
+                            $batch *= 1.5;
+                        } elseif($avg > 10){
+                            $batch = max(intval($batch / 1.5), 1);
+                        }
+                        $c = 0;
+
+                        return $result;
                     }
-                    $c = 0;
-
-                    return $result;
                 }
+                $result = array();
+                foreach($buckets as $key => $value) {
+                    foreach($value as $k =>$v){
+                        file_put_contents("/home/gt/php_worker9.txt", "here1 ".$k." ".$v."\n", FILE_APPEND);
+                    }
+
+                    array_push($result,$key);
+                    array_push($result,$value);
+                }
+                return $result;
             }
-            $result = array();
-            foreach($buckets as $key => $value) {
-
-                array_push($result,serialize($key));
-                array_push($result,serialize($value));
-            }
-            return $result;
-        };
 
 
-        $keyed = $this->mapPartitionsWithIndex($add_shuffle_key, True);
+        , True);
         $keyed->bypass_serializer = True;
 
         
       #TODO  with SCCallSiteSync(self.context) as css:
-        $pairRDD = $this->ctx->php_call_java->PairwiseRDD(
+        $pairRDD = $this->ctx->php_call_java->pair_wise_rdd(
                     $keyed->jrdd->rdd())->asJavaPairRDD();
         $jpartitioner = $this->ctx->php_call_java->php_partitioner($numPartitions,
             intval(spl_object_hash($partitionFunc)));#TODO long
@@ -423,6 +444,7 @@ class rdd
     }
 
     function prepare_for_python_RDD($sc, $command, $obj=null){
+
         # the serialized command will be compressed by broadcast
         if($this->s==null) {
             $this->s=new Serializer();
@@ -433,7 +455,6 @@ class rdd
                 echo ">>>>>>".$command[0];
             }
             $pickled_command[0] = $this->s->serialize($command[0]);
-
             if($command[1]!=null)
             $pickled_command[1]=serialize($command[1]);
             if($command[2]!=null)

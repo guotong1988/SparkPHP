@@ -38,6 +38,10 @@ class php_call_java {
         return new java("java.util.HashMap");
     }
 
+    function pair_wise_rdd($rdd){
+        return new java("org.apache.spark.api.php.PairwiseRDD",$rdd);
+    }
+
     function php_partitioner($numPartitions,
                              $partitionFunc){
         return new java("org.apache.spark.api.php.PhpPartitioner",$numPartitions,$partitionFunc);

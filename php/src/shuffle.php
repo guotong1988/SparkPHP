@@ -7,7 +7,7 @@ class shuffle
     static $DiskBytesSpilled = 0;
 }
 
-class Aggregator
+class aggregator
 {
 
    # Aggregator has tree functions to merge values into combiner.
@@ -21,7 +21,7 @@ class Aggregator
     var $mergeCombiners;
 
 
-    function __construct($createCombiner, $mergeValue, $mergeCombiners){
+    function __construct(callable $createCombiner,callable $mergeValue,callable $mergeCombiners){
         $this->createCombiner = $createCombiner;
         $this->mergeValue = $mergeValue;
         $this->mergeCombiners = $mergeCombiners;
@@ -75,7 +75,7 @@ class ExternalMerger extends Merger{
     var $data;
     var $pdata;
     var $batch;
-    var $spill;
+    var $spills;
     var $seed;
 
     function __construct($aggregator, $memory_limit=512, $serializer=null,
@@ -103,7 +103,7 @@ class ExternalMerger extends Merger{
         $this->pdata = array();
 
         # number of chunks dumped into disks
-        $this->spill = 0;
+        $this->spills = 0;
         # randomize the hash of key, id(o) is the address of o (aligned by 8)
         $this->seed = intval(spl_object_hash($this))+7;
     }
@@ -126,7 +126,7 @@ class ExternalMerger extends Merger{
         return hash("md5",$key.$this->seed) % $this-> partitions;
     }
 
-    function mergeValues($iterator)
+    function mergeValues($iterator)#对于key-value传进来的value合并，得到相同key的combine结果
     {
     #    """ Combine the items by creator and combiner """
         $creator = $this->agg->createCombiner;
@@ -134,22 +134,29 @@ class ExternalMerger extends Merger{
         $c=0;
         $data=$this->data;
         $pdata=$this->pdata;
-        $hash_func=$this->get_partition;
+        $hash_func= function ($key) {
+            return hash("md5",$key.$this->seed) % $this-> partitions;
+        };
         $batch = $this->batch;
         $limit = $this->memory_limit;
+        $d = null;
+        foreach($iterator as $key=>$value){#key是第几个，value是pair
 
-        foreach($iterator as $key=>$value){
-            $d = null;
+            $key = $value[0];
+
             if($pdata!=null){
                 $d=$pdata[$hash_func($key)];
-            }else{
+            }elseif($d==null){
                 $d=$data;
             }
-            if(in_array($key,$d)) {
-                $d[$key] = $comb($d[$key], $value);
+
+
+            if(array_key_exists($key,$d)) {
+                $d[$key] = $comb($d[$key], $value[1]);
             }else{
-                $d[$key] = $creator($value);
+                $d[$key] = $creator($value[1]);
             }
+
             $c++;
             if($c>=$batch){
                 if(memory_get_usage()/1024/1024>$limit){
@@ -165,6 +172,8 @@ class ExternalMerger extends Merger{
         if(memory_get_usage()/1024/1024>$limit){
             $this->spill();
         }
+        $this->data= $d;
+        $this->pdata = $pdata;
     }
 
     function get_object_size(){
@@ -178,22 +187,25 @@ class ExternalMerger extends Merger{
             $limit = $this->memory_limit;
         }
         $comb = $this->agg->mergeCombiners;
-        $hash_func = $this->get_partition;
+        $hash_func =  function ($key){
+            return hash("md5",$key.$this->seed) % $this-> partitions;
+        };
         $obj_size = $this->get_object_size();
         $c = 0;
         $data = $this->data;
-        $pdata = $this->data;
+        $pdata = $this->pdata;
         $batch = $this->batch;
 
         foreach($iterator as $key => $value){
             $d=null;
+            file_put_contents("/home/gt/php_worker10.txt", "here3 ".$value."\n", FILE_APPEND);
             if($pdata!=null){
                 $d = $pdata[$hash_func($key)];
             }else {
                 $d = $data;
             }
 
-            if(in_array($key,$d)) {
+            if(array_key_exists($key,$d)) {
                 $d[$key] = $comb($d[$key], $value);
             }else{
                 $d[$key] = $value;
@@ -218,6 +230,8 @@ class ExternalMerger extends Merger{
         if($limit != null && memory_get_usage()/1024/1024 >= $limit){
             $this->spill();
         }
+        $this->data= $data;
+        $this->pdata = $pdata;
     }
 
     function spill(){
@@ -240,7 +254,7 @@ class ExternalMerger extends Merger{
                 array_push($files,$f);
             }
 
-            foreach($this -> data -> items() as $key=>$value) { #TODO 注意
+            foreach($this -> data as $key=>$value) { #TODO 注意
                 $h = $this->get_partition($key);
 
                #TODO self . serializer . dump_stream([(k, v)], streams[h])
@@ -259,19 +273,61 @@ class ExternalMerger extends Merger{
 
     function items(){
     #    """ Return all merged items as iterator """
-        if($this->pdata==null && $this->spill==null) {
-            return $this -> data -> items();
+        if($this->pdata==null && $this->spills==null) {
+            return $this -> data;
         }
         return $this->external_items();
     }
 
     function external_items(){
         #""" Return all partitioned items as iterator """
+        if($this->data==null){
+            throw new Exception();
+        }
+        $flag = True;
+        foreach($this->pdata as $value){
+            if($value==null){
+                $flag=False;
+            }
+        }
+        if($flag) {
+            $this->spill();
+        }
+        # disable partitioning and spilling when merge combiners from disk
+        $this->pdata = array();
 
+        try {
+            for($i=0; $i<$this->partitions ;$i++){
+                $result = array();
+                for($v=0;$v<$this->merged_items($i);$v++) {
+                    array_push($result,$v);
+                }
 
+                unset($this->$data);
+
+                # remove the merged partition
+                for($j=0;$j<$this->spills;$j++){
+                    $path = $this->get_spill_dir($j);
+                    unlink($path.$i);
+                }
+                return $result;
+            }
+        }finally {
+            $this->cleanup();
+        }
+
+    }
+
+    function merged_items(){
 
     }
 
 
-
+    function cleanup()
+    {
+       # """ Clean up all the files in disks """
+        foreach($this->localdirs as $d) {
+            unlink($d);
+        }
+    }
 }

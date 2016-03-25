@@ -26,7 +26,13 @@ class utf8_serializer extends serializer{
     function dump_stream($iterator, sock_output_stream $stream){
         foreach($iterator as $element)
         {
-            $stream->write_utf2($element);
+            if(is_string($element)) {
+                $stream->write_utf2($element);
+            }elseif(is_array($element)){#pair情况
+                $stream->write_utf2(serialize($element));
+            }else{#integer情况
+                $stream->write_utf2($element);
+            }
         }
     }
 
@@ -35,15 +41,45 @@ class utf8_serializer extends serializer{
 
 class utf8_deserializer extends serializer{
     var $use_unicode;
+    var $is_array=False;
+
     function utf8_deserializer($use_unicode=True){
         $this->use_unicode=$use_unicode;
     }
 
+
     function loads(sock_input_stream $stream)
     {
         $length_of_line = $stream->read_int();
-        if($length_of_line == 4294967295){
-            throw new Exception("end of data");#TODO -1
+        if($length_of_line == 4294967295){#TODO -1
+            throw new Exception("end of data");
+        }elseif($length_of_line == $this->NULL) {
+            return null;
+        }
+        $string = $stream->read_fully($length_of_line);
+
+        if($this->is_array==False) {
+            if (is_array(unserialize($string))) {
+                $this->is_array = True;
+            }
+        }
+        if($this->is_array==False){
+            if ($this->use_unicode==True){
+                return $string;
+            }else{
+                return $string;
+            }
+        }else{#pair的情况
+            return unserialize($string);
+        }
+    }
+
+
+    function loads2(sock_input_stream $stream)
+    {
+        $length_of_line = $stream->read_int();
+        if($length_of_line == 4294967295){#TODO -1
+            throw new Exception("end of data");
         }elseif($length_of_line == $this->NULL) {
             return null;
         }
@@ -69,6 +105,19 @@ class utf8_deserializer extends serializer{
         }
     }
 
+
+    function load_stream2($stream)
+    {
+        $item_array= array();
+        try {
+            while(True){
+                $temp2 = $this->loads2($stream);
+                array_push($item_array,$temp2);
+            }
+        }catch (Exception $e){
+            return $item_array;
+        }
+    }
 }
 
 
