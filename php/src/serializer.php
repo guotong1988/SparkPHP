@@ -24,14 +24,19 @@ class utf8_serializer extends serializer{
         $this->use_unicode = $use_unicode;
     }
     function dump_stream($iterator, sock_output_stream $stream){
-        foreach($iterator as $element)
+        foreach($iterator as $key=>$element)
         {
-            if(is_string($element)) {
+            if(is_string($key)){
+                $stream->write_utf2($key);
                 $stream->write_utf2($element);
-            }elseif(is_array($element)){#pair情况
-                $stream->write_utf2(serialize($element));
-            }else{#integer情况
-                $stream->write_utf2($element);
+            }else{
+                if(is_string($element)) {
+                    $stream->write_utf2($element);
+                }elseif(is_array($element)){#pair情况
+                    $stream->write_utf2(serialize($element));
+                }else{#integer情况
+                    $stream->write_utf2($element);
+                }
             }
         }
     }

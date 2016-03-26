@@ -299,10 +299,10 @@ class rdd
         }
 
         $partitioner = new Partitioner($numPartitions, $partitionFunc);
-        if($this->partitioner != null && serialize($this->partitioner) == serialize($partitioner)) {
+    #    if($this->partitioner != null && serialize($this->partitioner) == serialize($partitioner)) {
             return $this;
-        }
-        $outputSerializer = $this->ctx->unbatched_serializer;#TODO check
+    #    }
+        $outputSerializer = $this->ctx->unbatched_serializer;#TODO TODO
 
         $limit=256;
 

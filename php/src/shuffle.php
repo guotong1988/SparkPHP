@@ -195,13 +195,13 @@ class ExternalMerger extends Merger{
         $data = $this->data;
         $pdata = $this->pdata;
         $batch = $this->batch;
-
+        $d=null;
         foreach($iterator as $key => $value){
-            $d=null;
-            file_put_contents("/home/gt/php_worker10.txt", "here3 ".$value."\n", FILE_APPEND);
+            file_put_contents("/home/gt/php_worker10.txt", "here3 ".$key." ".$value."\n", FILE_APPEND);
+
             if($pdata!=null){
                 $d = $pdata[$hash_func($key)];
-            }else {
+            }elseif ($d==null) {
                 $d = $data;
             }
 
@@ -230,7 +230,12 @@ class ExternalMerger extends Merger{
         if($limit != null && memory_get_usage()/1024/1024 >= $limit){
             $this->spill();
         }
-        $this->data= $data;
+        foreach($d as $k=>$v)
+        {
+            file_put_contents("/home/gt/php_worker10.txt", "here4 ".$k." ".$v."\n", FILE_APPEND);
+        }
+
+        $this->data= $d;
         $this->pdata = $pdata;
     }
 
