@@ -1,10 +1,14 @@
 <?php
 
-class sock_output_stream {
-    private $sock = null;
+class file_output_stream {
+    private $file = null;
 
-    public function __construct( $sock ){
-        $this->sock = $sock;
+    public function __construct( $file ){
+        $this->file = $file;
+    }
+
+    public function get_file(){
+        return $this->file;
     }
 
     public function __destruct(){
@@ -13,36 +17,31 @@ class sock_output_stream {
     function write_int($value)
     {
         $data = pack('N', $value);
-        socket_write($this->sock, $data);
+        fwrite($this->file, $data);
     }
 
     function write_long($value)
     {
         $data = pack('J', $value);
-        socket_write($this->sock, $data);
+        fwrite($this->file, $data);
     }
 
     function write_short($value)
     {
         $data = pack('n', $value);
-        socket_write($this->sock, $data);
+        fwrite($this->file, $data);
     }
 
     function write_utf($value)
     {
         $this->write_short(strlen($value));
-        socket_write($this->sock,$value);
+        fwrite($this->file,$value);
     }
 
     function write_utf2($value)
     {
         $this->write_int(strlen($value));
-        socket_write($this->sock,$value);
+        fwrite($this->file,$value);
     }
 
-    function write_utf3($value)
-    {
-        $this->write_long(strlen($value));
-        socket_write($this->sock,$value);
-    }
 }

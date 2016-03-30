@@ -13,7 +13,6 @@ class serializer {
     var $TIMING_DATA = -3;
     var $END_OF_STREAM = -4;
     var $NULL = -5;
-
 }
 
 
@@ -24,6 +23,34 @@ class utf8_serializer extends serializer{
         $this->use_unicode = $use_unicode;
     }
     function dump_stream($iterator, sock_output_stream $stream){
+        foreach($iterator as $key=>$element)
+        {
+            if(is_string($key)){
+                if($key!=""&&$element!=""){
+                    if(strpos($key,">>>")!=False) {
+                        $stream->write_utf3($key . ">>>" . $element);
+                    }elseif($element!=""){
+                        $stream->write_utf3($key);
+                        $stream->write_utf3($element);
+                    }
+                }
+             #   $stream->write_utf3($element);
+            }else{
+                if($element!=""){
+                    if(is_string($element)) {
+                        $stream->write_utf2($element);
+                    }elseif(is_array($element)){#pair情况
+                        $stream->write_utf2(serialize($element));
+                    }else{#integer情况
+                        $stream->write_utf2($element);
+                    }
+                }
+            }
+        }
+    }
+
+
+    function dump_stream4file($iterator, file_output_stream $stream){
         foreach($iterator as $key=>$element)
         {
             if(is_string($key)){
@@ -103,7 +130,9 @@ class utf8_deserializer extends serializer{
         try {
             while(True){
                 $temp2 = $this->loads($stream);
-                array_push($item_array,$temp2);
+                if($temp2!="") {
+                    array_push($item_array, $temp2);
+                }
             }
         }catch (Exception $e){
             return $item_array;

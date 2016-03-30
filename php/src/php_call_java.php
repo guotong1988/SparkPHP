@@ -21,7 +21,7 @@ class php_call_java {
     }
 
     function php_accumulator_param($host,$port){
-        $this->PhpAccumulatorParam = new java("org.apache.spark.api.php.PhpAccumulatorParam",$host,$port);
+        $this->PhpAccumulatorParam = new java("org.apache.spark.api.php.PhpAccumulatorParam",$this->new_java_string($host),$port);
         return $this->PhpAccumulatorParam;
     }
 

@@ -338,11 +338,26 @@ private class PythonException(msg: String, cause: Exception) extends RuntimeExce
 private class PairwiseRDD(prev: RDD[Array[Byte]]) extends RDD[(Long, Array[Byte])](prev) {
   override def getPartitions: Array[Partition] = prev.partitions
   override val partitioner: Option[Partitioner] = prev.partitioner
-  override def compute(split: Partition, context: TaskContext): Iterator[(Long, Array[Byte])] =
+  override def compute(split: Partition, context: TaskContext): Iterator[(Long, Array[Byte])] = {
+    val file = new java.io.File("/home/gt/scala_worker5.txt")
+    val fos = new java.io.FileWriter(file);
+    val osw = new BufferedWriter(fos);
+
     prev.iterator(split, context).grouped(2).map {
-      case Seq(a, b) => (Utils.deserializeLongValue(a), b)
+      case Seq(a, b) => {
+
+
+        osw.write(">>>>>" + Utils.deserializeLongValue(a))
+        osw.newLine()
+        osw.write("<<<<<" + new String(b))
+        osw.newLine()
+        osw.flush()
+
+        (Utils.deserializeLongValue(a), b)
+      }
       case x => throw new SparkException("PairwiseRDD: unexpected value: " + x)
     }
+  }
   val asJavaPairRDD : JavaPairRDD[Long, Array[Byte]] = JavaPairRDD.fromRDD(this)
 }
 

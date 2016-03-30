@@ -81,7 +81,7 @@ private[spark] class PhpRunner4worker(
                partitionIndex: Int,
                context: TaskContext): Iterator[Array[Byte]] = {
 
-    file = new java.io.File("/home/gt/scala_worker.txt")
+    file = new java.io.File("/home/gt/"+partitionIndex+"scala_worker.txt")
     fos = new java.io.FileWriter(file);
     osw = new BufferedWriter(fos);
 
@@ -135,6 +135,9 @@ private[spark] class PhpRunner4worker(
             case length if length > 0 =>
               val obj = new Array[Byte](length)
               stream.readFully(obj)
+              osw.write(">>>>>"+new String(obj))
+              osw.newLine()
+              osw.flush()
               obj
             case 0 => Array.empty[Byte]
             case SpecialLengths.TIMING_DATA =>

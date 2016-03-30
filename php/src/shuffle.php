@@ -1,5 +1,9 @@
 <?php
 
+$temp = __FILE__;
+$spark_php_home = substr($temp,0,strrpos($temp,"/")-3);
+require($spark_php_home . "src/file_output_stream.php");
+
 class shuffle
 {
 # global stats
@@ -197,6 +201,18 @@ class ExternalMerger extends Merger{
         $batch = $this->batch;
         $d=null;
         foreach($iterator as $key => $value){
+            if($value==">>>"||$value==""){
+                continue;
+            }
+            if(strpos($value,">>>")!=False) {
+                $kv=explode(">>>",$value);
+                $key = $kv[0];
+                $value = $kv[1];
+                if(strpos($value,">>>")!=False){
+                    continue;
+                }
+            }
+
             file_put_contents("/home/gt/php_worker10.txt", "here3 ".$key." ".$value."\n", FILE_APPEND);
 
             if($pdata!=null){
@@ -253,17 +269,28 @@ class ExternalMerger extends Merger{
             # above limit at the first time.
 
             # open all the files for writing
-            $files = array();
+            $file_streams = array();
             for($i=0;$i<$this->partitions;$i++){
                 $f = fopen($path.$i,"wb");
-                array_push($files,$f);
+                array_push($file_streams,new file_output_stream($f));
             }
 
             foreach($this -> data as $key=>$value) { #TODO 注意
                 $h = $this->get_partition($key);
-
-               #TODO self . serializer . dump_stream([(k, v)], streams[h])
+                $this->serializer->dump_stream4file([array($key, $value)], $file_streams[$h]);
             }
+
+
+            foreach($file_streams as $value){
+                shuffle::$DiskBytesSpilled += filesize($value->get_file());
+                unlink($value->get_file());
+            }
+
+            unset($this->data);
+            for($i=0;$i<$this->partitions;$i++){
+                array_push($this->pdata,array());
+            }
+
         }else{
             for($i=0;$i<$this->partitions;$i++){
                 $f = fopen($path.$i,"wb");

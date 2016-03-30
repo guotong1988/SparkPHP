@@ -4,7 +4,8 @@ $spark_php_home = substr($temp,0,strrpos($temp,"/")-3);
 require($spark_php_home . "src/conf.php");
 require($spark_php_home . "src/php_call_java.php");
 require($spark_php_home . "src/rdd.php");
-require($spark_php_home . "src/serializer.php");
+require($spark_php_home . "src/serializers.php");
+require($spark_php_home . "src/accumulators.php");
 class context {
 
     var $php_call_java;#就是php_call_java
@@ -22,7 +23,7 @@ class context {
     var $php_exec;
     var $php_ver;
     var $java_accumulator;
-
+    var $accumulator_server;
     var $defaultParallelism;
 
     function context( $master=null, $app_name=null, $spark_home=null, $phpFiles=null,
@@ -110,15 +111,14 @@ class context {
 
         $this->jsc = $this->initialize_context($this->conf->jconf);
 
-
-
         # Create a single Accumulator in Java that we'll send all our updates through;
         # they will be passed back to us through a TCP server
-     #TODO   $accumulators =new AccumulatorServer();
-     #TODO   $this->accumulator_server = $accumulators->_start_update_server();
-     #TODO   $temp = $this->accumulator_server->server_address;
-        $host ='127.0.0.1';#TODO
-        $port =0;#TODO
+        $this->accumulator_server =new AccumulatorServer();
+        $temp = $this->accumulator_server->start_update_server();
+        $host =$temp[0];
+        $port =$temp[1];
+
+
         $this->java_accumulator = $this->jsc->accumulator(
                 $this->php_call_java->new_java_list(),
                 $this->php_call_java->php_accumulator_param($host, $port));

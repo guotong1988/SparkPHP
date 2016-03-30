@@ -39,7 +39,6 @@ class Accumulator
 
 class AccumulatorServer{
 
-    var $tcp_server;
     var $server_shutdown = False;
 
     function shutdown()
@@ -48,5 +47,14 @@ class AccumulatorServer{
         #TODO
         #$tcp_server->shutdown();
         #self . server_close()
+    }
+
+
+
+    function start_update_server(){
+        $address = '127.0.0.1';
+        $port = 18082;
+      
+        return array($address,$port);
     }
 }

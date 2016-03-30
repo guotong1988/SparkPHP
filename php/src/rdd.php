@@ -264,7 +264,6 @@ class rdd
 
             True);
         $shuffled = $locally_combined->partitionBy($numPartitions, $partitionFunc);
-        file_put_contents("/home/gt/php_worker11.txt", "here\n", FILE_APPEND);
         return $shuffled->mapPartitions(
 
             function ($iterator)use ($memory,$serializer,$createCombinerFunc, $mergeValueFunc, $mergeCombinersFunc){
@@ -299,9 +298,9 @@ class rdd
         }
 
         $partitioner = new Partitioner($numPartitions, $partitionFunc);
-    #    if($this->partitioner != null && serialize($this->partitioner) == serialize($partitioner)) {
+        if($this->partitioner != null && serialize($this->partitioner) == serialize($partitioner)) {
             return $this;
-    #    }
+        }
         $outputSerializer = $this->ctx->unbatched_serializer;#TODO TODO
 
         $limit=256;
@@ -315,17 +314,24 @@ class rdd
 
 
 
-
+                $result = array();
                 foreach($iterator as $key=>$value){#wordcount为例，这是word=>count
-                    file_put_contents("/home/gt/php_worker9.txt", "here0 ".$key." ".$value."\n", FILE_APPEND);
-                    $buckets[$partitionFunc($key) % $numPartitions]=array();
-                    $buckets[$partitionFunc($key) % $numPartitions][$key]=$value;
+
+                    $temp = $partitionFunc($key) % $numPartitions;#相同的key汇集到一起
+
+                    file_put_contents("/home/gt/php_worker13.txt", "here ".intval($partitionFunc($key))." ".$numPartitions." ".$temp."\n", FILE_APPEND);
+
+
+                    if($buckets[$temp]==null) {
+                        $buckets[$temp] = array();
+                    }
+                    $buckets[$temp][$key]=$value;
                     $c++;
 
                     if ($c % 1000 == 0 && memory_get_usage()/1024/1024 > $limit || $c > $batch) {
                         $n = sizeof($buckets);
                         $size = 0;
-                        $result = array();
+
                         foreach($buckets as $key2 => $value2) { #value是一个array
 
                             array_push($result,serialize($key2));
@@ -347,14 +353,10 @@ class rdd
                         return $result;
                     }
                 }
-                $result = array();
                 foreach($buckets as $key => $value) {
                     foreach($value as $k =>$v){
-                        file_put_contents("/home/gt/php_worker9.txt", "here1 ".$k." ".$v."\n", FILE_APPEND);
+                        $result[$key.">>>".$k]=$v;
                     }
-
-                    array_push($result,$key);
-                    array_push($result,$value);
                 }
                 return $result;
             }

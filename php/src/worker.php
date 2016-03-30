@@ -3,7 +3,7 @@ $temp = __FILE__;
 $spark_php_home = substr($temp,0,strrpos($temp,"/")-3);
 require($spark_php_home . "src/sock_output_stream.php");
 require($spark_php_home . "src/sock_input_stream.php");
-require($spark_php_home . "src/serializer.php");
+require($spark_php_home . "src/serializers.php");
 require($spark_php_home . "src/shuffle.php");
 require($spark_php_home . "src/accumulators.php");
 require($spark_php_home . "src/files.php");
@@ -54,7 +54,6 @@ function report_times(sock_output_stream $out_stream, $boot, $init, $finish)
     $out_stream->write_long((int)(1000 * $init));
     $out_stream->write_long((int)(1000 * $finish));
 
-    file_put_contents("/home/gt/php_worker.txt", "成功".$boot."\n",FILE_APPEND);
 }
 
 $in_stream = new sock_input_stream($sock);
@@ -133,25 +132,31 @@ if($profiler) {
     $func_name = 'process';
     $profiler->profile($func_name);
 }else {
-    file_put_contents($spark_php_home."php_worker.txt", "here5\n", FILE_APPEND);
+    file_put_contents($spark_php_home."php_worker.txt", $split_index."here5\n", FILE_APPEND);
     $iterator = $deserializer->load_stream2($in_stream);
 
    # $temp2 = $in_stream->read_utf2();
    # file_put_contents($spark_php_home."php_worker.txt", "here5b ".$temp2."\n", FILE_APPEND);
+    $iterator4pair = array();
+
     foreach($iterator as $element) {
-        file_put_contents($spark_php_home."php_worker.txt", "here6".$element."\n", FILE_APPEND);
+        file_put_contents($spark_php_home."php_worker.txt",$split_index. "here6".$element."\n", FILE_APPEND);
     }
 
+    if(sizeof($iterator4pair)>0){
+        $iterator=$iterator4pair;
+    }
 
     $temp3 = $func($split_index, $iterator);
-
 
     file_put_contents($spark_php_home."php_worker.txt", "here7 ".gettype($temp3)."\n", FILE_APPEND);
 
     foreach($temp3 as $element) {
-        file_put_contents($spark_php_home."php_worker.txt", "here7a ".gettype($element)."\n", FILE_APPEND);
-        foreach ($element as $e){
-            file_put_contents($spark_php_home."php_worker.txt", "here7b ".$e."\n", FILE_APPEND);
+        file_put_contents($spark_php_home."php_worker.txt", "here7a ".$element."\n", FILE_APPEND);
+        if(is_array($element)) {
+            foreach ($element as $e) {
+                file_put_contents($spark_php_home . "php_worker.txt", "here7b " . $e . "\n", FILE_APPEND);
+            }
         }
     }
 
