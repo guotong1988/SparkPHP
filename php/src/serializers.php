@@ -22,39 +22,42 @@ class utf8_serializer extends serializer{
     function utf8_serializer($use_unicode=True){
         $this->use_unicode = $use_unicode;
     }
+
+    function is_list($arr){
+        return is_array($arr) && ($arr == array() || array_keys($arr) === range(0,count($arr)-1) );
+    }
+
     function dump_stream($iterator, sock_output_stream $stream){
-        if(is_array($iterator)){
-            foreach($iterator as $key=>$element)
-            {
-                if(is_string($key)){
-                    if($key!=""&&$element!=""){
-                        if(strpos($key,">>>")!=False) {
-                            $stream->write_utf3($key . ">>>" . $element);
-                        }elseif($element!=""){
-                            $stream->write_utf3($key);
-                            $stream->write_utf3($element);
-                        }
-                    }
-                 #   $stream->write_utf3($element);
-                }else{
-                    if($element!=""){
-                        if(is_string($element)) {
-                            $stream->write_utf2($element);
-                        }elseif(is_array($element)){#pair情况
-                            $stream->write_utf2(serialize($element));
-                        }else{#integer情况
-                            $stream->write_utf2($element);
-                        }
-                    }
+        if($this->is_list($iterator)) {
+            foreach ($iterator as $element) {
+                if (is_array($element)) {#pair等元组的情况
+                    $stream->write_utf2(serialize($element));
+                } else {
+                    $stream->write_utf2($element);
                 }
             }
-        }else{
-            $stream->write_utf2($iterator);
+        }else{#进来的key就是string的pair等元组的情况
+            $index=0;
+            $newArray = array();
+            foreach($iterator as $key=>$element){
+                $temp=array();
+                array_push($temp,$key);
+                array_push($temp,$element);
+                $newArray[$index]=$temp;
+                $index++;
+            }
+            foreach ($newArray as $element) {
+                if (is_array($element)) {#已经转化成元组
+                    $stream->write_utf2(serialize($element));
+                } else {
+                    $stream->write_utf2($element);
+                }
+            }
         }
     }
 
 
-    function dump_stream4file($iterator, file_output_stream $stream){
+    function dump_stream4file($iterator, file_output_stream $stream){#TODO 模仿上面
         foreach($iterator as $key=>$element)
         {
             if(is_string($key)){
@@ -87,12 +90,18 @@ class utf8_deserializer extends serializer{
     function loads(sock_input_stream $stream)
     {
         $length_of_line = $stream->read_int();
+
+        file_put_contents("/home/gt/php_worker18.txt", "here ".$length_of_line."\n", FILE_APPEND);
+
+
         if($length_of_line == 4294967295){#TODO -1
             throw new Exception("end of data");
         }elseif($length_of_line == $this->NULL) {
             return null;
         }
         $string = $stream->read_fully($length_of_line);
+
+        file_put_contents("/home/gt/php_worker18.txt", "here ".$string."\n\n\n\n", FILE_APPEND);
 
         if($this->is_array==False) {
             if (is_array(unserialize($string))) {
@@ -111,23 +120,6 @@ class utf8_deserializer extends serializer{
     }
 
 
-    function loads2(sock_input_stream $stream)
-    {
-        $length_of_line = $stream->read_int();
-        if($length_of_line == 4294967295){#TODO -1
-            throw new Exception("end of data");
-        }elseif($length_of_line == $this->NULL) {
-            return null;
-        }
-        $string = $stream->read_fully($length_of_line);
-        if ($this->use_unicode==True){
-            return $string;
-        }else{
-            return $string;
-        }
-    }
-
-
     function load_stream($stream)
     {
         $item_array= array();
@@ -137,20 +129,6 @@ class utf8_deserializer extends serializer{
                 if($temp2!="") {
                     array_push($item_array, $temp2);
                 }
-            }
-        }catch (Exception $e){
-            return $item_array;
-        }
-    }
-
-
-    function load_stream2($stream)
-    {
-        $item_array= array();
-        try {
-            while(True){
-                $temp2 = $this->loads2($stream);
-                array_push($item_array,$temp2);
             }
         }catch (Exception $e){
             return $item_array;

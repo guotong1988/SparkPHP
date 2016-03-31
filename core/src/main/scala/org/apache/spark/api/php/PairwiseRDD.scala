@@ -16,58 +16,26 @@ class PairwiseRDD(prev: RDD[Array[Byte]]) extends RDD[(Long, Array[Byte])](prev)
   override def getPartitions: Array[Partition] = prev.partitions
   override val partitioner: Option[Partitioner] = prev.partitioner
   override def compute(split: Partition, context: TaskContext): Iterator[(Long, Array[Byte])] = {
+    var file = new java.io.File("/home/gt/scala_worker11.txt")
+    var fos = new java.io.FileWriter(file);
+    var osw = new BufferedWriter(fos);
+    prev.iterator(split, context).grouped(2).map {
+      case Seq(a, b) => {
 
-    val file = new java.io.File("/home/gt/scala_worker3.txt")
-    val fos = new java.io.FileWriter(file);
-    val osw = new BufferedWriter(fos);
-
-    val eles = Thread.currentThread().getStackTrace
-    for(i <- 0 to eles.length-1) {
-      osw.write("<<<<<"+eles(i))
-      osw.newLine()
-    }
-    osw.flush()
-    prev.iterator(split, context).map {
-      case x => {
-        osw.write("#####"+new String(x))
+        osw.write("-----"+a)
         osw.newLine()
         osw.flush()
-        val temp = new String(x)
-        val temp2 = temp.split(">>>")
-        var split = temp2(0)
-        var key = ""
-        var value = ""
-        if(temp2.length>1){
-         key = temp2(1)
-         value = temp2(2)
-        }
-        if(split.equals("")){
-          split="0";
-        }
-        (java.lang.Long.valueOf(split).longValue(),(key+">>>"+value).getBytes)
 
+        osw.write("+++++"+b)
+        osw.newLine()
+        osw.flush()
+
+        osw.write("====="+Utils.deserializeLongValue(a))
+        osw.newLine()
+        osw.flush()
+
+        (Utils.deserializeLongValue(a), b)
       }
-   /*   case Seq(a, b) => {
-
-        (this.deserializeLongValue(a), b)}
-
-      case x:List[Byte] => {
-
-        osw.write("@@@@@"+x.length)
-        osw.newLine()
-        osw.flush()
-
-        try{
-          osw.write("^^^^^"+x.getClass)
-          osw.newLine()
-          osw.flush()
-
-        }catch{
-          case ex: Exception =>{}
-        }
-
-        (1L,"abcde".getBytes)
-      }*/
       case x => throw new SparkException("PairwiseRDD: unexpected value: " + x)
     }
   }
@@ -75,64 +43,64 @@ class PairwiseRDD(prev: RDD[Array[Byte]]) extends RDD[(Long, Array[Byte])](prev)
   def deserializeLongValue(bytes: Array[Byte]) : Long = {
     val temp = new Array[Byte](8);
     if(bytes.length==8) {
-      temp(7) = bytes(7);
-      temp(6) = bytes(6);
-      temp(5) = bytes(5);
-      temp(4) = bytes(4);
-      temp(3) = bytes(3);
-      temp(2) = bytes(2);
-      temp(1) = bytes(1);
-      temp(0) = bytes(0);
+      temp(7) = bytes(0);
+      temp(6) = bytes(1);
+      temp(5) = bytes(2);
+      temp(4) = bytes(3);
+      temp(3) = bytes(4);
+      temp(2) = bytes(5);
+      temp(1) = bytes(6);
+      temp(0) = bytes(7);
     }
     if(bytes.length==7) {
-      temp(7) = 0;
-      temp(6) = bytes(6);
-      temp(5) = bytes(5);
-      temp(4) = bytes(4);
-      temp(3) = bytes(3);
-      temp(2) = bytes(2);
-      temp(1) = bytes(1);
-      temp(0) = bytes(0);
+      temp(7) = bytes(0);
+      temp(6) = bytes(1);
+      temp(5) = bytes(2);
+      temp(4) = bytes(3);
+      temp(3) = bytes(4);
+      temp(2) = bytes(5);
+      temp(1) = bytes(6);
+      temp(0) = 0;
     }
     if(bytes.length==6) {
-      temp(7) = 0;
-      temp(6) = 0;
-      temp(5) = bytes(5);
-      temp(4) = bytes(4);
-      temp(3) = bytes(3);
-      temp(2) = bytes(2);
-      temp(1) = bytes(1);
-      temp(0) = bytes(0);
+      temp(7) = bytes(0);
+      temp(6) = bytes(1);
+      temp(5) = bytes(2);
+      temp(4) = bytes(3);
+      temp(3) = bytes(4);
+      temp(2) = bytes(5);
+      temp(1) = 0;
+      temp(0) = 0;
     }
     if(bytes.length==5) {
-      temp(7) = 0;
-      temp(6) = 0;
-      temp(5) = 0;
-      temp(4) = bytes(4);
-      temp(3) = bytes(3);
-      temp(2) = bytes(2);
-      temp(1) = bytes(1);
-      temp(0) = bytes(0);
+      temp(7) = bytes(0);
+      temp(6) = bytes(1);
+      temp(5) = bytes(2);
+      temp(4) = bytes(3);
+      temp(3) = bytes(4);
+      temp(2) = 0;
+      temp(1) = 0;
+      temp(0) = 0;
     }
     if(bytes.length==4) {
-      temp(7) = 0;
-      temp(6) = 0;
-      temp(5) = 0;
-      temp(4) = 0;
-      temp(3) = bytes(3);
-      temp(2) = bytes(2);
-      temp(1) = bytes(1);
-      temp(0) = bytes(0);
+      temp(7) = bytes(0);
+      temp(6) = bytes(1);
+      temp(5) = bytes(2);
+      temp(4) = bytes(3);
+      temp(3) = 0;
+      temp(2) = 0;
+      temp(1) = 0;
+      temp(0) = 0;
     }
     if(bytes.length==3) {
-      temp(7) = 0;
-      temp(6) = 0;
-      temp(5) = 0;
+      temp(7) = bytes(0);
+      temp(6) = bytes(1);
+      temp(5) = bytes(2);
       temp(4) = 0;
       temp(3) = 0;
-      temp(2) = bytes(2);
-      temp(1) = bytes(1);
-      temp(0) = bytes(0);
+      temp(2) = 0;
+      temp(1) = 0;
+      temp(0) = 0;
     }
     if(bytes.length==2) {
       temp(7) = bytes(0);

@@ -125,9 +125,19 @@ class ExternalMerger extends Merger{
         }
     }
 
-    function get_partition($key)
+    function get_partition($x)
     {
-        return hash("md5",$key.$this->seed) % $this-> partitions;
+        if ($x == null) {
+            return 0;
+        }
+        if (is_array($x)) {
+            $h=0;
+            foreach($x as $ele){
+                $h ^= hexdec(hash("md5", $ele));
+            }
+            return $h;
+        }
+        return hexdec(hash("md5", $x.$this->seed))%$this-> partitions;
     }
 
     function mergeValues($iterator)#对于key-value传进来的value合并，得到相同key的combine结果
@@ -138,14 +148,27 @@ class ExternalMerger extends Merger{
         $c=0;
         $data=$this->data;
         $pdata=$this->pdata;
-        $hash_func= function ($key) {
-            return hash("md5",$key.$this->seed) % $this-> partitions;
+        $hash_func= function ($x) {
+
+
+            if ($x == null) {
+                return 0;
+            }
+            if (is_array($x)) {
+                $h=0;
+                foreach($x as $ele){
+                    $h ^= hexdec(hash("md5", $ele));
+                }
+                return $h;
+            }
+            return hexdec(hash("md5", $x.$this->seed))%$this-> partitions;
+
         };
         $batch = $this->batch;
         $limit = $this->memory_limit;
         $d = null;
-        foreach($iterator as $key=>$value){#key是第几个，value是pair
-
+        foreach($iterator as $key=>$value){#key是第几个，value是pair/array
+            file_put_contents("/home/gt/php_worker17.txt", "here ".$key." ".$value."\n", FILE_APPEND);
             $key = $value[0];
 
             if($pdata!=null){
@@ -176,6 +199,10 @@ class ExternalMerger extends Merger{
         if(memory_get_usage()/1024/1024>$limit){
             $this->spill();
         }
+        foreach($d as $k=>$v)
+        {
+            file_put_contents("/home/gt/php_worker17.txt", "here2 ".$k." ".$v."\n", FILE_APPEND);
+        }
         $this->data= $d;
         $this->pdata = $pdata;
     }
@@ -191,8 +218,20 @@ class ExternalMerger extends Merger{
             $limit = $this->memory_limit;
         }
         $comb = $this->agg->mergeCombiners;
-        $hash_func =  function ($key){
-            return hash("md5",$key.$this->seed) % $this-> partitions;
+        $hash_func =  function ($x){
+
+            if ($x == null) {
+                return 0;
+            }
+            if (is_array($x)) {
+                $h=0;
+                foreach($x as $ele){
+                    $h ^= hexdec(hash("md5", $ele));
+                }
+                return $h;
+            }
+            return hexdec(hash("md5", $x.$this->seed))%$this-> partitions;
+
         };
         $obj_size = $this->get_object_size();
         $c = 0;
@@ -200,56 +239,47 @@ class ExternalMerger extends Merger{
         $pdata = $this->pdata;
         $batch = $this->batch;
         $d=null;
-        foreach($iterator as $key => $value){
-            if($value==">>>"||$value==""){
-                continue;
-            }
-            if(strpos($value,">>>")!=False) {
-                $kv=explode(">>>",$value);
-                $key = $kv[0];
-                $value = $kv[1];
-                if(strpos($value,">>>")!=False){
+        foreach($iterator as $k => $v){
+            foreach($v as $key=>$value) {
+                file_put_contents("/home/gt/php_worker10.txt", "here3 " . $key . " " . $value . "\n", FILE_APPEND);
+
+                if ($pdata != null) {
+                    $d = $pdata[$hash_func($key)];
+                } elseif ($d == null) {
+                    $d = $data;
+                }
+
+                if (array_key_exists($key, $d)) {
+                    $d[$key] = $comb($d[$key], $value);
+                } else {
+                    $d[$key] = $value;
+                }
+
+                if ($limit == null) {
                     continue;
                 }
-            }
 
-            file_put_contents("/home/gt/php_worker10.txt", "here3 ".$key." ".$value."\n", FILE_APPEND);
-
-            if($pdata!=null){
-                $d = $pdata[$hash_func($key)];
-            }elseif ($d==null) {
-                $d = $data;
-            }
-
-            if(array_key_exists($key,$d)) {
-                $d[$key] = $comb($d[$key], $value);
-            }else{
-                $d[$key] = $value;
-            }
-
-            if($limit==null){
-                continue;
-            }
-
-            $c+=$this->get_object_size();
-            if($c>$batch){
-                if(memory_get_usage()/1024/1024>$limit){
-                    $this->spill();
-                    $limit = $this->next_limit();
-                    $batch /= 2;
-                    $c = 0;
-                }else{
-                    $batch *= 1.5;
+                $c += $this->get_object_size();
+                if ($c > $batch) {
+                    if (memory_get_usage() / 1024 / 1024 > $limit) {
+                        $this->spill();
+                        $limit = $this->next_limit();
+                        $batch /= 2;
+                        $c = 0;
+                    } else {
+                        $batch *= 1.5;
+                    }
                 }
             }
         }
         if($limit != null && memory_get_usage()/1024/1024 >= $limit){
             $this->spill();
         }
-        foreach($d as $k=>$v)
-        {
-            file_put_contents("/home/gt/php_worker10.txt", "here4 ".$k." ".$v."\n", FILE_APPEND);
+
+        foreach($d as $u=>$e) {
+            file_put_contents("/home/gt/php_worker10.txt", "here5 " . $u . " " . $e . "\n", FILE_APPEND);
         }
+
 
         $this->data= $d;
         $this->pdata = $pdata;
@@ -362,4 +392,12 @@ class ExternalMerger extends Merger{
             unlink($d);
         }
     }
+}
+
+class ExternalGroupBy extends ExternalMerger
+{
+  static  $SORT_KEY_LIMIT = 1000;
+
+
+
 }

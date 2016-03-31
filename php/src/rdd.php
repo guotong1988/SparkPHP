@@ -183,7 +183,7 @@ class rdd
             echo "socket_create()成功\n";
         }
 
-        $port = $port->intValue() . "";
+        $port = $port->intValue() . "";#不然不行，坑啊
 
         $result = socket_connect($sock, '127.0.0.1', intval($port));
         if ($result == false) {
@@ -221,11 +221,14 @@ class rdd
                     if ($x == null) {
                         return 0;
                     }
-                    $h = null;
                     if (is_array($x)) {
-                        #TODO
+                        $h=0;
+                        foreach($x as $ele){
+                            $h ^= hexdec(hash("md5", $ele));
+                        }
+                        return $h;
                     }
-                    return hash("md5", $x);
+                    return hexdec(hash("md5", $x));#http://stackoverflow.com/questions/3379471/php-number-only-hash
                 }
 
             );
@@ -309,11 +312,8 @@ class rdd
 
                 $result = array();
                 foreach($iterator as $key=>$value){#wordcount为例，这是word=>count
-
+                    file_put_contents("/home/gt/php_worker19.txt", "here ".$key." ".$value."\n", FILE_APPEND);
                     $temp = $partitionFunc($key) % $numPartitions;#相同的key汇集到一起
-
-                    file_put_contents("/home/gt/php_worker13.txt", "here ".intval($partitionFunc($key))." ".$numPartitions." ".$temp."\n", FILE_APPEND);
-
 
                     if($buckets[$temp]==null) {
                         $buckets[$temp] = array();
@@ -346,10 +346,13 @@ class rdd
                         return $result;
                     }
                 }
-                foreach($buckets as $key => $value) {
-                    foreach($value as $k =>$v){
-                        $result[$key.">>>".$k]=$v;
+                foreach($buckets as $split => $pair) {
+                    array_push($result,pack('J', $split));
+                    $temp = array();
+                    foreach($pair as $k =>$v){
+                        $temp[$k]=$v;
                     }
+                    array_push($result,serialize($temp));
                 }
                 return $result;
             }
@@ -413,6 +416,94 @@ class rdd
         }
     }
 
+    function groupByKey($numPartitions=null, $partitionFunc=null){
+        if($numPartitions==null){
+            $numPartitions=$this->defaultReducePartitions();
+        }
+        if($partitionFunc==null){
+            $partitionFunc= function ($x) {
+                if ($x == null) {
+                    return 0;
+                }
+                if (is_array($x)) {
+                    $h=0;
+                    foreach($x as $ele){
+                        $h ^= hexdec(hash("md5", $ele));
+                    }
+                    return $h;
+                }
+                return hexdec(hash("md5", $x));#http://stackoverflow.com/questions/3379471/php-number-only-hash
+            };
+        }
+
+        $createCombiner=function($x) {
+            return $x;
+        };
+
+        $mergeValue=function($xs, $x) {
+            array_push($xs,$x);
+            return $xs;
+        };
+
+        $mergeCombiners=function($a, $b) {
+            if(is_string($a)){
+                return array($a,$b);
+            }else{
+                if(is_array($b)){
+                    foreach($b as $ele) {
+                        array_push($a, $ele);
+                    }
+                }else {
+                    array_push($a, $b);
+                }
+                return $a;
+            }
+        };
+        $memory = $this->memory_limit();
+        $serializer = $this->deserializer;
+
+        $combine= function ($iterator)use ($createCombiner, $mergeValue, $mergeCombiners,$memory,$serializer) {
+            $agg =new  aggregator($createCombiner, $mergeValue, $mergeCombiners);
+            $merger =new ExternalMerger($agg, $memory * 0.9, $serializer);
+            $merger->mergeValues($iterator);
+            return $merger->items();
+        };
+
+        $locally_combined = $this->mapPartitions($combine, True);
+        $shuffled = $locally_combined->partitionBy($numPartitions, $partitionFunc);
+
+        $groupByKey=function($it)use ($createCombiner, $mergeValue, $mergeCombiners,$memory,$serializer)  {
+            $agg =new  aggregator($createCombiner, $mergeValue, $mergeCombiners);
+            $merger = new ExternalGroupBy($agg, $memory, $serializer);
+            $merger->mergeCombiners($it);
+            return $merger->items();
+        };
+
+        return $shuffled->mapPartitions($groupByKey, True)->mapValues(
+
+            function ($x){
+                return $x;
+            }
+        );
+    }
+
+    function keyBy($f){
+        return $this->map(
+            function ($everyOne) use ($f){
+                return array($f($everyOne), $everyOne);
+            }
+        );
+    }
+
+
+    function mapValues(callable $f){
+
+        $map_values_func = function($value) use ($f){#TODO 传进一个array
+            return $f($value);
+        };
+
+        return $this->map($map_values_func, True);
+    }
 
     function convert_list($php_list,$sc)
     {
@@ -492,13 +583,11 @@ class pipelined_rdd extends rdd{
     function  pipelined_rdd($prev_rdd,callable $func, $preservesPartitioning=False) {
         $this->s = new Serializer();
         if(!($prev_rdd instanceof pipelined_rdd) || !$prev_rdd->is_pipelinable()) {
-            echo "不是pipedrdd";
             $this->func = $func;
             $this->preservesPartitioning = $preservesPartitioning;
             $this->prev_jrdd = $prev_rdd->jrdd;
             $this->prev_jrdd_deserializer = $prev_rdd->jrdd_deserializer;
         }else {
-            echo "是pipedrdd";
             $this->prev_func = $prev_rdd->func;
             $temp_prev_func =  $prev_rdd->func;
             $this->func = function ($split, $iterator) use ($func,$temp_prev_func){
