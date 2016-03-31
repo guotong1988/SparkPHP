@@ -23,29 +23,33 @@ class utf8_serializer extends serializer{
         $this->use_unicode = $use_unicode;
     }
     function dump_stream($iterator, sock_output_stream $stream){
-        foreach($iterator as $key=>$element)
-        {
-            if(is_string($key)){
-                if($key!=""&&$element!=""){
-                    if(strpos($key,">>>")!=False) {
-                        $stream->write_utf3($key . ">>>" . $element);
-                    }elseif($element!=""){
-                        $stream->write_utf3($key);
-                        $stream->write_utf3($element);
+        if(is_array($iterator)){
+            foreach($iterator as $key=>$element)
+            {
+                if(is_string($key)){
+                    if($key!=""&&$element!=""){
+                        if(strpos($key,">>>")!=False) {
+                            $stream->write_utf3($key . ">>>" . $element);
+                        }elseif($element!=""){
+                            $stream->write_utf3($key);
+                            $stream->write_utf3($element);
+                        }
                     }
-                }
-             #   $stream->write_utf3($element);
-            }else{
-                if($element!=""){
-                    if(is_string($element)) {
-                        $stream->write_utf2($element);
-                    }elseif(is_array($element)){#pair情况
-                        $stream->write_utf2(serialize($element));
-                    }else{#integer情况
-                        $stream->write_utf2($element);
+                 #   $stream->write_utf3($element);
+                }else{
+                    if($element!=""){
+                        if(is_string($element)) {
+                            $stream->write_utf2($element);
+                        }elseif(is_array($element)){#pair情况
+                            $stream->write_utf2(serialize($element));
+                        }else{#integer情况
+                            $stream->write_utf2($element);
+                        }
                     }
                 }
             }
+        }else{
+            $stream->write_utf2($iterator);
         }
     }
 

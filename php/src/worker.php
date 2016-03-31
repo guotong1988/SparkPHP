@@ -151,14 +151,14 @@ if($profiler) {
 
     file_put_contents($spark_php_home."php_worker.txt", "here7 ".gettype($temp3)."\n", FILE_APPEND);
 
-    foreach($temp3 as $element) {
-        file_put_contents($spark_php_home."php_worker.txt", "here7a ".$element."\n", FILE_APPEND);
-        if(is_array($element)) {
-            foreach ($element as $e) {
-                file_put_contents($spark_php_home . "php_worker.txt", "here7b " . $e . "\n", FILE_APPEND);
+        foreach ($temp3 as $element) {
+            file_put_contents($spark_php_home . "php_worker.txt", "here7a " . $element . "\n", FILE_APPEND);
+            if (is_array($element)) {
+                foreach ($element as $e) {
+                    file_put_contents($spark_php_home . "php_worker.txt", "here7b " . $e . "\n", FILE_APPEND);
+                }
             }
         }
-    }
 
     file_put_contents($spark_php_home."php_worker.txt", "here8  ".$temp3."\n", FILE_APPEND);
 

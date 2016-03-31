@@ -144,10 +144,10 @@ class rdd
             function ($iterator) use ($zeroValue, $op) {
                 $acc = $zeroValue;
                 foreach ($iterator as $element) {
-                    $ADD = 1;#TODO
-                    #     if($op==$ADD) {
-                    $acc = $element + $acc;
-                    #    }
+                    $ADD = 1;
+                    if($op==$ADD) {
+                        $acc = $element + $acc;
+                    }
                 }
                 $temp = array();
                 array_push($temp, $acc);
@@ -155,10 +155,7 @@ class rdd
             }
 
         )->collect();
-        $ADD = 1;
-        if ($op == $ADD) {
-            $op = 'add_function';
-        }
+
         return array_reduce($temp,
 
             function ($v0, $v1) {
@@ -171,7 +168,7 @@ class rdd
 
     function collect()
     {
-        #    with SCCallSiteSync(self . context) as css:
+        #TODO    with SCCallSiteSync(self . context) as css:
         $port = $this->ctx->php_call_java->PhpRDD->collectAndServe($this->jrdd->rdd());
         return $this->load_from_socket($port, $this->deserializer);
     }
@@ -186,10 +183,7 @@ class rdd
             echo "socket_create()成功\n";
         }
 
-
-        file_put_contents("/home/gt/php_worker2.txt", "here2 " . $port->intValue() . "\n", FILE_APPEND);
         $port = $port->intValue() . "";
-        file_put_contents("/home/gt/php_worker2.txt", "here2 " . gettype($port) . "\n", FILE_APPEND);
 
         $result = socket_connect($sock, '127.0.0.1', intval($port));
         if ($result == false) {
@@ -237,7 +231,6 @@ class rdd
             );
     }
 
-    # TODO: add control over map-side aggregation
     function combineByKey(callable $createCombinerFunc, callable $mergeValueFunc, callable $mergeCombinersFunc,
         $numPartitions=null, callable $partitionFunc=null)
     {
@@ -409,17 +402,12 @@ class rdd
         $temp = $this->mapPartitions(
 
             function ($iterator) use ($f){
-                try {
-                    $initial = $iterator->first();
-                }catch(Exception $e) {
-                    return null;
-                }
-                return array_reduce($iterator,$f,$initial);
+                return array_reduce($iterator,$f);
             }
 
         )->collect();
         if($temp!=null){
-            return array_reduce($temp,$f);
+            return array(array_reduce($temp,$f));
         } else {
             throw new Exception("Can not reduce() empty RDD");
         }
