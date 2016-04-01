@@ -143,6 +143,11 @@ if($profiler) {
 
         foreach ($temp3 as $key => $element) {
             file_put_contents($spark_php_home . "php_worker.txt", $split_index."output " .$key." ".$element . "\n", FILE_APPEND);
+            if(is_array($element)){
+                foreach($element as $k=>$v){
+                file_put_contents($spark_php_home . "php_worker.txt", $split_index."output2 " .$k." ".$v . "\n", FILE_APPEND);
+                }
+            }
         }
 
 

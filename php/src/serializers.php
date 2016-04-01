@@ -7,6 +7,12 @@ class serializer {
     function load_stream($stream){
         return array();
     }
+
+
+    function is_list($arr){
+        return is_array($arr) && ($arr == array() || array_keys($arr) === range(0,count($arr)-1) );
+    }
+
     #special_lengths
     var $END_OF_DATA_SECTION = -1;
     var $PHP_EXCEPTION_THROWN = -2;
@@ -23,10 +29,6 @@ class utf8_serializer extends serializer{
         $this->use_unicode = $use_unicode;
     }
 
-    function is_list($arr){
-        return is_array($arr) && ($arr == array() || array_keys($arr) === range(0,count($arr)-1) );
-    }
-
     function dump_stream($iterator, sock_output_stream $stream){
         if($this->is_list($iterator)) {
             foreach ($iterator as $element) {
@@ -36,7 +38,7 @@ class utf8_serializer extends serializer{
                     $stream->write_utf2($element);
                 }
             }
-        }else{#进来的key就是string的pair等元组的情况
+        }else{#进来的就是key是string的pair等元组的情况
             $index=0;
             $newArray = array();
             foreach($iterator as $key=>$element){
@@ -90,10 +92,6 @@ class utf8_deserializer extends serializer{
     function loads(sock_input_stream $stream)
     {
         $length_of_line = $stream->read_int();
-
-        file_put_contents("/home/gt/php_worker18.txt", "here ".$length_of_line."\n", FILE_APPEND);
-
-
         if($length_of_line == 4294967295){#TODO -1
             throw new Exception("end of data");
         }elseif($length_of_line == $this->NULL) {

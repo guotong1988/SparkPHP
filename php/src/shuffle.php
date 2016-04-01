@@ -276,10 +276,6 @@ class ExternalMerger extends Merger{
             $this->spill();
         }
 
-        foreach($d as $u=>$e) {
-            file_put_contents("/home/gt/php_worker10.txt", "here5 " . $u . " " . $e . "\n", FILE_APPEND);
-        }
-
 
         $this->data= $d;
         $this->pdata = $pdata;

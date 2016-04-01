@@ -498,8 +498,26 @@ class rdd
 
     function mapValues(callable $f){
 
-        $map_values_func = function($value) use ($f){#TODO 传进一个array
-            return $f($value);
+        $map_values_func = function($input) use ($f){#$input不是iterator
+            if(is_array($input)){
+                $re = array();
+                $index = 0;
+                foreach($input as $k=>$v){
+                    if($index==0){
+                        array_push($re,$v);
+                    }
+                    if($index==1) {
+                        array_push($re,$f($v));
+                    }
+                    $index++;
+                    if($index==2){
+                        $index=0;
+                    }
+                }
+                return $re;
+            }else{
+                return $f($input);
+            }
         };
 
         return $this->map($map_values_func, True);
