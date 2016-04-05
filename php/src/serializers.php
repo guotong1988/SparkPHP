@@ -29,7 +29,7 @@ class utf8_serializer extends serializer{
         $this->use_unicode = $use_unicode;
     }
 
-    function dump_stream($iterator, sock_output_stream $stream){
+    function dump_stream($iterator,$stream){
         if($this->is_list($iterator)) {
             foreach ($iterator as $element) {
                 if (is_array($element)) {#pair等元组的情况
@@ -59,19 +59,33 @@ class utf8_serializer extends serializer{
     }
 
 
-    function dump_stream4file($iterator, file_output_stream $stream){#TODO 模仿上面
-        foreach($iterator as $key=>$element)
-        {
-            if(is_string($key)){
-                $stream->write_utf2($key);
-                $stream->write_utf2($element);
-            }else{
-                if(is_string($element)) {
-                    $stream->write_utf2($element);
-                }elseif(is_array($element)){#pair情况
-                    $stream->write_utf2(serialize($element));
-                }else{#integer情况
-                    $stream->write_utf2($element);
+    function dump_stream4file($iterator,$stream){#TODO 模仿上面
+        if($this->is_list($iterator)) {
+            foreach ($iterator as $element) {
+
+                file_put_contents("/home/gt/php_worker10.txt", "here2 " .$element."\n", FILE_APPEND);
+
+                if (is_array($element)) {#pair等元组的情况
+                    $stream->write_utf(serialize($element));
+                } else {
+                    $stream->write_utf($element);
+                }
+            }
+        }else{#进来的就是key是string的pair等元组的情况
+            $index=0;
+            $newArray = array();
+            foreach($iterator as $key=>$element){
+                $temp=array();
+                array_push($temp,$key);
+                array_push($temp,$element);
+                $newArray[$index]=$temp;
+                $index++;
+            }
+            foreach ($newArray as $element) {
+                if (is_array($element)) {#已经转化成元组
+                    $stream->write_utf(serialize($element));
+                } else {
+                    $stream->write_utf($element);
                 }
             }
         }
@@ -89,7 +103,7 @@ class utf8_deserializer extends serializer{
     }
 
 
-    function loads(sock_input_stream $stream)
+    function loads($stream)
     {
         $length_of_line = $stream->read_int();
         if($length_of_line == 4294967295){#TODO -1
@@ -98,8 +112,6 @@ class utf8_deserializer extends serializer{
             return null;
         }
         $string = $stream->read_fully($length_of_line);
-
-        file_put_contents("/home/gt/php_worker18.txt", "here ".$string."\n\n\n\n", FILE_APPEND);
 
         if($this->is_array==False) {
             if (is_array(unserialize($string))) {
@@ -130,6 +142,53 @@ class utf8_deserializer extends serializer{
             }
         }catch (Exception $e){
             return $item_array;
+        }
+    }
+
+    function load_stream4file($stream)
+    {
+        $item_array= array();
+        try {
+            while(True){
+                $temp2 = $this->loads4file($stream);
+                if($temp2!="") {
+                    array_push($item_array, $temp2);
+                }
+            }
+        }catch (Exception $e){
+            return $item_array;
+        }
+    }
+
+    function loads4file($stream)
+    {
+        $length_of_line = $stream->read_int();
+        if($length_of_line == 4294967295){#TODO -1
+            throw new Exception("end of data");
+        }elseif($length_of_line == $this->NULL) {
+            return null;
+        }
+        $string = $stream->read_fully($length_of_line);
+
+        file_put_contents("/home/gt/php_worker20.txt", $string. "\n",FILE_APPEND);
+
+
+        if($string == ""){
+            throw new Exception("end of data");
+        }
+        if($this->is_array==False) {
+            if (is_array(unserialize($string))) {
+                $this->is_array = True;
+            }
+        }
+        if($this->is_array==False){
+            if ($this->use_unicode==True){
+                return $string;
+            }else{
+                return $string;
+            }
+        }else{#pair的情况
+            return unserialize($string);
         }
     }
 }

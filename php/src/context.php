@@ -46,9 +46,9 @@ class context {
         $this->$batch_size = $batch_size;
         $this->unbatched_serializer = $serializer;
         if($batch_size == 0) {
-            $this->serializer = new auto_batched_serializer($this->unbatched_serializer);
+            $this->serializer = new utf8_serializer();#TODO
         }else {
-            $this->serializer = new batched_serializer($this->unbatched_serializer, $batch_size);
+            $this->serializer = new utf8_serializer();
         }
 
         if($master) {

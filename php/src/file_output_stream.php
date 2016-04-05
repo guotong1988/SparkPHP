@@ -20,28 +20,10 @@ class file_output_stream {
         fwrite($this->file, $data);
     }
 
-    function write_long($value)
-    {
-        $data = pack('J', $value);
-        fwrite($this->file, $data);
-    }
-
-    function write_short($value)
-    {
-        $data = pack('n', $value);
-        fwrite($this->file, $data);
-    }
-
     function write_utf($value)
     {
-        $this->write_short(strlen($value));
-        fwrite($this->file,$value);
-    }
-
-    function write_utf2($value)
-    {
         $this->write_int(strlen($value));
-        fwrite($this->file,$value);
+        fwrite($this->file,$value,strlen($value));
     }
 
 }

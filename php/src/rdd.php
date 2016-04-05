@@ -312,7 +312,6 @@ class rdd
 
                 $result = array();
                 foreach($iterator as $key=>$value){#wordcount为例，这是word=>count
-                    file_put_contents("/home/gt/php_worker19.txt", "here ".$key." ".$value."\n", FILE_APPEND);
                     $temp = $partitionFunc($key) % $numPartitions;#相同的key汇集到一起
 
                     if($buckets[$temp]==null) {
@@ -321,17 +320,17 @@ class rdd
                     $buckets[$temp][$key]=$value;
                     $c++;
 
-                    if ($c % 1000 == 0 && memory_get_usage()/1024/1024 > $limit || $c > $batch) {
+                   /* if ($c % 1000 == 0 && memory_get_usage()/1024/1024 > $limit || $c > $batch) {
                         $n = sizeof($buckets);
                         $size = 0;
 
-                        foreach($buckets as $key2 => $value2) { #value是一个array
-
-                            array_push($result,serialize($key2));
-                            $d = serialize($value2);
-                            unset($value2);
-                            array_push($result,$d);
-                            $size += strlen($d);
+                        foreach($buckets as $split => $pair) { #value是一个array
+                            array_push($result,pack('J', $split));
+                            $temp2 = array();
+                            foreach($pair as $k =>$v){
+                                $temp2[$k]=$v;
+                            }
+                            array_push($result,serialize($temp2));
                         }
 
                         $avg = intval($size / $n) >> 20;
@@ -343,8 +342,7 @@ class rdd
                         }
                         $c = 0;
 
-                        return $result;
-                    }
+                    }*/
                 }
                 foreach($buckets as $split => $pair) {
                     array_push($result,pack('J', $split));
@@ -354,7 +352,7 @@ class rdd
                     }
                     array_push($result,serialize($temp));
                 }
-                return $result;
+                return $result;#给PairwiseRDD使用
             }
 
 
