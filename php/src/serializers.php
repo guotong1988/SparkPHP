@@ -62,9 +62,6 @@ class utf8_serializer extends serializer{
     function dump_stream4file($iterator,$stream){#TODO 模仿上面
         if($this->is_list($iterator)) {
             foreach ($iterator as $element) {
-
-                file_put_contents("/home/gt/php_worker10.txt", "here2 " .$element."\n", FILE_APPEND);
-
                 if (is_array($element)) {#pair等元组的情况
                     $stream->write_utf(serialize($element));
                 } else {
