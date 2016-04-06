@@ -207,7 +207,19 @@ class rdd
     function reduceByKey(callable $func, $numPartitions=null,callable $partitionFunc=null)
     {
         if($partitionFunc==null){
-            #TODO $partitionFunc=
+            $partitionFunc = function ($x) {
+                if ($x == null) {
+                    return 0;
+                }
+                if (is_array($x)) {
+                    $h=0;
+                    foreach($x as $ele){
+                        $h ^= hexdec(hash("md5", $ele));
+                    }
+                    return $h;
+                }
+                return hexdec(hash("md5", $x));#http://stackoverflow.com/questions/3379471/php-number-only-hash
+            };
         }
 
         return $this->combineByKey(
@@ -215,30 +227,14 @@ class rdd
                 return $x;
             }
 
-            ,$func, $func, $numPartitions,
-
-                function ($x) {
-                    if ($x == null) {
-                        return 0;
-                    }
-                    if (is_array($x)) {
-                        $h=0;
-                        foreach($x as $ele){
-                            $h ^= hexdec(hash("md5", $ele));
-                        }
-                        return $h;
-                    }
-                    return hexdec(hash("md5", $x));#http://stackoverflow.com/questions/3379471/php-number-only-hash
-                }
-
-            );
+            ,$func, $func, $numPartitions,$partitionFunc);
     }
 
     function combineByKey(callable $createCombinerFunc, callable $mergeValueFunc, callable $mergeCombinersFunc,
         $numPartitions=null, callable $partitionFunc=null)
     {
         if($numPartitions==null) {
-            $numPartitions = 2; #TODO $this->defaultReducePartitions();
+            $numPartitions = $this->defaultReducePartitions();
         }
 
         $serializer = $this->ctx->serializer;
@@ -246,16 +242,17 @@ class rdd
         $memory =  $this->memory_limit();
 
 
-
         $locally_combined = $this->mapPartitions(
 
             function ($iterator) use ($memory,$serializer,$createCombinerFunc, $mergeValueFunc, $mergeCombinersFunc){
 
+                file_put_contents("/home/gt/php_worker36.txt", sizeof($iterator)."\n", FILE_APPEND);
                 $agg = new aggregator($createCombinerFunc, $mergeValueFunc, $mergeCombinersFunc);
                 $merger = new ExternalMerger($agg, $memory * 0.9, $serializer);
                 $merger -> mergeValues($iterator);
-
-                return $merger->items();
+                $re = $merger->items();
+                file_put_contents("/home/gt/php_worker37.txt", sizeof($re)."\n", FILE_APPEND);
+                return $re;
             },
 
             True);
@@ -285,8 +282,19 @@ class rdd
     function partitionBy($numPartitions,callable $partitionFunc=null)
     {
         if ($partitionFunc == null) {
-            #TODO
-
+            $partitionFunc =  function ($x) {
+                if ($x == null) {
+                    return 0;
+                }
+                if (is_array($x)) {
+                    $h=0;
+                    foreach($x as $ele){
+                        $h ^= hexdec(hash("md5", $ele));
+                    }
+                    return $h;
+                }
+                return hexdec(hash("md5", $x));#http://stackoverflow.com/questions/3379471/php-number-only-hash
+            };
         }
 
         if ($numPartitions == null) {
@@ -297,7 +305,7 @@ class rdd
         if($this->partitioner != null && serialize($this->partitioner) == serialize($partitioner)) {
             return $this;
         }
-        $outputSerializer = $this->ctx->unbatched_serializer;#TODO TODO
+        $outputSerializer = $this->ctx->unbatched_serializer;#TODO
 
         $limit=256;
 

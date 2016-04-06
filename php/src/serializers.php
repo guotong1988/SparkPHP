@@ -94,7 +94,7 @@ class utf8_serializer extends serializer{
 class utf8_deserializer extends serializer{
     var $use_unicode;
     var $is_array=False;
-
+    var $need_check=True;
     function utf8_deserializer($use_unicode=True){
         $this->use_unicode=$use_unicode;
     }
@@ -109,11 +109,13 @@ class utf8_deserializer extends serializer{
             return null;
         }
         $string = $stream->read_fully($length_of_line);
+    # TODO 很奇怪之前把这个注释打开就正确了，可能之前java有日志 写得太慢了  file_put_contents("/home/gt/php_worker39.txt", $string."\n", FILE_APPEND);
 
-        if($this->is_array==False) {
+        if($this->is_array==False && $this->need_check==True) {
             if (is_array(unserialize($string))) {
                 $this->is_array = True;
             }
+            $this->need_check = False;
         }
         if($this->is_array==False){
             if ($this->use_unicode==True){
@@ -138,6 +140,8 @@ class utf8_deserializer extends serializer{
                 }
             }
         }catch (Exception $e){
+            $this->is_array = False;
+            $this->need_check = True;
             return $item_array;
         }
     }
@@ -166,9 +170,6 @@ class utf8_deserializer extends serializer{
             return null;
         }
         $string = $stream->read_fully($length_of_line);
-
-        file_put_contents("/home/gt/php_worker20.txt", $string. "\n",FILE_APPEND);
-
 
         if($string == ""){
             throw new Exception("end of data");

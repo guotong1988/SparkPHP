@@ -96,18 +96,16 @@ class ExternalMerger extends Merger{
         }else{
             $this->localdirs =$localdirs;
         }
-        # number of partitions when spill data into disks
-        $this->partitions = $partitions;
-        # check the memory after # of items merged
+        $this->partitions = $partitions;#和pdata的容器数相同
+        # partitioned merged data, list of dicts
+        $this->pdata = array();
+
         $this->batch = $batch;
         # scale is used to scale down the hash of key for recursive hash map
         $this->scale = $scale;
 
         # un-partitioned merged data
         $this->data = array();
-
-        # partitioned merged data, list of dicts
-        $this->pdata = array();
 
         # number of chunks dumped into disks
         $this->spills = 0;
@@ -121,7 +119,7 @@ class ExternalMerger extends Merger{
 
     function next_limit(){
         $temp = memory_get_usage()/1024/1024*1.05;
-        if($temp >$this->memory_limit){
+        if($temp > $this->memory_limit){
             return $temp;
         }else{
             return $this->memory_limit;
@@ -170,20 +168,23 @@ class ExternalMerger extends Merger{
         $batch = $this->batch;
         $limit = $this->memory_limit;
         $d = null;
-        foreach($iterator as $key=>$value){#key是第几个，value是pair/array
+        foreach($iterator as $key=>$value){#key是第几个，value是pair/array，这个pair是word和count
             $key = $value[0];
-
-            if($pdata!=null){
-                $d=$pdata[$hash_func($key)];
-            }elseif($d==null){
-                $d=$data;
-            }
-
-
-            if(array_key_exists($key,$d)) {
-                $d[$key] = $comb($d[$key], $value[1]);
-            }else{
-                $d[$key] = $creator($value[1]);
+            if (sizeof($pdata)>0) {
+                if (array_key_exists($key,  $pdata[$hash_func($key)])) {
+                    $pdata[$hash_func($key)][$key] = $comb($d[$key], $value[1]);
+                } else {
+                    $pdata[$hash_func($key)][$key] = $value[1];
+                }
+            } else {
+                if ($d == null) {
+                    $d = array();
+                }
+                if (array_key_exists($key, $d)) {
+                    $d[$key] = $comb($d[$key], $value[1]);
+                } else {
+                    $d[$key] = $value[1];
+                }
             }
 
             $c++;
@@ -249,8 +250,6 @@ class ExternalMerger extends Merger{
                             $pdata[$hash_func($key)][$key] = $value;
                         }
                     } else {
-                        file_put_contents("/home/gt/php_worker25.txt", $limit." ".$key." ".$value."\n",FILE_APPEND);
-
                         if ($d == null) {
                             $d = array();
                         }
@@ -266,7 +265,7 @@ class ExternalMerger extends Merger{
 
                     $c += $this->get_object_size();
                     if ($c > $batch) {
-                        if ($limit!=-1 && memory_get_usage() / 1024 / 1024 > $limit) {#TODO
+                        if ($limit!=-1 && memory_get_usage() / 1024 / 1024 > $limit) {
                             $this->spill();
                             $limit = $this->next_limit();
                             $batch /= 2;
@@ -277,7 +276,7 @@ class ExternalMerger extends Merger{
                     }
                 }
             }else{
-                    if (sizeof($pdata)>0) {
+                if (sizeof($pdata)>0) {
                     if (array_key_exists($k,  $pdata[$hash_func($k)])) {
                         $pdata[$hash_func($k)][$k] = $comb($d[$k], $v);
                     } else {
@@ -299,7 +298,7 @@ class ExternalMerger extends Merger{
 
                 $c += $this->get_object_size();
                 if ($c > $batch) {
-                    if ($limit!=-1 && memory_get_usage() / 1024 / 1024 > $limit) {#TODO
+                    if ($limit!=-1 && memory_get_usage() / 1024 / 1024 > $limit) {
                         $this->spill();
                         $limit = $this->next_limit();
                         $batch /= 2;
@@ -321,7 +320,7 @@ class ExternalMerger extends Merger{
     }
 
     function spill(){
-
+        return #TODO 现在没开硬盘缓存
         #$path = $this->get_spill_dir($this->spills);#TODO
         $path="/home/".get_current_user()."/php_temp/";
         if(!file_exists($path)) {
@@ -345,9 +344,8 @@ class ExternalMerger extends Merger{
                 $f = fopen($path."/".$i,"wb");
                 array_push($file_streams,new file_output_stream($f));
             }
-            foreach($this -> data as $key=>$value) { #TODO 注意
+            foreach($this -> data as $key=>$value) {
                 $h = $this->get_partition($key);
-                file_put_contents("/home/gt/php_worker30.txt", $key." ".$value."\n",FILE_APPEND);
                 $this->serializer->dump_stream4file(array($key,$value), $file_streams[$h]);
             }
 
@@ -378,21 +376,15 @@ class ExternalMerger extends Merger{
                 shuffle::$DiskBytesSpilled += filesize($p);
             }
         }
-        $this->spills += 1;
         #TODO gc.collect()  # release the memory as much as possible
         shuffle::$MemoryBytesSpilled += max($used_memory - memory_get_usage()/1024/1024, 0) << 20;
     }
 
 
     function items(){
-    #    """ Return all merged items as iterator """
-        if(sizeof($this->pdata)==0 && sizeof($this->data)!=0) {#如果硬盘没数据
-            foreach($this->data as $k=>$v) {
-                file_put_contents("/home/gt/php_worker28.txt", $k ." ".$v. "\n", FILE_APPEND);
-            }
+     #   if(sizeof($this->pdata)==0 && sizeof($this->data)!=0) {#如果硬盘没数据 #TODO 现在没开硬盘缓存
             return $this -> data;
-        }
-        file_put_contents("/home/gt/php_worker22.txt", sizeof($this->pdata)."\n",FILE_APPEND);
+     #   }#TODO
         return $this->external_items();
     }
 
@@ -421,7 +413,7 @@ class ExternalMerger extends Merger{
                 $c=0;
                 $temp=array();
                 foreach($this->merged_items($i) as $v) {
-                    if($c==0) {
+                    if($c==0) {#调整结果结构
                         $temp=array();
                         array_push($temp, $v);
                     }elseif($c==1){
@@ -452,7 +444,6 @@ class ExternalMerger extends Merger{
     function merged_items($pindex){
         $this->data = array();
         $limit = $this->next_limit();
-        file_put_contents("/home/gt/php_worker.txt", $this->spills ."\n",FILE_APPEND);
 
      #   for($i = 0; $i < $this->spills ;$i++) {
             #$path = $this->get_spill_dir($i);#TODO

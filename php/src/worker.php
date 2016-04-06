@@ -134,14 +134,17 @@ if($profiler) {
     file_put_contents($spark_php_home."php_worker.txt", $split_index."here5\n", FILE_APPEND);
     $iterator = $deserializer->load_stream($in_stream);
 
-    foreach($iterator as $element) {
-        file_put_contents($spark_php_home."php_worker.txt",$split_index. "input ".$element."\n", FILE_APPEND);
+    file_put_contents("/home/gt/php_worker38.txt", sizeof($iterator)."\n", FILE_APPEND);
+
+    for($i=0;$i<sizeof($iterator);$i++) {
+        file_put_contents($spark_php_home."php_worker.txt",$split_index. "input ".$iterator[$i]."\n", FILE_APPEND);
+        if ($i>10) {break;}
     }
 
-    $temp3 = $func($split_index, $iterator);
+    $temp3 = $func($split_index, $iterator);#分布式计算
+    file_put_contents($spark_php_home."php_worker.txt",$split_index. "output!\n", FILE_APPEND);
 
-
-        foreach ($temp3 as $key => $element) {
+    foreach ($temp3 as $key => $element) {
             file_put_contents($spark_php_home . "php_worker.txt", $split_index."output " .$key." ".$element . "\n", FILE_APPEND);
             if(is_array($element)){
                 foreach($element as $k=>$v){
