@@ -109,8 +109,8 @@ class utf8_deserializer extends serializer{
             return null;
         }
         $string = $stream->read_fully($length_of_line);
-    # TODO 很奇怪之前把这个注释打开就正确了，可能之前java有日志 写得太慢了  file_put_contents("/home/gt/php_worker39.txt", $string."\n", FILE_APPEND);
-
+#     TODO 很奇怪之前把这个注释打开就正确了，可能之前java有日志 写得太慢了
+  #  file_put_contents("/home/gt/php_worker39.txt", $string."\n", FILE_APPEND);
         if($this->is_array==False && $this->need_check==True) {
             if (is_array(unserialize($string))) {
                 $this->is_array = True;
