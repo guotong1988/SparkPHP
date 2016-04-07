@@ -1,345 +1,96 @@
-socket_create()成功45272
-
-socket_connect()成功
-socket_create()成功41918
+socket_create()成功58431
 
 socket_connect()成功
 1here!
 1 read 1
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-0here!
-0 read 1
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-socket_create()成功43562
-
-socket_connect()成功
-1here!
-1 read 1
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-socket_create()成功55286
+1 1 output!
+socket_create()成功42822
 
 socket_connect()成功
 0here!
 0 read 1
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-socket_create()成功53364
-
-socket_connect()成功
-1here!
-1 read 1
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-socket_create()成功34625
-
-socket_connect()成功
-0here!
-0 read 1
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-socket_create()成功44133
-
-socket_connect()成功
-1here!
-1 read 1
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-socket_create()成功51981
-
-socket_connect()成功
-0here!
-0 read 1
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-socket_create()成功49404
-
-socket_connect()成功
-socket_create()成功43963
-
-socket_connect()成功
-1here!
-0here!
-1 read 1
-0 read 1
-1input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-1input 
-0input aaa bbb ccc ddd eee
-0input 
-socket_create()成功57767
-
-socket_connect()成功
-0here!
-0 read 1
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input 
-socket_create()成功56963
-
-socket_connect()成功
-1here!
-1 read 1
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input 
-socket_create()成功54000
-
-socket_connect()成功
-0here!
-0 read 1
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input 
-socket_create()成功50319
-
-socket_connect()成功
-1here!
-1 read 1
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input aaa bbb ccc ddd eee
-1input 
-socket_create()成功52590
-
-socket_connect()成功
-0here!
-0 read 1
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input aaa bbb ccc ddd eee
-0input 
-socket_create()成功48356
-
-socket_connect()成功
-socket_create()成功38956
-
-socket_connect()成功
-socket_create()成功48871
-
-socket_connect()成功
-0here!
-0 read 1
-0 26 output!
-1here!
-1 read 1
-1 21 output!
-socket_create()成功42332
-
-socket_connect()成功
-socket_create()成功49691
-
-socket_connect()成功
-1here!
-1 read 1
-1 21 output!
-0here!
-0 read 1
-0 26 output!
-socket_create()成功40758
-
-socket_connect()成功
-socket_create()成功40299
-
-socket_connect()成功
-1here!
-0here!
-1 read 1
-0 read 1
-1 21 output!
-0 26 output!
-socket_create()成功60130
-
-socket_connect()成功
-socket_create()成功59598
-
-socket_connect()成功
-1here!
-1 read 1
-0here!
-0 read 1
-1 21 output!
-0 26 output!
-socket_create()成功55948
-
-socket_connect()成功
-socket_create()成功40664
-
-socket_connect()成功
-1here!
-1 read 1
-0here!
-0 read 1
-1 2496 output!
-0 2501 output!
-socket_create()成功47525
-
-socket_connect()成功
-socket_create()成功52078
-
-socket_connect()成功
-0here!
-0 read 1
-1here!
-1 read 1
 0 1 output!
-1 1 output!
-socket_create()成功53870
+socket_create()成功60483
 
 socket_connect()成功
 0here!
 0 read 1
-socket_create()成功37071
+0 6 output!
+socket_create()成功47979
 
 socket_connect()成功
 1here!
 1 read 1
+1 1 output!
+socket_create()成功49598
+
+socket_connect()成功
+1here!
+1 read 1
+1 1 output!
+socket_create()成功58335
+
+socket_connect()成功
+0here!
+0 read 1
 0 1 output!
-1 1 output!
-socket_create()成功60505
+socket_create()成功39932
 
 socket_connect()成功
 0here!
 0 read 1
-socket_create()成功39317
+socket_create()成功41580
+
+socket_connect()成功
+0 5 output!
+1here!
+1 read 1
+1 1 output!
+socket_create()成功40544
 
 socket_connect()成功
 1here!
 1 read 1
+socket_create()成功59757
+
+1 1 output!
+socket_connect()成功
+0here!
+0 read 1
 0 1 output!
-socket_create()成功33231
-
-socket_connect()成功
-1 1 output!
-0here!
-0 read 1
-socket_create()成功54970
+socket_create()成功35557
 
 socket_connect()成功
 1here!
 1 read 1
+1 1 output!
+socket_create()成功45088
+
+socket_connect()成功
+0here!
+0 read 1
+0 5 output!
+socket_create()成功45699
+
+socket_connect()成功
+1here!
+1 read 1
+1 1 output!
+socket_create()成功34180
+
+socket_connect()成功
+0here!
+0 read 1
 0 1 output!
-1 1 output!
-socket_create()成功59243
-
-socket_connect()成功
-socket_create()成功39558
-
-socket_connect()成功
-0here!
-0 read 1
-1here!
-1 read 1
-1 1 output!
-0 1 output!
-socket_create()成功32807
+socket_create()成功35805
 
 socket_connect()成功
 1here!
 1 read 1
 1 1 output!
-socket_create()成功48246
+socket_create()成功56842
 
 socket_connect()成功
 0here!
 0 read 1
-0 7 output!
+0 5 output!

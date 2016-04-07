@@ -108,6 +108,15 @@ class rdd
         return $this->mapPartitionsWithIndex(
 
             function ($any, $iterator) use ($f) {
+                if($iterator instanceof Generator){
+                    $re = array();
+                    foreach($iterator as $e){
+                        if($e!="") {
+                            array_push($re, $f($e));
+                        }
+                    }
+                    return $re;
+                }
                 return array_map($f, $iterator);
             }
 
@@ -515,16 +524,16 @@ class rdd
                 $re = array();
                 $index = 0;
                 foreach($input as $k=>$v){
-                    if($index==0){
-                        array_push($re,$v);
-                    }
-                    if($index==1) {
-                        array_push($re,$f($v));
-                    }
-                    $index++;
-                    if($index==2){
-                        $index=0;
-                    }
+                        if($index==0){
+                            array_push($re,$v);
+                        }
+                        if($index==1) {
+                            array_push($re,$f($v));
+                        }
+                        $index++;
+                        if($index==2){
+                            $index=0;
+                        }
                 }
                 return $re;
             }else{
