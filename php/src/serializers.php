@@ -13,6 +13,14 @@ class serializer {
         return is_array($arr) && ($arr == array() || array_keys($arr) === range(0,count($arr)-1) );
     }
 
+    function is_list4generator(Generator $g){
+        if($g->key()==0){
+                return True;
+        }
+        return False;
+    }
+
+
     #special_lengths
     var $END_OF_DATA_SECTION = -1;
     var $PHP_EXCEPTION_THROWN = -2;
@@ -30,29 +38,58 @@ class utf8_serializer extends serializer{
     }
 
     function dump_stream($iterator,$stream){
-        if($this->is_list($iterator)) {
-            foreach ($iterator as $element) {
-                if (is_array($element)) {#pair等元组的情况
-                    $stream->write_utf2(serialize($element));
-                } else {
-                    $stream->write_utf2($element);
+        if($iterator instanceof Generator){
+            if ($this->is_list4generator($iterator)) {
+                foreach ($iterator as $element) {
+                    if (is_array($element)) {#pair等元组的情况
+                        $stream->write_utf2(serialize($element));
+                    } else {
+                        $stream->write_utf2($element);
+                    }
+                }
+            }else{
+                $index = 0;
+                $newArray = array();
+                foreach ($iterator as $key => $element) {
+                    $temp = array();
+                    array_push($temp, $key);
+                    array_push($temp, $element);
+                    $newArray[$index] = $temp;
+                    $index++;
+                }
+                foreach ($newArray as $element) {
+                    if (is_array($element)) {#已经转化成元组
+                        $stream->write_utf2(serialize($element));
+                    } else {
+                        $stream->write_utf2($element);
+                    }
                 }
             }
-        }else{#进来的就是key是string的pair等元组的情况
-            $index=0;
-            $newArray = array();
-            foreach($iterator as $key=>$element){
-                $temp=array();
-                array_push($temp,$key);
-                array_push($temp,$element);
-                $newArray[$index]=$temp;
-                $index++;
-            }
-            foreach ($newArray as $element) {
-                if (is_array($element)) {#已经转化成元组
-                    $stream->write_utf2(serialize($element));
-                } else {
-                    $stream->write_utf2($element);
+        }else {
+            if ($this->is_list($iterator)) {
+                foreach ($iterator as $element) {
+                    if (is_array($element)) {#pair等元组的情况
+                        $stream->write_utf2(serialize($element));
+                    } else {
+                        $stream->write_utf2($element);
+                    }
+                }
+            } else {#进来的就是key是string的pair等元组的情况
+                $index = 0;
+                $newArray = array();
+                foreach ($iterator as $key => $element) {
+                    $temp = array();
+                    array_push($temp, $key);
+                    array_push($temp, $element);
+                    $newArray[$index] = $temp;
+                    $index++;
+                }
+                foreach ($newArray as $element) {
+                    if (is_array($element)) {#已经转化成元组
+                        $stream->write_utf2(serialize($element));
+                    } else {
+                        $stream->write_utf2($element);
+                    }
                 }
             }
         }
@@ -110,7 +147,7 @@ class utf8_deserializer extends serializer{
         }
         $string = $stream->read_fully($length_of_line);
 #     TODO 很奇怪之前把这个注释打开就正确了，可能之前java有日志 写得太慢了
-  #  file_put_contents("/home/gt/php_worker39.txt", $string."\n", FILE_APPEND);
+        usleep(1);
         if($this->is_array==False && $this->need_check==True) {
             if (is_array(unserialize($string))) {
                 $this->is_array = True;
@@ -131,33 +168,34 @@ class utf8_deserializer extends serializer{
 
     function load_stream($stream)
     {
-        $item_array= array();
         try {
             while(True){
                 $temp2 = $this->loads($stream);
+                file_put_contents("/home/gt/php_worker5.txt", $temp2."!!\n",FILE_APPEND);
+
                 if($temp2!="") {
-                    array_push($item_array, $temp2);
+                    yield $temp2;
                 }
             }
         }catch (Exception $e){
+            file_put_contents("/home/gt/php_worker6.txt", "!!\n",FILE_APPEND);
             $this->is_array = False;
             $this->need_check = True;
-            return $item_array;
+            yield ;
         }
     }
 
     function load_stream4file($stream)
     {
-        $item_array= array();
         try {
             while(True){
                 $temp2 = $this->loads4file($stream);
                 if($temp2!="") {
-                    array_push($item_array, $temp2);
+                    yield $temp2;
                 }
             }
         }catch (Exception $e){
-            return $item_array;
+            return ;
         }
     }
 

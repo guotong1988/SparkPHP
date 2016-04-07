@@ -63,9 +63,15 @@ class rdd
 
             function ($split, $iterator) use ($f) {
 
+                file_put_contents("/home/gt/php_worker3.txt", gettype($iterator)."^^\n",FILE_APPEND);
+
                 $sub_is_array = False;
                 foreach($iterator as $key=>$value){
                     $temp = $f($value);
+
+
+                    file_put_contents("/home/gt/php_worker3.txt", gettype($temp)."!!\n",FILE_APPEND);
+
                     if(is_array($temp)){
                         $sub_is_array = True;
                         break;
@@ -196,7 +202,7 @@ class rdd
             $deserializer = new utf8_deserializer();
         }
         $item_array = $deserializer->load_stream($stream);
-        socket_close($sock);
+        #socket_close($sock);#改成yield之后不能关了
         return $item_array;
     }
 
@@ -328,19 +334,20 @@ class rdd
                     $buckets[$temp][$key]=$value;
                     $c++;
 
-                   /* if ($c % 1000 == 0 && memory_get_usage()/1024/1024 > $limit || $c > $batch) {
+                    if ($c % 1000 == 0 && memory_get_usage()/1024/1024 > $limit || $c > $batch) {
                         $n = sizeof($buckets);
                         $size = 0;
 
                         foreach($buckets as $split => $pair) { #value是一个array
-                            array_push($result,pack('J', $split));
+                            yield pack('J', $split);
                             $temp2 = array();
                             foreach($pair as $k =>$v){
                                 $temp2[$k]=$v;
                             }
-                            array_push($result,serialize($temp2));
+                            yield serialize($temp2);#给PairwiseRDD使用
                         }
-
+                        unset($buckets);
+                        $buckets = array();
                         $avg = intval($size / $n) >> 20;
                         # let 1M < avg < 10M
                         if($avg < 1){
@@ -349,18 +356,17 @@ class rdd
                             $batch = max(intval($batch / 1.5), 1);
                         }
                         $c = 0;
-
-                    }*/
+                    }
                 }
+
                 foreach($buckets as $split => $pair) {
-                    array_push($result,pack('J', $split));
+                    yield pack('J', $split);
                     $temp = array();
                     foreach($pair as $k =>$v){
                         $temp[$k]=$v;
                     }
-                    array_push($result,serialize($temp));
+                    yield serialize($temp);#给PairwiseRDD使用
                 }
-                return $result;#给PairwiseRDD使用
             }
 
 

@@ -320,7 +320,6 @@ class ExternalMerger extends Merger{
     }
 
     function spill(){
-        return #TODO 现在没开硬盘缓存
         #$path = $this->get_spill_dir($this->spills);#TODO
         $path="/home/".get_current_user()."/php_temp/";
         if(!file_exists($path)) {
@@ -382,9 +381,9 @@ class ExternalMerger extends Merger{
 
 
     function items(){
-     #   if(sizeof($this->pdata)==0 && sizeof($this->data)!=0) {#如果硬盘没数据 #TODO 现在没开硬盘缓存
+        if(sizeof($this->pdata)==0 && sizeof($this->data)!=0) {#如果硬盘没数据
             return $this -> data;
-     #   }#TODO
+        }
         return $this->external_items();
     }
 
@@ -402,6 +401,7 @@ class ExternalMerger extends Merger{
             }
         }
         if($haveData) {
+            file_put_contents("/home/gt/php_worker33.txt", "!!!\n",FILE_APPEND);
             $this->spill();
         }
         # disable partitioning and spilling when merge combiners from disk
@@ -409,16 +409,14 @@ class ExternalMerger extends Merger{
 
         try {
             for($i=0; $i<$this->partitions ;$i++){
-                $result = array();
                 $c=0;
-                $temp=array();
                 foreach($this->merged_items($i) as $v) {
                     if($c==0) {#调整结果结构
                         $temp=array();
                         array_push($temp, $v);
                     }elseif($c==1){
                         array_push($temp, $v);
-                        array_push($result,$temp);
+                        yield $temp;
                     }
                     $c++;
                     if($c==2){
@@ -433,7 +431,6 @@ class ExternalMerger extends Merger{
                     $path="/home/".get_current_user()."/php_temp/";
                     fclose($path.$i);
                 }
-                return $result;
             }
         }finally {
             $this->cleanup();
@@ -453,7 +450,7 @@ class ExternalMerger extends Merger{
 
             $iter = $this->deserializer->load_stream4file(new file_input_stream($f));
 
-
+            file_put_contents("/home/gt/php_worker34.txt", sizeof($iter)."!!!\n",FILE_APPEND);
 
             $this->mergeCombiners($iter, -1);
 
