@@ -96,7 +96,9 @@ class utf8_serializer extends serializer{
     }
 
 
-    function dump_stream4file($iterator,$stream){#TODO 模仿上面
+    function dump_stream4file($iterator,$stream){
+        $stream->write_utf(serialize($iterator));
+  /*
         if($this->is_list($iterator)) {
             foreach ($iterator as $element) {
                 if (is_array($element)) {#pair等元组的情况
@@ -122,7 +124,7 @@ class utf8_serializer extends serializer{
                     $stream->write_utf($element);
                 }
             }
-        }
+        }*/
     }
 
 }
@@ -171,14 +173,11 @@ class utf8_deserializer extends serializer{
         try {
             while(True){
                 $temp2 = $this->loads($stream);
-                file_put_contents("/home/gt/php_worker5.txt", $temp2."!!\n",FILE_APPEND);
-
                 if($temp2!="") {
                     yield $temp2;
                 }
             }
         }catch (Exception $e){
-            file_put_contents("/home/gt/php_worker6.txt", "!!\n",FILE_APPEND);
             $this->is_array = False;
             $this->need_check = True;
             yield ;
@@ -208,7 +207,7 @@ class utf8_deserializer extends serializer{
             return null;
         }
         $string = $stream->read_fully($length_of_line);
-
+        file_put_contents("/home/gt/php_worker40.txt", $string." loads4file\n",FILE_APPEND);
         if($string == ""){
             throw new Exception("end of data");
         }

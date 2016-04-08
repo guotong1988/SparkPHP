@@ -135,8 +135,15 @@ if($profiler) {
 }else {
     file_put_contents($spark_php_home."php_worker.txt", $split_index."here!\n", FILE_APPEND);
     $iterator = $deserializer->load_stream($in_stream);
-
-    file_put_contents($spark_php_home."php_worker.txt", $split_index." read ".sizeof($iterator)."\n", FILE_APPEND);
+/*
+    file_put_contents($spark_php_home."php_worker.txt", $split_index." read ".$iterator->current()."\n", FILE_APPEND);
+    if(is_array($iterator->current()))
+    {
+       foreach($iterator->current() as $e){
+           file_put_contents($spark_php_home."php_worker.txt", $split_index." rrr ".$e."\n", FILE_APPEND);
+       }
+    }
+*/
     /*   $i=0;
        foreach($iterator as $e) {
          file_put_contents($spark_php_home."php_worker.txt",$split_index. "input ".$e."\n", FILE_APPEND);
@@ -145,8 +152,11 @@ if($profiler) {
        }
     $iterator->rewind();
 */
+
+   # file_put_contents($spark_php_home."php_worker.txt", $split_index." -------------- ".$str."\n", FILE_APPEND);
+
      $temp3 = $func($split_index, $iterator);#分布式计算
-     file_put_contents($spark_php_home."php_worker.txt",$split_index." ".sizeof($temp3). " output!\n", FILE_APPEND);
+   #  file_put_contents($spark_php_home."php_worker.txt",$split_index." ".$temp3->current(). " output!\n", FILE_APPEND);
 /*
     foreach ($temp3 as $key => $element) {
              file_put_contents($spark_php_home . "php_worker.txt", $split_index."output " .$key." ".$element . "\n", FILE_APPEND);

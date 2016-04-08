@@ -63,15 +63,9 @@ class rdd
 
             function ($split, $iterator) use ($f) {
 
-                file_put_contents("/home/gt/php_worker3.txt", gettype($iterator)."^^\n",FILE_APPEND);
-
                 $sub_is_array = False;
                 foreach($iterator as $key=>$value){
                     $temp = $f($value);
-
-
-                    file_put_contents("/home/gt/php_worker3.txt", gettype($temp)."!!\n",FILE_APPEND);
-
                     if(is_array($temp)){
                         $sub_is_array = True;
                         break;
@@ -260,13 +254,10 @@ class rdd
         $locally_combined = $this->mapPartitions(
 
             function ($iterator) use ($memory,$serializer,$createCombinerFunc, $mergeValueFunc, $mergeCombinersFunc){
-
-                file_put_contents("/home/gt/php_worker36.txt", sizeof($iterator)."\n", FILE_APPEND);
                 $agg = new aggregator($createCombinerFunc, $mergeValueFunc, $mergeCombinersFunc);
                 $merger = new ExternalMerger($agg, $memory * 0.9, $serializer);
                 $merger -> mergeValues($iterator);
                 $re = $merger->items();
-                file_put_contents("/home/gt/php_worker37.txt", sizeof($re)."\n", FILE_APPEND);
                 return $re;
             },
 
@@ -520,6 +511,9 @@ class rdd
     function mapValues(callable $f){
 
         $map_values_func = function($input) use ($f){#$input不是iterator
+
+            file_put_contents("/home/gt/php_worker35.txt", $input."??\n", FILE_APPEND);
+
             if(is_array($input)){
                 $re = array();
                 $index = 0;
