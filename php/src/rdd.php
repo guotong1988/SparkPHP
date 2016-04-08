@@ -511,9 +511,6 @@ class rdd
     function mapValues(callable $f){
 
         $map_values_func = function($input) use ($f){#$input不是iterator
-
-            file_put_contents("/home/gt/php_worker35.txt", $input."??\n", FILE_APPEND);
-
             if(is_array($input)){
                 $re = array();
                 $index = 0;

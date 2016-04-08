@@ -141,6 +141,7 @@ class utf8_deserializer extends serializer{
 
     function loads($stream)
     {
+
         $length_of_line = $stream->read_int();
         if($length_of_line == 4294967295){#TODO -1
             throw new Exception("end of data");
@@ -180,7 +181,6 @@ class utf8_deserializer extends serializer{
         }catch (Exception $e){
             $this->is_array = False;
             $this->need_check = True;
-            yield ;
         }
     }
 
@@ -194,7 +194,8 @@ class utf8_deserializer extends serializer{
                 }
             }
         }catch (Exception $e){
-            return ;
+            $this->is_array = False;
+            $this->need_check = True;
         }
     }
 
@@ -207,14 +208,14 @@ class utf8_deserializer extends serializer{
             return null;
         }
         $string = $stream->read_fully($length_of_line);
-        file_put_contents("/home/gt/php_worker40.txt", $string." loads4file\n",FILE_APPEND);
         if($string == ""){
             throw new Exception("end of data");
         }
-        if($this->is_array==False) {
+        if($this->is_array==False && $this->need_check==True) {
             if (is_array(unserialize($string))) {
                 $this->is_array = True;
             }
+            $this->need_check = False;
         }
         if($this->is_array==False){
             if ($this->use_unicode==True){
