@@ -22,6 +22,10 @@ class php_call_java {
         return $this->PhpAccumulatorParam;
     }
 
+    function BytesToString(){
+        return new java("org.apache.spark.api.php.BytesToString");
+    }
+
     function new_java_string($php_string){
         return new java("java.lang.String",$php_string);
     }

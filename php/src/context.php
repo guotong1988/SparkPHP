@@ -8,7 +8,7 @@ require($spark_php_home . "src/serializers.php");
 require($spark_php_home . "src/accumulators.php");
 class context {
 
-    var $php_call_java;#就是php_call_java
+    var $php_call_java;#就是pyspark里的jvm
     var $jsc;#JavaSparkContext
     var $conf;
     var $pickled_broadcast_vars;
@@ -160,6 +160,11 @@ class context {
         return new rdd($HadoopRDD, $this, $serializer);
     }
 
+
+    function stop(){
+        $this->jsc->stop();
+        $this->jsc=null;
+    }
 
 }
 

@@ -16,7 +16,7 @@ error_reporting(E_ERROR | E_WARNING | E_PARSE);
 set_error_handler('displayErrorHandler');
 function displayErrorHandler($error, $error_string, $filename, $line, $symbols)
 {
- #   file_put_contents("/home/gt/php_worker4.txt", $error." ".$filename." ".$line." ".$error_string. "\n",FILE_APPEND);
+    file_put_contents("/home/gt/php_worker4.txt", $error." ".$filename." ".$line." ".$error_string. "\n",FILE_APPEND);
 }
 
 
@@ -143,17 +143,17 @@ if($profiler) {
            file_put_contents($spark_php_home."php_worker.txt", $split_index." rrr ".$e."\n", FILE_APPEND);
        }
     }
-*/
-    /*   $i=0;
+
+       $i=0;
        foreach($iterator as $e) {
          file_put_contents($spark_php_home."php_worker.txt",$split_index. "input ".$e."\n", FILE_APPEND);
          if ($i>10) {break;}
            $i++;
        }
-    $iterator->rewind();
+#    $iterator->rewind();
 */
 
-   # file_put_contents($spark_php_home."php_worker.txt", $split_index." -------------- ".$str."\n", FILE_APPEND);
+    file_put_contents($spark_php_home."php_worker.txt", $split_index." -------------- ".$str."\n", FILE_APPEND);
 
      $temp3 = $func($split_index, $iterator);#分布式计算
      file_put_contents($spark_php_home."php_worker.txt",$split_index." output!\n", FILE_APPEND);

@@ -95,8 +95,7 @@ class ExternalMerger extends Merger{
             $this->localdirs =$localdirs;
         }
         $this->partitions = $partitions;#和pdata的容器数相同
-        # partitioned merged data, list of dicts
-        $this->pdata = array();
+        $this->pdata = array();#分成若干个写入不同文件
 
         $this->batch = $batch;
         # scale is used to scale down the hash of key for recursive hash map
@@ -169,7 +168,7 @@ class ExternalMerger extends Merger{
 
             $key = $value[0];
 
-            if (sizeof($this->pdata)>0) {
+            if (sizeof($this->pdata)>0) {#spill到硬盘之后就>0了
                 if (array_key_exists($key,  $this->pdata[$hash_func($key)])) {
                     $this->pdata[$hash_func($key)][$key] = $comb($this->pdata[$hash_func($key)][$key] , $value[1]);
 
@@ -243,14 +242,6 @@ class ExternalMerger extends Merger{
         foreach($iterator as $k => $v){
             if(is_array($v)){
                 foreach($v as $key=>$value) {
-
-
-                    if($limit==-1){
-                        file_put_contents("/home/gt/php_worker5",$key." ".$value, FILE_APPEND);
-                    }else{
-                        file_put_contents("/home/gt/php_worker6",$key." ".$value, FILE_APPEND);
-                    }
-
 
                     if (sizeof($this->pdata)>0) {
                         if (array_key_exists($key,  $this->pdata[$hash_func($key)])) {
@@ -331,8 +322,6 @@ class ExternalMerger extends Merger{
         $path = $this->get_spill_dir($this->spills);
         if(!file_exists($path)) {
             mkdir($path,0777,True);
-        }else{
-    #        $this->cleanup();
         }
 
         $used_memory = memory_get_usage()/1024/1024;
@@ -355,8 +344,6 @@ class ExternalMerger extends Merger{
             }
 
             foreach($this -> data as $key=>$value) {
-
-                file_put_contents("/home/".get_current_user()."/php_worker11.txt", $key." ".$value. "!!!\n", FILE_APPEND);
                 $h = $this->get_partition($key);
                 $temp = array();
                 $temp[$key] = $value;

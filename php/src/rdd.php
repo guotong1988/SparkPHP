@@ -49,7 +49,7 @@ class rdd
                 foreach ($iterator as $element) {
                     $count++;
                 }
-                return $count;
+                return array($count);
             }
 
         )->sum();
@@ -98,10 +98,13 @@ class rdd
 
     function map(callable $f, $preservesPartitioning = False)
     {
+        $is_list = function ($arr){
+            return is_array($arr) && ($arr == array() || array_keys($arr) === range(0,count($arr)-1) );
+        };
 
         return $this->mapPartitionsWithIndex(
 
-            function ($any, $iterator) use ($f) {
+            function ($any, $iterator) use ($f,$is_list) {#TODO 注意$iterator的每个为kv的情况
                 if($iterator instanceof Generator){
                     $re = array();
                     foreach($iterator as $e){
@@ -110,12 +113,23 @@ class rdd
                         }
                     }
                     return $re;
+                }elseif($is_list($iterator)) {
+                    return array_map($f, $iterator);
+                }else {
+                    $re = array();
+                    foreach ($iterator as $k => $v) {
+                        $temp = array();
+                        array_push($temp, $k);
+                        array_push($temp, $v);
+                        array_push($re, $f($temp));
+                    }
+                    return $re;
                 }
-                return array_map($f, $iterator);
             }
 
             , $preservesPartitioning);
     }
+
 
 
     function mapPartitions(callable $f, $preservesPartitioning = False)
@@ -138,10 +152,22 @@ class rdd
 #        输出6.0
     function sum()
     {
-        $ADD = 1;
+        $ADD = function ($x0,$x1){
+            return $x0+$x1;
+        };
         return $this->mapPartitions(
             function ($iterator) {
-                return array(array_sum($iterator));
+                if($iterator instanceof Generator){
+                    $sum = 0;
+                    foreach($iterator as $e){
+                        $sum = $sum + $e;
+                    }
+                    return array($sum);
+                }elseif(is_integer($iterator)){
+                    return $iterator;
+                }else{
+                    return array(array_sum($iterator));
+                }
             }
         )->fold(0, $ADD);
     }
@@ -153,25 +179,33 @@ class rdd
             function ($iterator) use ($zeroValue, $op) {
                 $acc = $zeroValue;
                 foreach ($iterator as $element) {
-                    $ADD = 1;
-                    if($op==$ADD) {
-                        $acc = $element + $acc;
-                    }
+                        $acc = $op($element,$acc);
                 }
-                $temp = array();
-                array_push($temp, $acc);
-                return $temp;
+                yield $acc;
             }
-
         )->collect();
 
-        return array_reduce($temp,
-
-            function ($v0, $v1) {
-                return $v0 + $v1;
+        if($temp instanceof Generator){
+            $temp2 = array();
+            foreach($temp as $e){
+                array_push($temp2, $e);
             }
+            return array_reduce($temp2,
 
-            , $zeroValue);
+                function ($v0, $v1) {
+                    return $v0 + $v1;
+                }
+
+                , $zeroValue);
+        }else {
+            return array_reduce($temp,
+
+                function ($v0, $v1) {
+                    return $v0 + $v1;
+                }
+
+                , $zeroValue);
+        }
     }
 
 
@@ -238,6 +272,12 @@ class rdd
 
             ,$func, $func, $numPartitions,$partitionFunc);
     }
+
+    function saveAsTextFile($path){
+        $this->jrdd->map($this->ctx->php_call_java->BytesToString())->saveAsTextFile($path);
+    }
+
+
 
     function combineByKey(callable $createCombinerFunc, callable $mergeValueFunc, callable $mergeCombinersFunc,
         $numPartitions=null, callable $partitionFunc=null)
@@ -417,12 +457,30 @@ class rdd
         $temp = $this->mapPartitions(
 
             function ($iterator) use ($f){
+
+                if($iterator instanceof Generator) {
+                    $temp2 = array();
+                    foreach ($iterator as $e) {
+                        array_push($temp2, $e);
+                    }
+                    return array_reduce($temp2,$f);
+                }
+
                 return array_reduce($iterator,$f);
             }
 
         )->collect();
         if($temp!=null){
-            return array(array_reduce($temp,$f));
+            if($temp instanceof Generator) {
+                $temp2 = array();
+                foreach ($temp as $e) {
+                    array_push($temp2, $e);
+                }
+                return array_reduce($temp2,$f);
+            }
+            else {
+                return array(array_reduce($temp, $f));
+            }
         } else {
             throw new Exception("Can not reduce() empty RDD");
         }
