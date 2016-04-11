@@ -210,7 +210,7 @@ class rdd
     }
 
     function memory_limit(){
-        return 512;#TODO
+        return 128;#TODO
     }
 
     function reduceByKey(callable $func, $numPartitions=null,callable $partitionFunc=null)

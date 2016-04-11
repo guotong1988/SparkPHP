@@ -68,6 +68,7 @@ class utf8_serializer extends serializer{
         }else {
             if ($this->is_list($iterator)) {
                 foreach ($iterator as $element) {
+
                     if (is_array($element)) {#pair等元组的情况
                         $stream->write_utf2(serialize($element));
                     } else {
@@ -78,6 +79,7 @@ class utf8_serializer extends serializer{
                 $index = 0;
                 $newArray = array();
                 foreach ($iterator as $key => $element) {
+
                     $temp = array();
                     array_push($temp, $key);
                     array_push($temp, $element);
@@ -143,12 +145,14 @@ class utf8_deserializer extends serializer{
     {
 
         $length_of_line = $stream->read_int();
+        file_put_contents("/home/".get_current_user()."/php_worker7.txt", $length_of_line."!!!\n", FILE_APPEND);
         if($length_of_line == 4294967295){#TODO -1
             throw new Exception("end of data");
         }elseif($length_of_line == $this->NULL) {
             return null;
         }
         $string = $stream->read_fully($length_of_line);
+      #  file_put_contents("/home/".get_current_user()."/php_worker8.txt", $string."!!!\n", FILE_APPEND);
 #     TODO 很奇怪之前把这个注释打开就正确了，可能之前java有日志 写得太慢了
         usleep(1);
         if($this->is_array==False && $this->need_check==True) {
@@ -186,6 +190,7 @@ class utf8_deserializer extends serializer{
 
     function load_stream4file($stream)
     {
+        $this->need_check=True;
         try {
             while(True){
                 $temp2 = $this->loads4file($stream);
