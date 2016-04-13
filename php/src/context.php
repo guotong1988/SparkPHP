@@ -118,9 +118,8 @@ class context {
                 $this->php_call_java->new_java_list(),
                 $this->php_call_java->php_accumulator_param($host, $port));
 
-        $this->php_exec = "php";
-        $this->php_ver = "5.6";#TODO
-
+        $this->php_exec = getenv("SPARKPHP_DRIVER_PHP");
+        $this->php_ver = 7.0;
 
 
         $this->pickled_broadcast_vars = array();

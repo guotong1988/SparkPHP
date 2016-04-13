@@ -97,7 +97,7 @@ private[spark] class PhpWorkerFactory(phpExec: String, envVars: Map[String, Stri
 
       // Create and start the worker
       val commands = new java.util.ArrayList[String]();
-      commands.add("php");
+      commands.add(sys.env.getOrElse("SPARKPHP_DRIVER_PHP","php"));
       commands.add("worker.php");
       val pb = new ProcessBuilder()
       pb.command(commands);
