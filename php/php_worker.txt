@@ -1,0 +1,144 @@
+socket_create()成功54007
+
+socket_connect()成功
+socket_create()成功52621
+
+socket_connect()成功
+1here!
+1 -------------- C:32:"SuperClosure\SerializableClosure":379:{a:5:{s:4:"code";s:197:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    (yield $rdd_sampler->func($split, $iterator));
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+1 output!
+0here!
+0 -------------- C:32:"SuperClosure\SerializableClosure":379:{a:5:{s:4:"code";s:197:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    (yield $rdd_sampler->func($split, $iterator));
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+0 output!
+socket_create()成功59368
+
+socket_connect()成功
+1here!
+1 -------------- C:32:"SuperClosure\SerializableClosure":379:{a:5:{s:4:"code";s:197:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    (yield $rdd_sampler->func($split, $iterator));
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+1 output!
+socket_create()成功48025
+
+socket_connect()成功
+0here!
+0 -------------- C:32:"SuperClosure\SerializableClosure":379:{a:5:{s:4:"code";s:197:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    (yield $rdd_sampler->func($split, $iterator));
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+0 output!
+socket_create()成功34986
+
+socket_connect()成功
+1here!
+1 -------------- C:32:"SuperClosure\SerializableClosure":379:{a:5:{s:4:"code";s:197:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    (yield $rdd_sampler->func($split, $iterator));
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+1 output!
+socket_create()成功46676
+
+socket_connect()成功
+0here!
+0 -------------- C:32:"SuperClosure\SerializableClosure":379:{a:5:{s:4:"code";s:197:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    (yield $rdd_sampler->func($split, $iterator));
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+0 output!
+socket_create()成功60083
+
+socket_connect()成功
+1here!
+1 -------------- C:32:"SuperClosure\SerializableClosure":379:{a:5:{s:4:"code";s:197:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    (yield $rdd_sampler->func($split, $iterator));
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+1 output!
+socket_create()成功40521
+
+socket_connect()成功
+0here!
+0 -------------- C:32:"SuperClosure\SerializableClosure":379:{a:5:{s:4:"code";s:197:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    (yield $rdd_sampler->func($split, $iterator));
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+0 output!
+socket_create()成功53385
+
+socket_connect()成功
+socket_create()成功50019
+
+socket_connect()成功
+1here!
+1 -------------- C:32:"SuperClosure\SerializableClosure":379:{a:5:{s:4:"code";s:197:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    (yield $rdd_sampler->func($split, $iterator));
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+1 output!
+0here!
+0 -------------- C:32:"SuperClosure\SerializableClosure":379:{a:5:{s:4:"code";s:197:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    (yield $rdd_sampler->func($split, $iterator));
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+0 output!
+socket_create()成功45669
+
+socket_connect()成功
+1here!
+1 -------------- C:32:"SuperClosure\SerializableClosure":379:{a:5:{s:4:"code";s:197:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    (yield $rdd_sampler->func($split, $iterator));
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+1 output!
+socket_create()成功58360
+
+socket_connect()成功
+0here!
+0 -------------- C:32:"SuperClosure\SerializableClosure":379:{a:5:{s:4:"code";s:197:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    (yield $rdd_sampler->func($split, $iterator));
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+0 output!
+socket_create()成功34549
+
+socket_connect()成功
+1here!
+1 -------------- C:32:"SuperClosure\SerializableClosure":379:{a:5:{s:4:"code";s:197:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    (yield $rdd_sampler->func($split, $iterator));
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+1 output!
+socket_create()成功45077
+
+socket_connect()成功
+1here!
+1 -------------- C:32:"SuperClosure\SerializableClosure":379:{a:5:{s:4:"code";s:197:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    (yield $rdd_sampler->func($split, $iterator));
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+1 output!
+socket_create()成功47898
+
+socket_connect()成功
+socket_create()成功60535
+
+socket_connect()成功
+1here!
+1 -------------- C:32:"SuperClosure\SerializableClosure":378:{a:5:{s:4:"code";s:196:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    return $rdd_sampler->func($split, $iterator);
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+1 output!
+0here!
+0 -------------- C:32:"SuperClosure\SerializableClosure":378:{a:5:{s:4:"code";s:196:"function ($split, $iterator) use($withReplacement, $fraction, $seed) {
+    $rdd_sampler = new \rdd_sampler($withReplacement, $fraction, $seed);
+    return $rdd_sampler->func($split, $iterator);
+};";s:7:"context";a:3:{s:15:"withReplacement";b:0;s:8:"fraction";d:0.10000000000000001;s:4:"seed";i:2;}s:7:"binding";N;s:5:"scope";s:3:"rdd";s:8:"isStatic";b:0;}}
+0 output!

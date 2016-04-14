@@ -5,6 +5,7 @@ $temp = __FILE__;
 $spark_php_home = substr($temp,0,strrpos($temp,"/")-3);
 require($spark_php_home . "src/sock_input_stream.php");
 require($spark_php_home . "src/shuffle.php");
+require($spark_php_home . "src/rddsampler.php");
 require 'vendor/autoload.php';
 use SuperClosure\Serializer;
 
@@ -485,6 +486,48 @@ class rdd
             throw new Exception("Can not reduce() empty RDD");
         }
     }
+
+    function sortByKey($ascending=True, $numPartitions=null, callable $keyFunc=null){
+        if($numPartitions==null){
+            $numPartitions=$this->defaultReducePartitions();
+        }
+        $memory = $this->memory_limit();
+        $serializer = $this->deserializer;
+
+        $func = function ($kv) use ($keyFunc) {
+            return $keyFunc($kv[0]);
+        };
+
+        $sortPartition = function  ($iterator) use ($func,$memory,$serializer,$ascending) {
+            $temp = new ExternalSorter($memory * 0.9, $serializer);
+            return $temp -> sorted($iterator,$func,!$ascending);
+        };
+
+        #TODO if numPartitions == 1:
+
+        $rddSize = $this->count();
+        if($rddSize==0){
+            return $this; # empty RDD
+        }
+
+        $maxSampleSize = $numPartitions * 20.0;  # constant from Spark's RangePartitioner
+        $fraction = min($maxSampleSize / max($rddSize, 1), 1.0);
+
+    }
+
+/**
+ *  @param withReplacement: can elements be sampled multiple times (replaced when sampled out)
+ *  @param fraction: 取百分之多少的数据，在0-1之间
+ *  @param seed: 关于random的方法
+ */
+    function sample($withReplacement, $fraction, $seed=null){
+        $temp_func = function ($split,$iterator) use ($withReplacement,$fraction,$seed){
+            $rdd_sampler = new rdd_sampler($withReplacement, $fraction, $seed);
+            return $rdd_sampler->func($split,$iterator);
+        };
+        return $this->mapPartitionsWithIndex($temp_func, True);
+    }
+
 
     function groupByKey($numPartitions=null, $partitionFunc=null){
         if($numPartitions==null){

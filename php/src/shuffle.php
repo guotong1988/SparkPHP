@@ -517,6 +517,29 @@ class ExternalGroupBy extends ExternalMerger
 {
   static  $SORT_KEY_LIMIT = 1000;
 
+}
 
+
+class ExternalSorter{
+
+    var $memory_limit;
+    var $local_dirs;
+    var $serializer;
+
+    function get_local_dirs($sub)
+    {
+        $path = "/home/".get_current_user()."/php_tmp/";
+        return $path.getmypid()."/".$sub."/";
+    }
+
+    function __construct($memory_limit, $serializer){
+        $this->memory_limit = $memory_limit;
+        $this->local_dirs = $this->get_local_dirs("sort");
+        $this->serializer = $serializer;
+    }
+
+    function sorted($iterator,$key=null,$reverse=False){
+
+    }
 
 }

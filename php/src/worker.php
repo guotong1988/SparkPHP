@@ -8,6 +8,7 @@ require($spark_php_home . "src/shuffle.php");
 require($spark_php_home . "src/accumulators.php");
 require($spark_php_home . "src/files.php");
 require($spark_php_home . "src/broadcast.php");
+require($spark_php_home . "src/rddsampler.php");
 
 require 'vendor/autoload.php';
 use SuperClosure\Serializer;
