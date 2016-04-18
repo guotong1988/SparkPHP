@@ -512,6 +512,11 @@ class rdd
 
         $maxSampleSize = $numPartitions * 20.0;  # constant from Spark's RangePartitioner
         $fraction = min($maxSampleSize / max($rddSize, 1), 1.0);
+        $samples = $this->sample(False, $fraction, 1)->map(
+                function ($kv){
+                    return $kv[0];
+                }
+            )->collect();
 
     }
 

@@ -387,7 +387,7 @@ object SparkSubmit {
         args.files = mergeFileLists(args.files, args.phpFiles)
       }
       if (args.phpFiles != null) {
-        sysProps("spark.submit.pyFiles") = args.phpFiles
+        sysProps("spark.submit.phpFiles") = args.phpFiles
       }
     }
 
@@ -573,6 +573,9 @@ object SparkSubmit {
     if (clusterManager == YARN) {
       if (args.isPython) {
         sysProps.put("spark.yarn.isPython", "true")
+      }
+      if (args.isPHP) {
+        sysProps.put("spark.yarn.isPhp", "true")
       }
     }
 

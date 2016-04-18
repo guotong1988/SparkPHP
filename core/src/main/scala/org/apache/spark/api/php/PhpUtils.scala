@@ -31,7 +31,7 @@ private[spark] object PhpUtils {
   def sparkPhpPath: String = {
     val phpPath = new ArrayBuffer[String]
     for (sparkHome <- sys.env.get("SPARK_HOME")) {
-      phpPath += Seq(sparkHome, "php", "lib", "JavaBridge.jar").mkString(File.separator)
+      phpPath += Seq(sparkHome, "php", "yarn", "SparkPHP.zip").mkString(File.separator)
     //  phpPath += Seq(sparkHome, "php", "lib", "php-script.jar").mkString(File.separator)
     }
     phpPath ++= SparkContext.jarOfObject(this)

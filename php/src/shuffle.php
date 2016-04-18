@@ -526,6 +526,24 @@ class ExternalSorter{
     var $local_dirs;
     var $serializer;
 
+    function next_limit(){
+        $temp = memory_get_usage()/1024/1024*1.05;
+        if($temp > $this->memory_limit){
+            return $temp;
+        }else{
+            return $this->memory_limit;
+        }
+    }
+
+    function get_path($n){
+        $d =  $this->local_dirs;
+        if(!file_exists($d)){
+            mkdir($d);
+        }
+        return $d."/".$n;
+    }
+
+
     function get_local_dirs($sub)
     {
         $path = "/home/".get_current_user()."/php_tmp/";
@@ -539,7 +557,22 @@ class ExternalSorter{
     }
 
     function sorted($iterator,$key=null,$reverse=False){
-
+        $batch = 100;
+        $limit = $this->next_limit();
+        $chunks = array();
+        $current_chunk = array();
+        while(True){
+            $chunk = array_slice($iterator,0,$batch);
+            $current_chunk = array_merge($current_chunk,$chunk);
+            if(sizeof($chunk) < $batch){
+                break;
+            }
+            if(memory_get_usage()/1024/1024>$limit){
+                sort($current_chunk);
+                $path = $this->get_path(sizeof($chunks));
+                fopen($path,"a");
+            }
+        }
     }
 
 }

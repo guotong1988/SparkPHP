@@ -10,6 +10,10 @@ import scala.collection.JavaConverters._
 
 import org.apache.spark._
 import org.apache.spark.util.{RedirectThread, Utils}
+
+
+import java.io.File;
+
 /**
  * worker端用的
  */
@@ -23,7 +27,7 @@ private[spark] class PhpWorkerFactory(phpExec: String, envVars: Map[String, Stri
   // only works on UNIX-based systems now because it uses signals for child management, so we can
   // also fall back to launching workers (php/src/worker.py) directly.
   val useDaemon = !System.getProperty("os.name").startsWith("Windows")
-
+  var phpSrcPath : String = null;
   var daemon: Process = null
   val daemonHost = InetAddress.getByAddress(Array(127, 0, 0, 1))
   var daemonPort: Int = 0
@@ -36,8 +40,17 @@ private[spark] class PhpWorkerFactory(phpExec: String, envVars: Map[String, Stri
 
   val phpPath = PhpUtils.mergePhpPaths(
     PhpUtils.sparkPhpPath,
-    envVars.getOrElse("PHPPATH", ""),
+    envVars.getOrElse("PHPPATH", ""),//Yarn模式下是在Client.scala设置的
     sys.env.getOrElse("PHPPATH", ""))
+
+    if(sys.env.getOrElse("PHPPATH", "").contains("SparkPHP.zip")){
+      ZipUtils.extract(new File(sys.env.getOrElse("PHPPATH", "")),new File(sys.env.getOrElse("PHPPATH", "").replace("SparkPHP.zip","")))
+      phpSrcPath=sys.env.getOrElse("PHPPATH", "").replace("SparkPHP.zip","")
+    }else if(envVars.getOrElse("PHPPATH", "").contains("SparkPHP.zip")){
+      ZipUtils.extract(new File(envVars.getOrElse("PHPPATH", "")),new File(envVars.getOrElse("PHPPATH", "").replace("SparkPHP.zip","")))
+      phpSrcPath=sys.env.getOrElse("PHPPATH", "").replace("SparkPHP.zip","")
+    }
+
 
   def create(): Socket = {
     if (false) {
@@ -87,6 +100,7 @@ private[spark] class PhpWorkerFactory(phpExec: String, envVars: Map[String, Stri
     }
   }
 
+
   /**
    * Launch a worker by executing worker.py directly and telling it to connect to us.
    */
@@ -97,16 +111,22 @@ private[spark] class PhpWorkerFactory(phpExec: String, envVars: Map[String, Stri
 
       // Create and start the worker
       val commands = new java.util.ArrayList[String]();
-      commands.add(sys.env.getOrElse("SPARKPHP_DRIVER_PHP","php"));
-      commands.add("worker.php");
+      commands.add(sys.env.getOrElse("SPARKPHP_DRIVER_PHP","/home/map/php7/bin/php"));
       val pb = new ProcessBuilder()
+      if(phpSrcPath!=null) {
+        commands.add(phpSrcPath+"/src/worker.php");
+      }else{
+        commands.add("worker.php");
+        val tempPhpPath=new java.io.File(sys.env.getOrElse("SPARK_HOME","/home/gt/spark")+"/php/src/");
+        pb.directory(tempPhpPath);
+      }
+
       pb.command(commands);
-      val tempPhpPath=new java.io.File(sys.env.get("SPARK_HOME").toString.replace("Some(","").replace(")","")+"/php/src/");
-      pb.directory(tempPhpPath);
+
       val workerEnv = pb.environment()
       workerEnv.putAll(envVars.asJava)
-      workerEnv.put("PHPPATH", tempPhpPath.toString)
-      workerEnv.put("PHPUNBUFFERED", "YES")
+    //  workerEnv.put("PHPPATH", phpPath)
+   //   workerEnv.put("PHPUNBUFFERED", "YES")
       val worker = pb.start()
 
       // Redirect worker stdout and stderr
@@ -114,7 +134,13 @@ private[spark] class PhpWorkerFactory(phpExec: String, envVars: Map[String, Stri
 
       // Tell the worker our port
       val out = new OutputStreamWriter(worker.getOutputStream)
-      out.write(serverSocket.getLocalPort + "\n")
+      out.write(serverSocket.getLocalPort+"\n")
+      if(phpSrcPath!=null){
+        out.write(phpSrcPath+"\n")
+      }else{
+        out.write("NULL\n")
+      }
+
       out.flush()
 
       // Wait for it to connect to our socket
@@ -125,7 +151,7 @@ private[spark] class PhpWorkerFactory(phpExec: String, envVars: Map[String, Stri
         return socket
       } catch {
         case e: Exception =>
-          throw new SparkException("Php worker did not connect back in time", e)
+          throw new SparkException("Php worker did not connect back in time + " + e.getStackTraceString, e)
       }
     } finally {
       if (serverSocket != null) {

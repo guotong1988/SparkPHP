@@ -1,14 +1,18 @@
 <?php
 $temp = __FILE__;
 $spark_php_home = substr($temp,0,strrpos($temp,"/")-3);
-require($spark_php_home . "src/sock_output_stream.php");
-require($spark_php_home . "src/sock_input_stream.php");
-require($spark_php_home . "src/serializers.php");
-require($spark_php_home . "src/shuffle.php");
-require($spark_php_home . "src/accumulators.php");
-require($spark_php_home . "src/files.php");
-require($spark_php_home . "src/broadcast.php");
-require($spark_php_home . "src/rddsampler.php");
+
+
+/*
+require("php/src/sock_output_stream.php");
+require("php/src/sock_input_stream.php");
+require("php/src/serializers.php");
+require("php/src/shuffle.php");
+require("php/src/accumulators.php");
+require("php/src/files.php");
+require("php/src/broadcast.php");
+require("php/src/rddsampler.php");
+*/
 
 require 'vendor/autoload.php';
 use SuperClosure\Serializer;
@@ -23,21 +27,45 @@ function displayErrorHandler($error, $error_string, $filename, $line, $symbols)
 
 $stdin = fopen('php://stdin','r');
 $jvm_worker_port = fgets($stdin);
+
+$php_path_on_yarn =fgets($stdin);
+if($php_path_on_yarn=="NULL\n")
+{
+    require($spark_php_home . "src/sock_output_stream.php");
+    require($spark_php_home . "src/sock_input_stream.php");
+    require($spark_php_home . "src/serializers.php");
+    require($spark_php_home . "src/shuffle.php");
+    require($spark_php_home . "src/accumulators.php");
+    require($spark_php_home . "src/files.php");
+    require($spark_php_home . "src/broadcast.php");
+    require($spark_php_home . "src/rddsampler.php");
+
+}else{
+
+    $php_path_on_yarn = str_replace("\n","",$php_path_on_yarn);
+    require($php_path_on_yarn . "src/sock_output_stream.php");
+    require($php_path_on_yarn . "src/sock_input_stream.php");
+    require($php_path_on_yarn . "src/serializers.php");
+    require($php_path_on_yarn . "src/shuffle.php");
+    require($php_path_on_yarn . "src/accumulators.php");
+    require($php_path_on_yarn . "src/files.php");
+    require($php_path_on_yarn . "src/broadcast.php");
+    require($php_path_on_yarn . "src/rddsampler.php");
+
+}
+
 $sock = socket_create ( AF_INET, SOCK_STREAM, SOL_TCP );
 if ($sock == false) {
     file_put_contents($spark_php_home."php_worker.txt", "socket_create()失败:" . socket_strerror(socket_last_error($sock)) . "\n",FILE_APPEND);
-    echo "socket_create()失败:" . socket_strerror(socket_last_error($sock)) . "\n";
 }else {
     file_put_contents($spark_php_home."php_worker.txt", "socket_create()成功".$jvm_worker_port."\n",FILE_APPEND);
-    echo "socket_create()成功\n";
 }
-$result =socket_connect ( $sock, '127.0.0.1', (int)$jvm_worker_port );
+
+$result =socket_connect ( $sock, '127.0.0.1', intval($jvm_worker_port) );
 if ($result == false) {
     file_put_contents($spark_php_home."php_worker.txt","socket_connect()失败:" . socket_strerror(socket_last_error($sock)) . "\n", FILE_APPEND);
-    echo "socket_connect()失败:" . socket_strerror(socket_last_error($sock)) . "\n";
 }else {
     file_put_contents($spark_php_home."php_worker.txt", "socket_connect()成功\n", FILE_APPEND);
-    echo "socket_connect()成功\n";
 }
 
 #special_lengths
@@ -78,11 +106,16 @@ $spark_files_dir = $in_stream->read_utf();
 $spark_files= new spark_files();
 $spark_files->is_running_on_worker=True;
 $spark_files->root_directory=$spark_files_dir;
+
+file_put_contents($spark_php_home."php_worker.txt", $spark_files_dir."---here!\n", FILE_APPEND);
+
 #  add_path(spark_files_dir)
 $num_python_includes = $in_stream->read_int();
 for($i=0;$i<$num_python_includes;$i++){
     $filename = $in_stream->read_utf();
     #add_path(os.path.join(spark_files_dir, filename))
+
+    file_put_contents($spark_php_home."php_worker.txt", $filename."===here!\n", FILE_APPEND);
 }
 
 $broadcast = new broadcast();
