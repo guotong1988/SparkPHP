@@ -99,15 +99,16 @@ if($version != ""){
 
 shuffle::$DiskBytesSpilled = 0;
 shuffle::$MemoryBytesSpilled = 0;
+#unset(Accumulator::$accumulatorRegistry);
+accumulator::$accumulatorRegistry=array();
 
-$accumulator = new Accumulator();
-unset($accumulator->accumulatorRegistry);
+
 $spark_files_dir = $in_stream->read_utf();
 $spark_files= new spark_files();
 $spark_files->is_running_on_worker=True;
 $spark_files->root_directory=$spark_files_dir;
 
-file_put_contents($spark_php_home."php_worker.txt", $spark_files_dir."---here!\n", FILE_APPEND);
+file_put_contents($spark_php_home."php_worker.txt", $spark_files_dir."---2here!\n", FILE_APPEND);
 
 #  add_path(spark_files_dir)
 $num_python_includes = $in_stream->read_int();
@@ -115,7 +116,7 @@ for($i=0;$i<$num_python_includes;$i++){
     $filename = $in_stream->read_utf();
     #add_path(os.path.join(spark_files_dir, filename))
 
-    file_put_contents($spark_php_home."php_worker.txt", $filename."===here!\n", FILE_APPEND);
+    file_put_contents($spark_php_home."php_worker.txt", $filename."===3here!\n", FILE_APPEND);
 }
 
 $broadcast = new broadcast();
@@ -130,7 +131,10 @@ for($i=0;$i<$num_broadcast_variables;$i++) {
      #     $broadcast-> broadcastRegistry->pop(bid);
      }
 }
-unset($accumulator->accumulatorRegistry);
+
+#unset(Accumulator::$accumulatorRegistry);
+accumulator::$accumulatorRegistry=array();
+
 
 $s = new Serializer();
 $str = $in_stream->read_utf();
@@ -187,7 +191,7 @@ if($profiler) {
 #    $iterator->rewind();
 */
 
-    file_put_contents($spark_php_home."php_worker.txt", $split_index." -------------- ".$str."\n", FILE_APPEND);
+    file_put_contents($spark_php_home."php_worker.txt", $split_index." -------------- \n", FILE_APPEND);
 
      $temp3 = $func($split_index, $iterator);#分布式计算
      file_put_contents($spark_php_home."php_worker.txt",$split_index." output!\n", FILE_APPEND);
@@ -214,10 +218,10 @@ $out_stream->write_long(shuffle::$MemoryBytesSpilled);
 $out_stream->write_long(shuffle::$DiskBytesSpilled);
 
 $out_stream->write_int($END_OF_DATA_SECTION);
-$out_stream->write_int(sizeof($accumulator->accumulatorRegistry));
+$out_stream->write_int(sizeof(accumulator::$accumulatorRegistry));
 
 
-foreach($accumulator->accumulatorRegistry as $aid=>$accum){
+foreach(accumulator::$accumulatorRegistry as $aid=>$accum){
        $temp = array();
        $temp[0]=$aid;
        $temp[1]=$accum;

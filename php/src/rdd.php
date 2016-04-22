@@ -4,6 +4,7 @@
 $temp = __FILE__;
 $spark_php_home = substr($temp,0,strrpos($temp,"/")-3);
 require($spark_php_home . "src/sock_input_stream.php");
+require($spark_php_home . "src/sock_output_stream.php");
 require($spark_php_home . "src/shuffle.php");
 require($spark_php_home . "src/rddsampler.php");
 require 'vendor/autoload.php';
@@ -655,7 +656,7 @@ class rdd
     {
         $jmap = $sc->php_call_java->new_java_map();
         foreach ($php_map as $key => $value) {
-            $jmap[$key]->put($key,$value);
+            $jmap->put($key,$value);
         }
         return $jmap;
     }

@@ -5,6 +5,7 @@ import java.net._
 import java.util.{Collections, ArrayList => JArrayList, List => JList, Map => JMap}
 
 
+import org.apache.spark.api.python._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -193,12 +194,12 @@ private[spark] class PhpRunner4worker(
             null  // exit silently
 
           case e: Exception if writerThread.exception.isDefined =>
-            logError("Python worker exited unexpectedly (crashed)", e)
+            logError("Php worker exited unexpectedly (crashed)", e)
             logError("This may have been caused by a prior exception:", writerThread.exception.get)
             throw writerThread.exception.get
 
           case eof: EOFException =>
-            throw new SparkException("Python worker exited unexpectedly (crashed)", eof)
+            throw new SparkException("Php worker exited unexpectedly (crashed)", eof)
         }
       }
 
@@ -332,7 +333,7 @@ private class PhpException(msg: String, cause: Exception) extends RuntimeExcepti
 
 
 
-private[spark] object PhpRDD extends Logging {
+object PhpRDD extends Logging {
   def collectAndServe[T](rdd: RDD[T]): Int = {//被rdd.php的collect方法调用
     serveIterator(rdd.collect().iterator, s"serve RDD ${rdd.id}")
   }
@@ -445,6 +446,72 @@ private[spark] object PhpRDD extends Logging {
     dataOut.writeInt(bytes.length)
     dataOut.write(bytes)
   }
+
+  private def convertRDD[K, V](rdd: RDD[(K, V)],
+                               keyConverterClass: String,
+                               valueConverterClass: String,
+                               defaultConverter: Converter[Any, Any]): RDD[(Any, Any)] = {
+    val (kc, vc) = getKeyValueConverters(keyConverterClass, valueConverterClass,
+      defaultConverter)
+    PhpHadoopUtil.convertRDD(rdd, kc, vc)
+  }
+
+  private def getKeyValueConverters(keyConverterClass: String, valueConverterClass: String,
+                                    defaultConverter: Converter[Any, Any]): (Converter[Any, Any], Converter[Any, Any]) = {
+    val keyConverter = Converter.getInstance(Option(keyConverterClass), defaultConverter)
+    val valueConverter = Converter.getInstance(Option(valueConverterClass), defaultConverter)
+    (keyConverter, valueConverter)
+  }
+
+
+  def newAPIHadoopFile[K, V, F <: NewInputFormat[K, V]](
+                                                         sc: JavaSparkContext,
+                                                         path: String,
+                                                         inputFormatClass: String,
+                                                         keyClass: String,
+                                                         valueClass: String,
+                                                         keyConverterClass: String,
+                                                         valueConverterClass: String,
+                                                         confAsMap: java.util.HashMap[String, String],
+                                                         batchSize: Integer): JavaRDD[Array[Byte]] = {
+    var mergedConf :Configuration= null
+    if(confAsMap==null){
+      mergedConf = sc.hadoopConfiguration()
+    }else {
+      mergedConf = getMergedConf(confAsMap, sc.hadoopConfiguration())
+    }
+    val rdd = newAPIHadoopRDDFromClassNames[K, V, F](sc,
+        Some(path), inputFormatClass, keyClass, valueClass, mergedConf)
+    val confBroadcasted = sc.sc.broadcast(new SerializableConfiguration(mergedConf))
+    val converted = convertRDD(rdd, keyConverterClass, valueConverterClass,
+      new WritableToJavaConverter(confBroadcasted))
+    JavaRDD.fromRDD(SerDeUtil.pairRDDToPhp(converted, batchSize))
+  }
+
+  private def newAPIHadoopRDDFromClassNames[K, V, F <: NewInputFormat[K, V]](
+                                                                              sc: JavaSparkContext,
+                                                                              path: Option[String] = None,
+                                                                              inputFormatClass: String,
+                                                                              keyClass: String,
+                                                                              valueClass: String,
+                                                                              conf: Configuration): RDD[(K, V)] = {
+    val kc = Utils.classForName(keyClass).asInstanceOf[Class[K]]
+    val vc = Utils.classForName(valueClass).asInstanceOf[Class[V]]
+    val fc = Utils.classForName(inputFormatClass).asInstanceOf[Class[F]]
+    if (path.isDefined) {
+      sc.sc.newAPIHadoopFile[K, V, F](path.get, fc, kc, vc, conf)
+    } else {
+      sc.sc.newAPIHadoopRDD[K, V, F](conf, fc, kc, vc)
+    }
+  }
+
+  private def getMergedConf(confAsMap: java.util.HashMap[String, String],
+                            baseConf: Configuration): Configuration = {
+    val conf = PhpHadoopUtil.mapToConf(confAsMap)
+    PhpHadoopUtil.mergeConfs(baseConf, conf)
+  }
+
+
 }
 
 

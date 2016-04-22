@@ -24,6 +24,7 @@ import org.apache.spark.util.{SerializableConfiguration, Utils}
 class PhpAccumulatorParam(@transient private val serverHost: String, serverPort: Int)
   extends AccumulatorParam[JList[Array[Byte]]] {
 
+
   Utils.checkHost(serverHost, "Expected hostname")
 
   val bufferSize = SparkEnv.get.conf.getInt("spark.buffer.size", 65536)
@@ -52,7 +53,7 @@ class PhpAccumulatorParam(@transient private val serverHost: String, serverPort:
     } else {
       // This happens on the master, where we pass the updates to Python through a socket
       val socket = openSocket()
-      val in = socket.getInputStream
+      val in =  new DataInputStream(new BufferedInputStream(socket.getInputStream,bufferSize))
       val out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream, bufferSize))
       out.writeInt(val2.size)
       for (array <- val2.asScala) {
@@ -61,10 +62,21 @@ class PhpAccumulatorParam(@transient private val serverHost: String, serverPort:
       }
       out.flush()
       // Wait for a byte from the Python side as an acknowledgement
-      val byteRead = in.read()
+  /*    val byteRead = in.readInt()
+
+      val  file = new java.io.File("/home/gt/scala_worker2.txt")
+      val  fos = new java.io.FileWriter(file,true);
+      val  osw = new BufferedWriter(fos);
+
+      osw.write(byteRead+"@@@@@")
+      osw.newLine()
+      osw.flush()
+
+
       if (byteRead == -1) {
         throw new SparkException("EOF reached before Python server acknowledged")
       }
+  */
       null
     }
   }

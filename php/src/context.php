@@ -25,6 +25,8 @@ class context {
     var $java_accumulator;
     var $accumulator_server;
     var $defaultParallelism;
+    var $profiler_collector;
+    var $next_accum_id = 0;
 
     function context( $master=null, $app_name=null, $spark_home=null, $phpFiles=null,
                       $environment=null, $batchSize=0, $serializer=null, $conf=null,
@@ -124,6 +126,13 @@ class context {
 
         $this->pickled_broadcast_vars = array();
         $this->python_includes = array();
+
+
+        if($this->conf->get("spark.python.profile", "false") == "true"){
+            $dump_path = $this->conf->get("spark.python.profile.dump");
+            $this->profiler_collector = new ProfilerCollector($profiler_cls, $dump_path);
+        }
+
     }
 
     function ensure_initialized(){
@@ -159,10 +168,47 @@ class context {
         return new rdd($HadoopRDD, $this, $serializer);
     }
 
+    function accumulator($value,$accum_param=null){
+        if ($accum_param==null){
+            if(is_int($value)){
+                $accum_param = new AddingAccumulatorParam(0);
+            }elseif(is_float($value)){
+                $accum_param = new AddingAccumulatorParam(0.0);
+            }
+        }
+        $this->$next_accum_id += 1;
+        return new accumulator($this->$next_accum_id - 1, $value, $accum_param);
+    }
+
+
+    function convert_map($php_map)
+    {
+        if($php_map==null){
+            return $this->php_call_java->new_java_map();
+        }
+
+        $jmap = $this->php_call_java->new_java_map();
+
+        foreach ($php_map as $key => $value) {
+            $jmap->put($key,$value);
+        }
+        return $jmap;
+    }
+
+    function newAPIHadoopFile($path,$inputFormatClass,$keyClass,$valueClass,$keyConverter="",$valueConverter="",$conf=null,$batchSize=0){
+        $jconf = $this->convert_map($conf);
+        $jrdd = $this->php_call_java->PhpRDD->newAPIHadoopFile($this->jsc, $path, $inputFormatClass, $keyClass,
+                $valueClass, $keyConverter, $valueConverter,
+                $jconf, $batchSize);
+        return new rdd($jrdd, $this,new utf8_deserializer());
+    }
+
 
     function stop(){
         $this->jsc->stop();
         $this->jsc=null;
+        $this->accumulator_server->shutdown();
+        $this->accumulator_server = null;
     }
 
 }

@@ -30,6 +30,17 @@ class php_call_java {
         return new java("java.lang.String",$php_string);
     }
 
+    function new_java_integer($php_int){
+        return new java("java.lang.Integer",$php_int);
+    }
+
+    function java_streaming_context($jsc,$jd){
+        return new java("org.apache.spark.streaming.api.java.JavaStreamingContext",$jsc,$jd);
+    }
+
+    function duration($ms){
+        return new java("org.apache.spark.streaming.Duration",$ms);
+    }
 
     function new_java_list(){
         return new java("java.util.ArrayList");

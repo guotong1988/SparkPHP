@@ -198,6 +198,7 @@
     <orderEntry type="module" module-name="spark-test-tags_2.10" scope="TEST" />
     <orderEntry type="library" name="Maven: org.spark-project.spark:unused:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: phpjava:PhpJavaBridge:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.sction:phprpc:3.0.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.scalatest:scalatest_2.10:2.2.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.11" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.novocode:junit-interface:0.11" level="project" />

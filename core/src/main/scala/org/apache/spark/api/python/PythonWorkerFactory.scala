@@ -119,10 +119,6 @@ private[spark] class PythonWorkerFactory(pythonExec: String, envVars: Map[String
       // Redirect worker stdout and stderr
       redirectStreamsToStderr(worker.getInputStream, worker.getErrorStream)
 
-      if(""!=null){
-        throw new Exception(pythonPath)
-      }
-
       // Tell the worker our port
       val out = new OutputStreamWriter(worker.getOutputStream)
       out.write(serverSocket.getLocalPort + "\n")
@@ -162,11 +158,6 @@ private[spark] class PythonWorkerFactory(pythonExec: String, envVars: Map[String
         // This is equivalent to setting the -u flag; we use it because ipython doesn't support -u:
         workerEnv.put("PYTHONUNBUFFERED", "YES")
         daemon = pb.start()
-
-
-        if(""!=null){
-          throw new Exception(pythonPath)
-        }
 
         val in = new DataInputStream(daemon.getInputStream)
         daemonPort = in.readInt()
