@@ -276,7 +276,8 @@ class rdd
     }
 
     function saveAsTextFile($path){
-        $this->jrdd->map($this->ctx->php_call_java->BytesToString())->saveAsTextFile($path);
+        $temp = $this->jrdd->map($this->ctx->php_call_java->BytesToString());
+        $temp ->saveAsTextFile($path);
     }
 
 

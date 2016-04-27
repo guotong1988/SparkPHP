@@ -22,11 +22,6 @@ function __construct($ctx,$func, $deserializer)
 
 }
 
-function func($t,$rdds){
-    file_put_contents("/home/gt/php_worker.txt",$t." here3!\n", FILE_APPEND);
-    return $this->func($t,$rdds);
-}
-
 function call($milliseconds, $jrdds){
     $this->failure=null;
     try {
@@ -44,7 +39,10 @@ function call($milliseconds, $jrdds){
 
         $rdds = array();
         for($i=0;$i<sizeof($jrdds);$i++) {
-            array_push($rdds,$rdd_wrap_func($jrdds->get($i), $this->ctx, $this->deserializer));
+            $rdd_temp = $jrdds->get($i);
+            if($rdd_temp!=null) {
+                array_push($rdds, $rdd_wrap_func($rdd_temp, $this->ctx, $this->deserializer));
+            }
         }
         $t =time();
 
@@ -55,9 +53,13 @@ function call($milliseconds, $jrdds){
         };
         $r = $saveAsTextFile($t,$rdds);
         */
-        $r = $this->func($t,$rdds);
-        if($r!=null){
-            return $r;
+
+        foreach($rdds as $rdd){
+            $temp = $this->func;
+            $r = $temp($t,$rdd);
+            if($r!=null){
+                return $r->jrdd;
+            }
         }
     }catch(Exception $e){
         $this->failure=$e->getMessage();

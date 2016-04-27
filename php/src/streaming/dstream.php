@@ -1,5 +1,11 @@
 <?php
 
+/*
+$spark_php_home = substr(__DIR__,0,strrpos(__DIR__,"/")-3);
+require $spark_php_home.'/src/vendor/autoload.php';
+use SuperClosure\Serializer;
+*/
+
 class dstream{
 
     var $jdstream;
@@ -117,7 +123,7 @@ function combineByKey($createCombiner, $mergeValue, $mergeCombiners, $numPartiti
     if($numPartitions==null) {
         $numPartitions = $this->sc->defaultParallelism;
     }
-    $func = function ($rdd) use ($createCombiner, $mergeValue, $mergeCombiners,$numPartitions){
+    $func = function ($t,$rdd) use ($createCombiner, $mergeValue, $mergeCombiners,$numPartitions){
         return $rdd->combineByKey($createCombiner, $mergeValue, $mergeCombiners, $numPartitions);
     };
     return $this->transform($func);
@@ -126,8 +132,8 @@ function combineByKey($createCombiner, $mergeValue, $mergeCombiners, $numPartiti
 function mapPartitionsWithIndex($f, $preservesPartitioning=False)
 {
     return $this->transform(
-        function($rdd) use ($f,$preservesPartitioning) {
-            $rdd->mapPartitionsWithIndex($f, $preservesPartitioning);
+        function($t,$rdd) use ($f,$preservesPartitioning) {
+            return $rdd->mapPartitionsWithIndex($f, $preservesPartitioning);
         }
     );
 }
@@ -169,11 +175,9 @@ function saveAsTextFiles($prefix,$suffix=null){
         }
     };
 
-    $saveAsTextFile = function ($t,$rdds) use ($rddToFileName,$prefix,$suffix){
+    $saveAsTextFile = function ($t,$rdd) use ($rddToFileName,$prefix,$suffix){
         $path = $rddToFileName($prefix,$suffix,$t);
-        foreach($rdds as $rdd) {
-            $rdd->saveAsTextFile($path);
-        }
+        $rdd->saveAsTextFile($path);
     };
 
     $this->foreachRDD($saveAsTextFile);
@@ -210,7 +214,8 @@ function __construct($prev,$func){
         echo " 是 ";
         $prev_func = $prev -> func;
         $this->func = function($t,$rdd) use ($func,$prev_func){
-          return $func($t,$prev_func($t,$rdd));
+            $temp =  $prev_func($t,$rdd);
+            return $func($t,$temp);
         };
         $this->prev = $prev->prev;
     }else{
@@ -219,13 +224,14 @@ function __construct($prev,$func){
         $this->func = $func;
     }
 
-    $jfunc = new TransformFunction($this->sc,$this->func,$this->prev->jrdd_deserializer);
+    if($this->jdstream==null){
+        $jfunc = new TransformFunction($this->sc, $this->func, $this->prev->jrdd_deserializer);
 
-    $temp =  java_closure($jfunc,null,java("org.apache.spark.streaming.api.php.PhpTransformFunction"));
+        $temp = java_closure($jfunc, null, java("org.apache.spark.streaming.api.php.PhpTransformFunction"));
 
-    $dstream = $this->sc->php_call_java->PhpTransformedDStream($this->prev->jdstream->dstream(), $temp);
-    $this->jdstream = $dstream->asJavaDStream();
-
+        $dstream = $this->sc->php_call_java->PhpTransformedDStream($this->prev->jdstream->dstream(), $temp);
+        $this->jdstream = $dstream->asJavaDStream();
+    }
 }
 
 
