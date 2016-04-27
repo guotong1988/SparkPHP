@@ -285,6 +285,24 @@ class rdd
     function combineByKey(callable $createCombinerFunc, callable $mergeValueFunc, callable $mergeCombinersFunc,
         $numPartitions=null, callable $partitionFunc=null)
     {
+
+        if($partitionFunc==null){
+            $partitionFunc = function ($x) {
+                if ($x == null) {
+                    return 0;
+                }
+                if (is_array($x)) {
+                    $h=0;
+                    foreach($x as $ele){
+                        $h ^= hexdec(hash("md5", $ele));
+                    }
+                    return $h;
+                }
+                return hexdec(hash("md5", $x));#http://stackoverflow.com/questions/3379471/php-number-only-hash
+            };
+        }
+
+
         if($numPartitions==null) {
             $numPartitions = $this->defaultReducePartitions();
         }
@@ -704,7 +722,9 @@ class rdd
             if(is_string($command[0])){
                 echo ">>>>>>".$command[0];
             }
+
             $pickled_command[0] = $this->s->serialize($command[0]);
+
             if($command[1]!=null)
             $pickled_command[1]=serialize($command[1]);
             if($command[2]!=null)
@@ -781,38 +801,38 @@ class pipelined_rdd extends rdd{
         }
 
 
-        if($this->jrdd_val){
-            $this->jrdd = $this->jrdd_val;
-        }
-        if($this->bypass_serializer) {
+        if($this->jrdd!=null){
+
+        }else {
+            if ($this->bypass_serializer) {
 #            $this->jrdd_deserializer = new NoOpSerializer();
-        }
-        $profiler=null;
-        if($this->ctx->profiler_collector){
-            $profiler = $this->ctx->profiler_collector->new_profiler($this->ctx);
-        } else {
+            }
             $profiler = null;
-        }
-        $command = array();
-        $command[0] = $this-> func;
-        $command[1] = $profiler;
-        $command[2] = $this->prev_jrdd_deserializer;
-        $command[3] = $this->jrdd_deserializer;
+            if ($this->ctx->profiler_collector) {
+                $profiler = $this->ctx->profiler_collector->new_profiler($this->ctx);
+            } else {
+                $profiler = null;
+            }
+            $command = array();
+            $command[0] = $this->func;
+            $command[1] = $profiler;
+            $command[2] = $this->prev_jrdd_deserializer;
+            $command[3] = $this->jrdd_deserializer;
 
 
-        $tempArray = $this->prepare_for_python_RDD($this->ctx, $command, $this);
+            $tempArray = $this->prepare_for_python_RDD($this->ctx, $command, $this);
 
 
-        $all4cmd = $tempArray[0];
-        $fff = $all4cmd[0];
-        #TODO $profiler $prev_jrdd_deserializer $jrdd_deserializer 没有传
+            $all4cmd = $tempArray[0];
+            $fff = $all4cmd[0];
+            #TODO $profiler $prev_jrdd_deserializer $jrdd_deserializer 没有传
 
 
-        $bvars= $tempArray[1];
-        $env= $tempArray[2];
-        $includes = $tempArray[3];
+            $bvars = $tempArray[1];
+            $env = $tempArray[2];
+            $includes = $tempArray[3];
 
-        $python_rdd = $this->ctx->php_call_java->phpRDD(
+            $python_rdd = $this->ctx->php_call_java->phpRDD(
                 $this->prev_jrdd->rdd(),
                 $fff,
                 $env,
@@ -822,13 +842,14 @@ class pipelined_rdd extends rdd{
                 $this->ctx->php_ver,
                 $bvars,
                 $this->ctx->java_accumulator);
-        $this->jrdd_val = $python_rdd->getJavaRDD();
-        if($profiler) {
-            $this->id = $this->jrdd_val->id();
-            $this->ctx->profiler_collector->add_profiler($this->id, $profiler);
-            return $this->jrdd_val;
+            $this->jrdd_val = $python_rdd->getJavaRDD();
+            if ($profiler) {
+                $this->id = $this->jrdd_val->id();
+                $this->ctx->profiler_collector->add_profiler($this->id, $profiler);
+                return $this->jrdd_val;
+            }
+            $this->jrdd = $this->jrdd_val;
         }
-        $this->jrdd = $this->jrdd_val;
     }
 
     function is_pipelinable(){

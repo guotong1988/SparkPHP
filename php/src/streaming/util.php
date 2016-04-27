@@ -25,7 +25,6 @@ function __construct($ctx,$func, $deserializer)
 function call($milliseconds, $jrdds){
     $this->failure=null;
     try {
-
         if ($this->ctx == null) {
           $this->ctx = streaming_context::$activeContext;
         }
@@ -36,9 +35,8 @@ function call($milliseconds, $jrdds){
         $rdd_wrap_func = function($jrdd, $ctx, $ser){
             return new rdd($jrdd, $ctx, $ser);
         };
-
         $rdds = array();
-        for($i=0;$i<sizeof($jrdds);$i++) {
+        for($i=0;$i<$jrdds->size();$i++) {
             $rdd_temp = $jrdds->get($i);
             if($rdd_temp!=null) {
                 array_push($rdds, $rdd_wrap_func($rdd_temp, $this->ctx, $this->deserializer));

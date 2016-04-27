@@ -107,8 +107,8 @@ function flatMap($f, $preservesPartitioning=False)
 
 function reduceByKey($func, $numPartitions=null)
 {
-    if($numPartitions=null) {
-        $numPartitions = $this->sc->defaultParallelism;
+    if($numPartitions==null) {
+        $numPartitions = 2;#大坑啊 $this->sc->defaultParallelism;
     }
     return $this->combineByKey(
         function ($x){
@@ -123,8 +123,23 @@ function combineByKey($createCombiner, $mergeValue, $mergeCombiners, $numPartiti
     if($numPartitions==null) {
         $numPartitions = $this->sc->defaultParallelism;
     }
-    $func = function ($t,$rdd) use ($createCombiner, $mergeValue, $mergeCombiners,$numPartitions){
-        return $rdd->combineByKey($createCombiner, $mergeValue, $mergeCombiners, $numPartitions);
+
+    $partitionFunc = function ($x) {
+        if ($x == null) {
+            return 0;
+        }
+        if (is_array($x)) {
+            $h=0;
+            foreach($x as $ele){
+                $h ^= hexdec(hash("md5", $ele));
+            }
+            return $h;
+        }
+        return hexdec(hash("md5", $x));#http://stackoverflow.com/questions/3379471/php-number-only-hash
+    };
+
+    $func = function ($t,$rdd) use ($createCombiner, $mergeValue, $mergeCombiners,$numPartitions,$partitionFunc){
+        return $rdd->combineByKey($createCombiner, $mergeValue, $mergeCombiners, $numPartitions,$partitionFunc);
     };
     return $this->transform($func);
 }
@@ -198,7 +213,7 @@ function foreachRDD($func)
 }
 
 
-class TransformedDStream extends DStream{
+class TransformedDStream extends dstream{
 
     var $func;
     var $prev;
@@ -211,7 +226,6 @@ function __construct($prev,$func){
     $this->is_checkpointed = False;
 
     if($prev instanceof TransformedDStream && !$prev -> is_cached && !$prev->is_checkpointed){
-        echo " 是 ";
         $prev_func = $prev -> func;
         $this->func = function($t,$rdd) use ($func,$prev_func){
             $temp =  $prev_func($t,$rdd);
@@ -219,7 +233,6 @@ function __construct($prev,$func){
         };
         $this->prev = $prev->prev;
     }else{
-        echo " 不是 ";
         $this->prev = $prev;
         $this->func = $func;
     }
