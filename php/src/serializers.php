@@ -151,7 +151,7 @@ class utf8_deserializer extends serializer{
             return null;
         }
         $string = $stream->read_fully($length_of_line);
-      #  file_put_contents("/home/".get_current_user()."/php_worker8.txt", $string."!!!\n", FILE_APPEND);
+ #      file_put_contents("/home/".get_current_user()."/php_worker8.txt", $string."!!!\n", FILE_APPEND);
 #     TODO 很奇怪之前把这个注释打开就正确了，可能之前java有日志 写得太慢了
         usleep(1);
         if($this->is_array==False && $this->need_check==True) {
@@ -177,6 +177,7 @@ class utf8_deserializer extends serializer{
         try {
             while(True){
                 $temp2 = $this->loads($stream);
+
                 if($temp2!="") {
                     yield $temp2;
                 }

@@ -521,6 +521,37 @@ class rdd
 
     }
 
+    function take($num){
+        $items = array();
+        $totalParts = $this->getNumPartitions();
+        $partsScanned=0;
+        while(sizeof($items)<$num and $partsScanned<$totalParts){
+            $numPartsToTry = 1;
+            if($partsScanned>0){
+                if(sizeof($items)==0){
+                    $numPartsToTry = $partsScanned * 4;
+                }else{
+                    $numPartsToTry = intval(1.5*$num*$partsScanned/sizeof($items))-$partsScanned;
+                    $numPartsToTry = min(max($numPartsToTry, 1), $partsScanned * 4);
+                }
+            }
+            $left = $num - sizeof($items);
+
+            $takeUpToNumLeft = function ($iterator)use($left){
+                $taken = 0;
+                while($taken < $left){
+                    yield $iterator->next();
+                    $taken+=1;
+                }
+            };
+
+        }
+
+
+    }
+
+
+
 /**
  *  @param withReplacement: can elements be sampled multiple times (replaced when sampled out)
  *  @param fraction: 取百分之多少的数据，在0-1之间

@@ -204,6 +204,11 @@ class context {
     }
 
 
+    function runJob($rdd,$partitionFunc,$partitions=null,$allowLocal=False){
+
+
+    }
+
     function stop(){
         $this->jsc->stop();
         $this->jsc=null;

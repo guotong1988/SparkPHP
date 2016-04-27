@@ -3,18 +3,23 @@ $temp = __FILE__;
 $spark_php_home = substr($temp,0,strrpos($temp,"/")-3);
 require_once($spark_php_home."lib/Java.inc");
 
-
 class php_call_java {
     var $JavaSparkContext;
     var $SparkConf;
     var $PhpRDD;
     var $Byte;
     var $PhpAccumulatorParam;
+    var $PhpDStream;
     function php_call_java()
     {
+        $this->PhpDStream = new java("org.apache.spark.streaming.api.php.PhpDStream");
         $this->SparkConf = new java("org.apache.spark.SparkConf");
         $this->JavaSparkContext = new java("org.apache.spark.api.java.JavaSparkContext");
         $this->PhpRDD = new java("org.apache.spark.api.php.PhpRDD");
+    }
+
+    function PhpTransformedDStream($d,$f){
+        return new java("org.apache.spark.streaming.api.php.PhpTransformedDStream",$d,$f);
     }
 
     function php_accumulator_param($host,$port){

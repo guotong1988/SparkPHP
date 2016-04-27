@@ -1,17 +1,16 @@
 <?php
-
-require "../php_call_java.php";
-
+#$spark_php_home = substr(__DIR__,0,strrpos(__DIR__,"/")-3);
+require __DIR__."/dstream.php";
+require __DIR__."/util.php";
 
 class streaming_context{
-
+    static $activeContext;
     var $sc;
-    var $jvm;
+    var $php_call_java;
     var $jssc;
     function __construct($spark_context, $batchDuration=null, $jssc=null){
-
         $this->sc = $spark_context;
-        $this->jvm = $this->sc->php_call_java;
+        $this->php_call_java = $this->sc->php_call_java;
         if($jssc!=null){
             $this->jssc = $jssc;
         }else{
@@ -22,18 +21,42 @@ class streaming_context{
     function initialize_context($sc, $duration)
     {
         $this->ensure_initialized();
-        return $this->jvm->java_streaming_context($sc->jsc, $this->jduration($duration));
+        return $this->php_call_java->java_streaming_context($sc->jsc, $this->jduration($duration));
     }
 
     function jduration($seconds)
     {
-        return $this->jvm->duration(intval($seconds * 1000));
+        return $this->php_call_java->duration(java_values($seconds * 1000));
     }
 
     function ensure_initialized(){
-        if($this->jvm==null){
-            $this->jvm=new php_call_java();
+        $this->sc->ensure_initialized();
+        if($this->php_call_java==null){
+            $this->php_call_java=$this->sc->php_call_java;
         }
     }
 
+    function textFileStream($directory)
+    {
+        return new DStream($this->jssc->textFileStream($directory), $this, new utf8_deserializer());
+    }
+
+    function start()
+    {
+        $this->jssc->start();
+        streaming_context::$activeContext = $this;
+    }
+
+    function awaitTermination($timeout=null)
+    {
+        if($timeout==null) {
+            $this->jssc->awaitTermination();
+        }else {
+            $this->jssc->awaitTerminationOrTimeout(java_values($timeout * 1000));
+        }
+    }
+
+    function awaitTerminationOrTimeout($timeout){
+        return $this->jssc->awaitTerminationOrTimeout(java_values($timeout * 1000));
+    }
 }
