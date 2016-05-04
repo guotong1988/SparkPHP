@@ -81,7 +81,8 @@ class AccumulatorServer{
     {
         echo "AccumulatorServer关闭";
         self::$server_shutdown = True;
-        posix_kill(self::$pid, SIGTERM);
+        print("!!!!!!!!!!!!!!!!!!!".self::$pid);
+        print(posix_kill(self::$pid, SIGKILL));
     }
 
 
@@ -150,7 +151,6 @@ class AccumulatorServer{
 
         msg_receive($message_queue, 0, $message_type, 1024, $message, true, MSG_IPC_NOWAIT);
         self::$pid = $message;
-
         return array($address,$port);
     }
 }

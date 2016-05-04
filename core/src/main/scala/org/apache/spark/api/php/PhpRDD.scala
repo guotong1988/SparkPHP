@@ -334,6 +334,38 @@ private class PhpException(msg: String, cause: Exception) extends RuntimeExcepti
 
 
 object PhpRDD extends Logging {
+
+
+
+  def runJob(
+              sc: SparkContext,
+              rdd: JavaRDD[Array[Byte]],
+              partitions: JArrayList[Int]): Int = {
+
+       var file:java.io.File=null
+       var fos:FileWriter=null
+      var osw:BufferedWriter=null
+
+       file = new java.io.File("/home/gt/scala_worker2.txt")
+       fos = new java.io.FileWriter(file,true);
+       osw = new BufferedWriter(fos);
+
+         osw.write("<<<<<"+rdd.getClass)
+         osw.newLine()
+         osw.flush()
+
+
+    type ByteArray = Array[Byte]
+    type UnrolledPartition = Array[ByteArray]
+    val allPartitions: Array[UnrolledPartition] =
+      sc.runJob(rdd, (x: Iterator[ByteArray]) => x.toArray, partitions.asScala)
+    val flattenedPartition: UnrolledPartition = Array.concat(allPartitions: _*)
+    serveIterator(flattenedPartition.iterator,
+      s"serve RDD ${rdd.id} with partitions ${partitions.asScala.mkString(",")}")
+  }
+
+
+
   def collectAndServe[T](rdd: RDD[T]): Int = {//被rdd.php的collect方法调用
     serveIterator(rdd.collect().iterator, s"serve RDD ${rdd.id}")
   }
@@ -407,27 +439,27 @@ object PhpRDD extends Logging {
 
   def writeIteratorToStream[T](iter: Iterator[T], dataOut: DataOutputStream) {
 
- //   var file:java.io.File=null
- //   var fos:FileWriter=null
-  //  var osw:BufferedWriter=null
+    var file:java.io.File=null
+    var fos:FileWriter=null
+    var osw:BufferedWriter=null
 
-  //  file = new java.io.File("/home/gt/scala_worker2.txt")
- //   fos = new java.io.FileWriter(file);
- //   osw = new BufferedWriter(fos);
+    file = new java.io.File("/home/gt/scala_worker.txt")
+    fos = new java.io.FileWriter(file,true);
+    osw = new BufferedWriter(fos);
 
     def write(obj: Any): Unit = obj match {
       case null =>
         dataOut.writeInt(SpecialLengths.NULL)
       case arr: Array[Byte] =>
-   //     osw.write("<<<<<"+arr.length)
-   //     osw.newLine()
-   //     osw.flush()
+        osw.write("<<<<<"+arr.length)
+        osw.newLine()
+        osw.flush()
         dataOut.writeInt(arr.length)
         dataOut.write(arr)
       case str: String =>
-   //     osw.write(">>>>>"+str)
-   //     osw.newLine()
-   //     osw.flush()
+        osw.write(">>>>>"+str)
+        osw.newLine()
+        osw.flush()
         writeUTF(str, dataOut)
       case stream: PortableDataStream =>
         write(stream.toArray())

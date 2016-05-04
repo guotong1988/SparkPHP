@@ -173,6 +173,8 @@ if($profiler) {
 }else {
     file_put_contents($spark_php_home."php_worker.txt", $split_index."here!\n", FILE_APPEND);
     $iterator = $deserializer->load_stream($in_stream);
+
+
 /*
     file_put_contents($spark_php_home."php_worker.txt", $split_index." read ".$iterator->current()."\n", FILE_APPEND);
     if(is_array($iterator->current()))
@@ -195,6 +197,7 @@ if($profiler) {
 
      $temp3 = $func($split_index, $iterator);#分布式计算
      file_put_contents($spark_php_home."php_worker.txt",$split_index." output!\n", FILE_APPEND);
+
 /*
     foreach ($temp3 as $key => $element) {
              file_put_contents($spark_php_home . "php_worker.txt", $split_index."output " .$key." ".$element . "\n", FILE_APPEND);
@@ -204,7 +207,6 @@ if($profiler) {
                  }
              }
          }
-    $temp3->rewind();
 */
     $serializer -> dump_stream($temp3, $out_stream);#显然是返回计算结果
 }
@@ -219,7 +221,6 @@ $out_stream->write_long(shuffle::$DiskBytesSpilled);
 
 $out_stream->write_int($END_OF_DATA_SECTION);
 $out_stream->write_int(sizeof(accumulator::$accumulatorRegistry));
-
 
 foreach(accumulator::$accumulatorRegistry as $aid=>$accum){
        $temp = array();

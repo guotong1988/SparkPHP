@@ -7,7 +7,7 @@ require($SPARK_HOME . "/php/src/context.php");
 $sc = new context();
 
 
-$schema_rdd = $sc->text_file("/home/gt/test.avsc", 1)->collect();
+$schema_rdd = $sc->text_file("/home/gt/test.avsc", 1)->collect();//avsc文件负责筛选字段
 $schema = array();
 foreach($schema_rdd as $ele){
     array_push($schema,$ele);
@@ -26,7 +26,7 @@ $avro_rdd = $sc->newAPIHadoopFile(
     "org.apache.avro.mapred.AvroKey",
     "org.apache.hadoop.io.NullWritable",
     "org.apache.spark.examples.phpconverters.AvroWrapperToJavaConverter",
-    "",$conf0,0);
+    "",$conf0,0);//$conf0如果填null则是全部字段
 
 
 $output = $avro_rdd->map(

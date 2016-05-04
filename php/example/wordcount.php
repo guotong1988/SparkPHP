@@ -1,7 +1,7 @@
 <?php
 $SPARK_HOME = "/home/gt/spark/";
 require($SPARK_HOME . "/php/src/context.php");
-include_once($SPARK_HOME."/php/src/report_error.php");
+#include_once($SPARK_HOME."/php/src/report_error.php");
 $sc = new context();
 
 
@@ -19,14 +19,21 @@ $temp2 = $temp->map(
     }
 );
 
+
 $temp3 = $temp2 -> reduceByKey(
     function ($x1,$x2) {
         return $x1+$x2;
     }
 );
 
-foreach($temp3->collect() as $key=>$value){
-    echo $value;
+foreach($temp3->collect() as $key=>$element){
+    echo $element;
+    foreach($element as $ele){
+        echo $ele." ";
+
+    }
     echo "!!!\n";
 };
+
+$sc->stop();
 

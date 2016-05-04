@@ -149,9 +149,9 @@ class context {
 
     function parallelize($data, $numSlices){
         $my_file = fopen("/home/gt/php_master.txt", "w");
+        $fos = new file_output_stream($my_file);
         for($i=0;$i<sizeof($data);$i++) {
-            fwrite($my_file,strlen($data[$i]));
-            fwrite($my_file,$data[$i]);
+            $fos->write_utf($data[$i]);
         }
         fclose($my_file);
         $jrdd = $this->php_call_java->PhpRDD->readRDDFromFile($this->jsc, "/home/gt/php_master.txt", $numSlices);;
@@ -190,6 +190,10 @@ class context {
         $jmap = $this->php_call_java->new_java_map();
 
         foreach ($php_map as $key => $value) {
+            echo $key;
+            echo "!!!\n";
+            echo $value;
+            echo "!!!\n";
             $jmap->put($key,$value);
         }
         return $jmap;
@@ -205,8 +209,40 @@ class context {
 
 
     function runJob($rdd,$partitionFunc,$partitions=null,$allowLocal=False){
+        if($partitions==null) {
+            $partitions = range(1,$rdd->jrdd->partitions()->size());
+        }
+        $mappedRDD = $rdd->mapPartitions($partitionFunc);
+        $port = $this->php_call_java->PhpRDD->runJob($this->jsc->sc(), $mappedRDD->jrdd,$partitions);
+        return $this->load_from_socket($port, $mappedRDD->jrdd_deserializer);#是个utf8_serializer
+    }
 
 
+    function load_from_socket($port, $deserializer)
+    {
+       # print_r($deserializer);
+        $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+        if ($sock == false) {
+            echo "socket_create()失败:" . socket_strerror(socket_last_error($sock)) . "\n";
+        } else {
+            echo "socket_create()成功\n";
+        }
+
+        $port = $port->intValue() . "";#不然不行，坑啊
+
+        $result = socket_connect($sock, '127.0.0.1', intval($port));
+        if ($result == false) {
+            echo "socket_connect()失败:" . socket_strerror(socket_last_error($sock)) . "\n";
+        } else {
+            echo "socket_connect()成功\n";
+        }
+        $stream = new sock_input_stream($sock);
+      #  if ($deserializer == null) {
+        $deserializer = new utf8_deserializer();
+      #  }
+        $item_array = $deserializer->load_stream($stream);
+        #socket_close($sock);#改成yield之后不能关了
+        return $item_array;
     }
 
     function stop(){
@@ -214,6 +250,7 @@ class context {
         $this->jsc=null;
         $this->accumulator_server->shutdown();
         $this->accumulator_server = null;
+        exit();
     }
 
 }

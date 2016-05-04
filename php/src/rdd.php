@@ -58,6 +58,22 @@ class rdd
 
     }
 
+
+    function filter($f){
+        $func = function ($iterator)use ($f){
+            if($iterator instanceof Generator){
+                $temp = array();
+                foreach($iterator as $ele){
+                    array_push($temp,$ele);
+                }
+                return array_filter($temp,$f);
+            }
+            return array_filter($iterator,$f);
+        };
+        return $this->mapPartitions($func, True);
+    }
+
+
     function flatMap(callable $f, $preservesPartitioning = False)
     {
 
@@ -543,6 +559,7 @@ class rdd
     function take($num){
         $items = array();
         $totalParts = $this->getNumPartitions();
+
         $partsScanned=0;
         while(sizeof($items)<$num and $partsScanned<$totalParts){
             $numPartsToTry = 1;
@@ -558,15 +575,38 @@ class rdd
 
             $takeUpToNumLeft = function ($iterator)use($left){
                 $taken = 0;
-                while($taken < $left){
-                    yield $iterator->next();
-                    $taken+=1;
+                foreach($iterator as $e) {
+                    $taken += 1;
+                    if($taken>$left){
+                        break;
+                    }
+                    yield $e;
                 }
             };
+            $p = range($partsScanned, min($partsScanned + $numPartsToTry, $totalParts)-1);
+
+            print_r($p);
+
+
+            $p=$this->convert_list($p,$this->ctx);
+
+            $res = $this->ctx->runJob($this, $takeUpToNumLeft, $p);
+            print("!!!!!!!!!!!!!!!!!!!");
+            print(gettype($res));
+            print("!!!!!!!!!!!!!!!!!!!");
+            foreach($res as $e) {
+                print("!!!!!!!!!!!!!!!!!!!");
+                print($e);
+                array_push($items,$e);
+            }
+            $partsScanned += $numPartsToTry;
 
         }
-
-
+        $result = array();
+        for($i=0;$i<$num;$i++){
+            array_push($result,$items[$i]);
+        }
+        return $result;
     }
 
 
