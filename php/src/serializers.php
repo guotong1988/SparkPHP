@@ -152,9 +152,12 @@ class utf8_deserializer extends serializer{
         file_put_contents("/home/".get_current_user()."/php_worker9.txt", $length_of_line."!!!\n", FILE_APPEND);
 
 
+
         if($length_of_line == 4294967295){#TODO -1
             throw new Exception("end of data");
         }elseif($length_of_line == $this->NULL) {
+            return null;
+        }elseif($length_of_line == 4294967291){
             return null;
         }
         $string = $stream->read_fully($length_of_line);

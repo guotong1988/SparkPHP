@@ -16,6 +16,23 @@ class php_call_java {
         $this->SparkConf = new java("org.apache.spark.SparkConf");
         $this->JavaSparkContext = new java("org.apache.spark.api.java.JavaSparkContext");
         $this->PhpRDD = new java("org.apache.spark.api.php.PhpRDD");
+        $this->StorageLevel = new java("org.apache.spark.storage.StorageLevel");
+    }
+
+    function newStorageLevel($useDisk,
+        $useMemory,
+        $useOffHeap,
+        $deserialized,
+        $replication){
+        return new java("org.apache.spark.storage.StorageLevel",$useDisk,
+            $useMemory,
+            $useOffHeap,
+            $deserialized,
+            $replication);
+    }
+
+    function newThread(){
+        return new java("java.lang.Thread");
     }
 
     function PhpTransformedDStream($d,$f){

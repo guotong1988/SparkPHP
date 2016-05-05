@@ -245,6 +245,18 @@ class context {
         return $item_array;
     }
 
+
+    function getJavaStorageLevel($storageLevel){
+        if(!($storageLevel instanceof StorageLevel)) {
+            throw new Exception("storageLevel must be of type StorageLevel");
+        }
+        return $this->php_call_java->newStorageLevel($storageLevel->useDisk,
+            $storageLevel->useMemory,
+            $storageLevel->useOffHeap,
+            $storageLevel->deserialized,
+            $storageLevel->replication);
+    }
+
     function stop(){
         $this->jsc->stop();
         $this->jsc=null;

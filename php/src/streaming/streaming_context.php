@@ -3,6 +3,8 @@
 require __DIR__."/dstream.php";
 require __DIR__."/util.php";
 
+require __DIR__."/Kafka.php";
+
 class streaming_context{
     static $activeContext;
     var $sc;
@@ -38,7 +40,7 @@ class streaming_context{
 
     function textFileStream($directory)
     {
-        return new DStream($this->jssc->textFileStream($directory), $this, new utf8_deserializer());
+        return new dstream($this->jssc->textFileStream($directory), $this, new utf8_deserializer());
     }
 
     function start()
