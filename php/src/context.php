@@ -148,13 +148,14 @@ class context {
     }
 
     function parallelize($data, $numSlices){
-        $my_file = fopen("/home/gt/php_master.txt", "w");
+        $my_file = fopen("/home/".get_current_user()."/php_master.txt", "w");
         $fos = new file_output_stream($my_file);
         for($i=0;$i<sizeof($data);$i++) {
             $fos->write_utf($data[$i]);
         }
         fclose($my_file);
-        $jrdd = $this->php_call_java->PhpRDD->readRDDFromFile($this->jsc, "/home/gt/php_master.txt", $numSlices);;
+        $jrdd = $this->php_call_java->PhpRDD->readRDDFromFile($this->jsc, "/home/gt/php_master.txt", $numSlices);
+        unlink("/home/".get_current_user()."/php_master.txt");
         return new rdd($jrdd,$this,null);
     }
 

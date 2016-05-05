@@ -59,6 +59,15 @@ class rdd
     }
 
 
+    function first()
+    {
+        $rs = $this->take(1);
+        if($rs!=null){
+            return $rs[0];
+        }
+        throw new Exception("no data");
+    }
+
     function filter($f){
         $func = function ($iterator)use ($f){
             if($iterator instanceof Generator){
@@ -585,18 +594,10 @@ class rdd
             };
             $p = range($partsScanned, min($partsScanned + $numPartsToTry, $totalParts)-1);
 
-            print_r($p);
-
-
             $p=$this->convert_list($p,$this->ctx);
 
             $res = $this->ctx->runJob($this, $takeUpToNumLeft, $p);
-            print("!!!!!!!!!!!!!!!!!!!");
-            print(gettype($res));
-            print("!!!!!!!!!!!!!!!!!!!");
             foreach($res as $e) {
-                print("!!!!!!!!!!!!!!!!!!!");
-                print($e);
                 array_push($items,$e);
             }
             $partsScanned += $numPartsToTry;

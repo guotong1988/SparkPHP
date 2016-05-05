@@ -81,7 +81,7 @@ class AccumulatorServer{
     {
         echo "AccumulatorServer关闭";
         self::$server_shutdown = True;
-        print("!!!!!!!!!!!!!!!!!!!".self::$pid);
+       # print("!!!!!!!!!!!!!!!!!!!".self::$pid);
         print(posix_kill(self::$pid, SIGKILL));
     }
 

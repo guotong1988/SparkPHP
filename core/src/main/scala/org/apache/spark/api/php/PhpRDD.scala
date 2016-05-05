@@ -74,17 +74,17 @@ private[spark] class PhpRunner4worker(
                                    reuse_worker: Boolean)
   extends Logging {
 
- // var file:java.io.File=null
- // var fos:FileWriter=null
- // var osw:BufferedWriter=null
+//  var file:java.io.File=null
+//  var fos:FileWriter=null
+//  var osw:BufferedWriter=null
   def compute(
                inputIterator: Iterator[_],
                partitionIndex: Int,
                context: TaskContext): Iterator[Array[Byte]] = {
 
-  //  file = new java.io.File("/home/gt/"+partitionIndex+"scala_worker.txt")
-  //  fos = new java.io.FileWriter(file);
-  //  osw = new BufferedWriter(fos);
+//    file = new java.io.File("/home/gt/scala_worker3.txt")
+//    fos = new java.io.FileWriter(file,true);
+//    osw = new BufferedWriter(fos);
 
     val startTime = System.currentTimeMillis
     val env = SparkEnv.get
@@ -129,16 +129,16 @@ private[spark] class PhpRunner4worker(
 
         try {
           val temp = stream.readInt()
-      //    osw.write("#####"+temp)
-      //    osw.newLine()
-      //    osw.flush()
+//          osw.write("#####"+temp)
+//          osw.newLine()
+//          osw.flush()
           temp match {
             case length if length > 0 =>
               val obj = new Array[Byte](length)
               stream.readFully(obj)
-       //       osw.write(">>>>>"+new String(obj))
-       //       osw.newLine()
-       //       osw.flush()
+//              osw.write(">>>>>"+new String(obj))
+//              osw.newLine()
+//              osw.flush()
               obj
             case 0 => Array.empty[Byte]
             case SpecialLengths.TIMING_DATA =>
@@ -341,20 +341,6 @@ object PhpRDD extends Logging {
               sc: SparkContext,
               rdd: JavaRDD[Array[Byte]],
               partitions: JArrayList[Int]): Int = {
-
-       var file:java.io.File=null
-       var fos:FileWriter=null
-      var osw:BufferedWriter=null
-
-       file = new java.io.File("/home/gt/scala_worker2.txt")
-       fos = new java.io.FileWriter(file,true);
-       osw = new BufferedWriter(fos);
-
-         osw.write("<<<<<"+rdd.getClass)
-         osw.newLine()
-         osw.flush()
-
-
     type ByteArray = Array[Byte]
     type UnrolledPartition = Array[ByteArray]
     val allPartitions: Array[UnrolledPartition] =
@@ -439,27 +425,28 @@ object PhpRDD extends Logging {
 
   def writeIteratorToStream[T](iter: Iterator[T], dataOut: DataOutputStream) {
 
-    var file:java.io.File=null
-    var fos:FileWriter=null
-    var osw:BufferedWriter=null
-
-    file = new java.io.File("/home/gt/scala_worker.txt")
-    fos = new java.io.FileWriter(file,true);
-    osw = new BufferedWriter(fos);
+//    var file:java.io.File=null
+//    var fos:FileWriter=null
+//    var osw:BufferedWriter=null
+//    file = new java.io.File("/home/gt/scala_worker.txt")
+//    fos = new java.io.FileWriter(file,true)
+//    osw = new BufferedWriter(fos)
 
     def write(obj: Any): Unit = obj match {
       case null =>
         dataOut.writeInt(SpecialLengths.NULL)
       case arr: Array[Byte] =>
-        osw.write("<<<<<"+arr.length)
-        osw.newLine()
-        osw.flush()
+//        osw.write("<<<<<"+arr.length)
+//        osw.newLine()
+//        osw.write("<<<<<" + new String(arr))
+//        osw.newLine()
+//        osw.flush()
         dataOut.writeInt(arr.length)
         dataOut.write(arr)
       case str: String =>
-        osw.write(">>>>>"+str)
-        osw.newLine()
-        osw.flush()
+//        osw.write(">>>>>"+str)
+//        osw.newLine()
+//        osw.flush()
         writeUTF(str, dataOut)
       case stream: PortableDataStream =>
         write(stream.toArray())

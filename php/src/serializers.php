@@ -41,9 +41,6 @@ class utf8_serializer extends serializer{
         if($iterator instanceof Generator){
             if ($this->is_list4generator($iterator)) {
                 foreach ($iterator as $element) {
-
-                    file_put_contents("/home/gt/php_worker.txt", $element."---\n", FILE_APPEND);
-
                     if (is_array($element)) {#pair等元组的情况
                         $stream->write_utf2(serialize($element));
                     } else {
@@ -149,7 +146,7 @@ class utf8_deserializer extends serializer{
 
         $length_of_line = $stream->read_int();
 
-        file_put_contents("/home/".get_current_user()."/php_worker9.txt", $length_of_line."!!!\n", FILE_APPEND);
+       file_put_contents("/home/".get_current_user()."/php_worker7.txt", $length_of_line."!!!\n", FILE_APPEND);
 
 
 
