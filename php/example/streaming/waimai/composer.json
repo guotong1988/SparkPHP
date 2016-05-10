@@ -1,0 +1,5 @@
+{
+    "require": {
+        "nmred/kafka-php": "0.1.*"
+    }
+}

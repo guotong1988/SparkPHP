@@ -10,8 +10,10 @@ class php_call_java {
     var $Byte;
     var $PhpAccumulatorParam;
     var $PhpDStream;
+    var $SerDeUtil;
     function php_call_java()
     {
+        $this->SerDeUtil=new java("org.apache.spark.api.php.SerDeUtil");
         $this->PhpDStream = new java("org.apache.spark.streaming.api.php.PhpDStream");
         $this->SparkConf = new java("org.apache.spark.SparkConf");
         $this->JavaSparkContext = new java("org.apache.spark.api.java.JavaSparkContext");
@@ -29,6 +31,10 @@ class php_call_java {
             $useOffHeap,
             $deserialized,
             $replication);
+    }
+
+    function newSQLContext($s){
+        return new java("org.apache.spark.sql.SQLContext",$s);
     }
 
     function newThread(){

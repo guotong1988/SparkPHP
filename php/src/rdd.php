@@ -459,7 +459,7 @@ class rdd
         , True);
         $keyed->bypass_serializer = True;
 
-        
+
       #TODO  with SCCallSiteSync(self.context) as css:
         $pairRDD = $this->ctx->php_call_java->pair_wise_rdd(
                     $keyed->jrdd->rdd())->asJavaPairRDD();
@@ -610,8 +610,10 @@ class rdd
         return $result;
     }
 
-
-
+    function to_java_object_rdd()
+    {
+        return $this->ctx->php_call_java->SerDeUtil->phpToJava($this->jrdd, True);
+    }
 /**
  *  @param withReplacement: can elements be sampled multiple times (replaced when sampled out)
  *  @param fraction: 取百分之多少的数据，在0-1之间

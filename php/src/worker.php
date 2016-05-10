@@ -17,13 +17,14 @@ require("php/src/rddsampler.php");
 require 'vendor/autoload.php';
 use SuperClosure\Serializer;
 
+/*
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 set_error_handler('displayErrorHandler');
 function displayErrorHandler($error, $error_string, $filename, $line, $symbols)
 {
     file_put_contents("/home/gt/php_worker4.txt", $error." ".$filename." ".$line." ".$error_string. "\n",FILE_APPEND);
 }
-
+*/
 
 $stdin = fopen('php://stdin','r');
 $jvm_worker_port = fgets($stdin);
