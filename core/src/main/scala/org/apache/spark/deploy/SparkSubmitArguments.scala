@@ -390,7 +390,7 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
         pyFiles = Utils.resolveURIs(value)
 
       case PHP_FILES =>
-        pyFiles = Utils.resolveURIs(value)
+        phpFiles = Utils.resolveURIs(value)
 
       case ARCHIVES =>
         archives = Utils.resolveURIs(value)

@@ -394,9 +394,10 @@ object PhpRDD extends Logging {
 
 
   def serveIterator[T](items: Iterator[T], threadName: String): Int = {
-    val r = new java.util.Random();
-    val port = 18082 + r.nextInt(10000)
-    val serverSocket = new ServerSocket(port)
+  //  val r = new java.util.Random();
+  //  val port = 18082 + r.nextInt(10000)
+    val serverSocket = new ServerSocket(0, 1, InetAddress.getByName("localhost"))
+  //  val serverSocket = new ServerSocket(port)
     // Close the socket if no connection in 3 seconds
     serverSocket.setSoTimeout(3000)
 
@@ -419,8 +420,8 @@ object PhpRDD extends Logging {
         }
       }
     }.start()
-
-    port
+    serverSocket.getLocalPort
+  //  port
   }
 
   def writeIteratorToStream[T](iter: Iterator[T], dataOut: DataOutputStream) {

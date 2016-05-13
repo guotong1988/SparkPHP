@@ -112,6 +112,7 @@ class SparkSubmitOptionParser {
     { PROPERTIES_FILE },
     { PROXY_USER },
     { PY_FILES },
+    { PHP_FILES },
     { QUEUE },
     { REPOSITORIES },
     { STATUS },

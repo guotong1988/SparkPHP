@@ -533,6 +533,13 @@ private[spark] class ApplicationMaster(
     if (args.primaryRFile != null && args.primaryRFile.endsWith(".R")) {
       // TODO(davies): add R dependencies here
     }
+
+    if (args.primaryPhpFile != null && args.primaryPhpFile.endsWith(".php")) {
+      // When running pyspark, the app is run using PythonRunner. The second argument is the list
+      // of files to add to PYTHONPATH, which Client.scala already handles, so it's empty.
+      userArgs = Seq(args.primaryPhpFile, "") ++ userArgs
+    }
+
     val mainMethod = userClassLoader.loadClass(args.userClass)
       .getMethod("main", classOf[Array[String]])
 

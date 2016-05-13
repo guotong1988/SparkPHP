@@ -1,7 +1,7 @@
 <?php
 $SPARK_HOME = "/home/gt/spark/";
-require($SPARK_HOME . "/php/src/context.php");
-require($SPARK_HOME . "/php/src/streaming/streaming_context.php");
+require_once($SPARK_HOME . "/php/src/context.php");
+require_once($SPARK_HOME . "/php/src/streaming/streaming_context.php");
 #include_once($SPARK_HOME."/php/src/report_error.php");
 #usage:  ./spark-submit --jars /home/gt/spark/external/kafka-assembly/target/spark-streaming-kafka-assembly_2.10-1.6.0.jar kafka_wordcount.php
 

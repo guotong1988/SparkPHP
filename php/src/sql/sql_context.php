@@ -33,6 +33,8 @@ class sql_context{
             $schema = $temp[1];
         }
 
+        print_r($schema->json());
+
         $jrdd = $this->php_call_java->SerDeUtil->toJavaArray($rdd->to_java_object_rdd());
         $jdf = $this->ssql_ctx->applySchemaToPhpRDD($jrdd->rdd(), $schema->json());
         $df = new DataFrame($jdf, $this);
@@ -45,6 +47,13 @@ class sql_context{
             $struct = $this->inferSchema($rdd,$samplingRatio);
             $converter = create_converter($struct);
             $rdd = $rdd->map($converter);
+
+            if(is_array($schema)) {
+           #     for i, name in enumerate(schema):
+           #         $struct . fields[i] . name = name
+           #         $struct . names[i] = name
+            }
+
             $schema = $struct;
         }
         $rdd = $rdd->map(

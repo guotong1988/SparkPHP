@@ -279,7 +279,13 @@ public class SparkLauncher {
       for (String file : value.split(",")) {
         addPyFile(file);
       }
-    } else {
+    }else if (validator.PHP_FILES.equals(name)) {
+        builder.phpFiles.clear();
+        for (String file : value.split(",")) {
+            addPhpFile(file);
+        }
+    }
+    else {
       validator.parse(Arrays.asList(name, value));
       builder.sparkArgs.add(name);
       builder.sparkArgs.add(value);
@@ -336,6 +342,12 @@ public class SparkLauncher {
     builder.pyFiles.add(file);
     return this;
   }
+
+    public SparkLauncher addPhpFile(String file) {
+        checkNotNull(file, "file");
+        builder.phpFiles.add(file);
+        return this;
+    }
 
   /**
    * Enables verbose reporting for SparkSubmit.

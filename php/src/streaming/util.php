@@ -61,7 +61,7 @@ function call($milliseconds, $jrdds){
         }
     }catch(Exception $e){
         $this->failure=$e->getMessage();
-        file_put_contents("/home/gt/php_worker.txt",$e->getMessage()."here3!\n", FILE_APPEND);
+      #  file_put_contents("/home/gt/php_worker.txt",$e->getMessage()."here3!\n", FILE_APPEND);
     }
 }
 

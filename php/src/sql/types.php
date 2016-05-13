@@ -158,7 +158,7 @@ function _has_nulltype($dt)
 class DataType{
 
     function typeName(){
-        return __CLASS__;
+        return strtolower(substr(__CLASS__,0,sizeof(__CLASS__)-5));#为了match DataType.scala里的130行
     }
 
     function jsonValue()
@@ -198,9 +198,27 @@ class FractionalType extends NumericType{
 
 class DoubleType extends FractionalType{
 
+    function typeName(){
+        return strtolower(substr(__CLASS__,0,sizeof(__CLASS__)-5));#为了match DataType.scala里的130行
+    }
+
+    function jsonValue()
+    {
+        return $this->typeName();
+    }
+
 }
 
 class NullType extends DataType{
+
+    function typeName(){
+        return strtolower(substr(__CLASS__,0,sizeof(__CLASS__)-5));#为了match DataType.scala里的130行
+    }
+
+    function jsonValue()
+    {
+        return $this->typeName();
+    }
 
 }
 
@@ -210,9 +228,27 @@ class AtomicType extends  DataType{
 
 class BooleanType extends AtomicType{
 
+    function typeName(){
+        return strtolower(substr(__CLASS__,0,sizeof(__CLASS__)-5));#为了match DataType.scala里的130行
+    }
+
+    function jsonValue()
+    {
+        return $this->typeName();
+    }
+
 }
 
 class IntegralType extends NumericType{
+
+    function typeName(){
+        return strtolower(substr(__CLASS__,0,sizeof(__CLASS__)-5));#为了match DataType.scala里的130行
+    }
+
+    function jsonValue()
+    {
+        return $this->typeName();
+    }
 
 }
 
@@ -222,10 +258,29 @@ class NumericType extends AtomicType{
 
 class StringType extends AtomicType{
 
+    function typeName(){
+        return strtolower(substr(__CLASS__,0,sizeof(__CLASS__)-5));#为了match DataType.scala里的130行
+    }
+
+    function jsonValue()
+    {
+        return $this->typeName();
+    }
+
 }
 
 class IntegerType extends IntegralType
 {
+
+    function typeName(){
+        return strtolower(substr(__CLASS__,0,sizeof(__CLASS__)-5));#为了match DataType.scala里的130行
+    }
+
+    function jsonValue()
+    {
+        return $this->typeName();
+    }
+
     function simpleString()
     {
     return 'int';
@@ -261,6 +316,26 @@ class StructType extends DataType{
                 $this->needSerializeAnyField=False;
             }
         }
+    }
+
+
+    function typeName(){
+        return strtolower(substr(__CLASS__,0,sizeof(__CLASS__)-5));#为了match DataType.scala里的130行
+    }
+
+
+    #override
+    function jsonValue()
+    {
+        $temp = array();
+        foreach($this->fields as $f){
+            array_push($temp,$f->jsonValue());
+        }
+
+        return array(
+            "fields" =>  $temp,
+            "type"=> $this->typeName(),
+       );
     }
 
     function toInternal($obj)
@@ -328,6 +403,17 @@ class StructField extends DataType{
     {
         return $this->dataType->toInternal($obj);
     }
+
+    #override
+    function jsonValue()
+    {
+        return array(
+        #    "metadata" => $this->metadata,
+            "name" => $this->name,
+            "nullable" => $this->nullable,
+            "type" => $this->dataType->jsonValue(),
+        );
+    }
 }
 
 class MapType extends DataType{
@@ -343,6 +429,15 @@ class MapType extends DataType{
 
     function needConversion(){
         return $this->keyType->needConversion() or $this->valueType->needConversion();
+    }
+
+    function typeName(){
+        return strtolower(substr(__CLASS__,0,sizeof(__CLASS__)-5));#为了match DataType.scala里的130行
+    }
+
+    function jsonValue()
+    {
+        return $this->typeName();
     }
 
     function toInternal($obj)

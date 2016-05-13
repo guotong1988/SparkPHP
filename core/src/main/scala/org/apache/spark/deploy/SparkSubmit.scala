@@ -611,7 +611,14 @@ object SparkSubmit {
         val mainFile = new Path(args.primaryResource).getName
         childArgs += ("--primary-r-file", mainFile)
         childArgs += ("--class", "org.apache.spark.deploy.RRunner")
-      } else {
+      } else if(args.isPHP){
+        childArgs += ("--primary-php-file", args.primaryResource)
+        if (args.pyFiles != null) {
+          childArgs += ("--php-files", args.pyFiles)
+        }
+        childArgs += ("--class", "org.apache.spark.deploy.PhpRunner")
+      }
+      else {
         if (args.primaryResource != SPARK_INTERNAL) {
           childArgs += ("--jar", args.primaryResource)
         }

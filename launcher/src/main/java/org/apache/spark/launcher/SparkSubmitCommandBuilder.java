@@ -170,6 +170,11 @@ class SparkSubmitCommandBuilder extends AbstractCommandBuilder {
             args.add(join(",", pyFiles));
         }
 
+        if (!phpFiles.isEmpty()) {
+            args.add(parser.PHP_FILES);
+            args.add(join(",", phpFiles));
+        }
+
         if (mainClass != null) {
             args.add(parser.CLASS);
             args.add(mainClass);

@@ -17,19 +17,65 @@ require("php/src/rddsampler.php");
 require 'vendor/autoload.php';
 use SuperClosure\Serializer;
 
-/*
+
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 set_error_handler('displayErrorHandler');
 function displayErrorHandler($error, $error_string, $filename, $line, $symbols)
 {
-    file_put_contents("/home/gt/php_worker4.txt", $error." ".$filename." ".$line." ".$error_string. "\n",FILE_APPEND);
+#    file_put_contents("/home/gt/php_worker15.txt", $error." ".$filename." ".$line." ".$error_string. "\n",FILE_APPEND);
 }
-*/
+
 
 $stdin = fopen('php://stdin','r');
 $jvm_worker_port = fgets($stdin);
 
 $php_path_on_yarn =fgets($stdin);
+
+#第一个是原串,第二个是部份串
+function endWith($haystack, $needle) {
+
+    $length = strlen($needle);
+    if($length == 0)
+    {
+        return true;
+    }
+    return (substr($haystack, -$length) === $needle);
+}
+
+function read_all_dir ( $dir )
+{
+    $result = array();
+    $handle = opendir($dir);
+    if ( $handle )
+    {
+        while ( ( $file = readdir ( $handle ) ) !== false )
+        {
+            if ( $file != '.' && $file != '..')
+            {
+                $cur_path = $dir . DIRECTORY_SEPARATOR . $file;
+                if ( is_dir ( $cur_path ) )
+                {
+                    $result['dir'][$cur_path] = read_all_dir ( $cur_path );
+                }
+                else
+                {
+                    $result['file'][] = $cur_path;
+                    if(endWith($cur_path,"php")){
+                        file_put_contents("/home/gt/php_worker16.txt", file_exists($cur_path). " ?\n",FILE_APPEND);
+                        require_once($cur_path);
+                        file_put_contents("/home/gt/php_worker16.txt", $cur_path. " !\n",FILE_APPEND);
+                    }
+                }
+            }
+        }
+        closedir($handle);
+    }
+    return $result;
+}
+
+
+
+
 if($php_path_on_yarn=="NULL\n")
 {
     require($spark_php_home . "src/sock_output_stream.php");
@@ -40,7 +86,8 @@ if($php_path_on_yarn=="NULL\n")
     require($spark_php_home . "src/files.php");
     require($spark_php_home . "src/broadcast.php");
     require($spark_php_home . "src/rddsampler.php");
-
+    set_include_path($spark_php_home."example/");
+ #   read_all_dir($spark_php_home."example");
 }else{
 
     $php_path_on_yarn = str_replace("\n","",$php_path_on_yarn);
@@ -52,7 +99,8 @@ if($php_path_on_yarn=="NULL\n")
     require($php_path_on_yarn . "src/files.php");
     require($php_path_on_yarn . "src/broadcast.php");
     require($php_path_on_yarn . "src/rddsampler.php");
-
+    set_include_path($php_path_on_yarn."example/");
+ #   read_all_dir($php_path_on_yarn."example");
 }
 
 $sock = socket_create ( AF_INET, SOCK_STREAM, SOL_TCP );

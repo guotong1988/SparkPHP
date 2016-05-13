@@ -33,6 +33,7 @@ private[spark] class ClientArguments(args: Array[String], sparkConf: SparkConf) 
   var pyFiles: Seq[String] = Nil
   var phpFiles: Seq[String] = Nil
   var primaryPyFile: String = null
+  var primaryPhpFile: String = null
   var primaryRFile: String = null
   var userArgs: ArrayBuffer[String] = new ArrayBuffer[String]()
   var executorMemory = 1024 // MB
@@ -151,6 +152,10 @@ private[spark] class ClientArguments(args: Array[String], sparkConf: SparkConf) 
           primaryPyFile = value
           args = tail
 
+        case ("--primary-php-file") :: value :: tail =>
+          primaryPhpFile = value
+          args = tail
+
         case ("--primary-r-file") :: value :: tail =>
           primaryRFile = value
           args = tail
@@ -212,6 +217,10 @@ private[spark] class ClientArguments(args: Array[String], sparkConf: SparkConf) 
 
         case ("--py-files") :: value :: tail =>
           pyFiles = value.split(",")
+          args = tail
+
+        case ("--php-files") :: value :: tail =>
+          phpFiles = value.split(",")
           args = tail
 
         case ("--files") :: value :: tail =>

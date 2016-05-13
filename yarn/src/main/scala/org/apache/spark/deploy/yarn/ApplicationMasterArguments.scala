@@ -25,6 +25,7 @@ class ApplicationMasterArguments(val args: Array[String]) {
   var userJar: String = null
   var userClass: String = null
   var primaryPyFile: String = null
+  var primaryPhpFile: String = null
   var primaryRFile: String = null
   var userArgs: Seq[String] = Nil
   var executorMemory = 1024
@@ -52,6 +53,10 @@ class ApplicationMasterArguments(val args: Array[String]) {
 
         case ("--primary-py-file") :: value :: tail =>
           primaryPyFile = value
+          args = tail
+
+        case ("--primary-php-file") :: value :: tail =>
+          primaryPhpFile = value
           args = tail
 
         case ("--primary-r-file") :: value :: tail =>

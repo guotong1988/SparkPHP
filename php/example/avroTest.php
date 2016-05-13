@@ -1,6 +1,6 @@
 <?php
 $SPARK_HOME = "/home/gt/spark/";
-require($SPARK_HOME . "/php/src/context.php");
+require_once($SPARK_HOME . "/php/src/context.php");
 #usage
 #./bin/spark-submit --jars /home/gt/spark/examples/target/scala-2.10/spark-examples-1.6.0-hadoop2.6.0.jar ./bin/avroTest.php
 

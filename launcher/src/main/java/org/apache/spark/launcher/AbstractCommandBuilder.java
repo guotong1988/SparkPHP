@@ -52,6 +52,7 @@ abstract class AbstractCommandBuilder {
   final List<String> jars;
   final List<String> files;
   final List<String> pyFiles;
+  final List<String> phpFiles;
   final Map<String, String> childEnv;
   final Map<String, String> conf;
 
@@ -66,6 +67,7 @@ abstract class AbstractCommandBuilder {
     this.files = new ArrayList<String>();
     this.jars = new ArrayList<String>();
     this.pyFiles = new ArrayList<String>();
+    this.phpFiles = new ArrayList<String>();
   }
 
   /**
