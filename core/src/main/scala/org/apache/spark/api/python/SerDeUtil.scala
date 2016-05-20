@@ -16,7 +16,7 @@
  */
 
 package org.apache.spark.api.python
-
+import java.io.BufferedWriter
 import java.nio.ByteOrder
 import java.util.{ArrayList => JArrayList}
 
@@ -146,15 +146,64 @@ private[spark] object SerDeUtil extends Logging {
     pyRDD.rdd.mapPartitions { iter =>
       initialize()
       val unpickle = new Unpickler
-      iter.flatMap { row =>
-        val obj = unpickle.loads(row)
-        if (batched) {
-          obj match {
-            case array: Array[Any] => array.toSeq
-            case _ => obj.asInstanceOf[JArrayList[_]].asScala
+      iter.flatMap { row => {
+
+          val file = new java.io.File("/home/gt/scala_worker23.txt")
+          val fos = new java.io.FileWriter(file, true)
+          val osw = new BufferedWriter(fos)
+          osw.write(">>>>>" + row)
+          osw.write(">>>>>" + row.getClass)
+          osw.newLine()
+          osw.flush()
+
+
+          val obj = unpickle.loads(row)
+
+          osw.write("#####" + obj)
+          osw.write("#####" + obj.getClass)
+          osw.newLine()
+          osw.flush()
+
+          val lll = obj.asInstanceOf[JArrayList[String]]
+          for (i <- 0 to lll.size() - 1) {
+            if(lll.get(i).isInstanceOf[String]){
+
+              
+            }
+
+            osw.write("<<<<<" + lll.get(i))
+            osw.write("<<<<<" + lll.get(i).getClass)
           }
-        } else {
-          Seq(obj)
+          osw.newLine()
+          osw.flush()
+
+          if (batched) {
+            obj match {
+              case array: Array[Any] => array.toSeq
+              case _ => {
+
+                val file = new java.io.File("/home/gt/scala_worker13.txt")
+                val fos = new java.io.FileWriter(file, true)
+                val osw = new BufferedWriter(fos)
+                val temp = obj.asInstanceOf[JArrayList[_]]
+                for (i <- 0 to temp.size() - 1) {
+                  osw.write("#####" + temp.get(i))
+                  osw.write("#####" + temp.get(i).getClass)
+                }
+                osw.newLine()
+                osw.flush()
+
+                osw.write("#####" + obj.asInstanceOf[JArrayList[_]].asScala)
+                osw.write("#####" + obj.asInstanceOf[JArrayList[_]].asScala.getClass)
+                osw.newLine()
+                osw.flush()
+
+                obj.asInstanceOf[JArrayList[_]].asScala
+              }
+            }
+          } else {
+            Seq(obj)
+          }
         }
       }
     }.toJavaRDD()

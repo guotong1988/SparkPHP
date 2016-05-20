@@ -33,7 +33,7 @@ class sql_context{
             $schema = $temp[1];
         }
 
-        print_r($schema->json());
+     #   print_r($schema->json());
 
         $jrdd = $this->php_call_java->SerDeUtil->toJavaArray($rdd->to_java_object_rdd());
         $jdf = $this->ssql_ctx->applySchemaToPhpRDD($jrdd->rdd(), $schema->json());
@@ -43,7 +43,7 @@ class sql_context{
     }
 
     function createFromRDD($rdd,$schema,$samplingRatio){
-        if($schema==null or is_array($schema)){
+        if($schema==null or is_array($schema)){#是StructType就跳过
             $struct = $this->inferSchema($rdd,$samplingRatio);
             $converter = create_converter($struct);
             $rdd = $rdd->map($converter);
@@ -58,7 +58,15 @@ class sql_context{
         }
         $rdd = $rdd->map(
             function($obj) use ($schema) {
-                return $schema->toInternal($obj);
+
+
+
+//                file_put_contents("/home/gt/php_worker13.txt", $obj." -------------- \n", FILE_APPEND);
+                $temp = $schema->toInternal($obj);
+
+
+//                file_put_contents("/home/gt/php_worker13.txt", $temp." -------------- \n", FILE_APPEND);
+                return $temp;
             }
         );
         return array($rdd, $schema);
@@ -101,4 +109,21 @@ class sql_context{
 
     }
 
+    function sql($sqlQuery)
+    {
+        return new DataFrame($this->ssql_ctx->sql($sqlQuery), $this);
+    }
+
+
+    function jsonFile($path, $schema=null, $samplingRatio=1.0)
+    {
+    if($schema==null) {
+        $df = $this->ssql_ctx->jsonFile($path, $samplingRatio);
+    }
+    else{
+        $scala_datatype = $this->ssql_ctx->parseDataType($schema->json());
+        $df = $this->ssql_ctx->jsonFile($path, $scala_datatype);
+    }
+    return new DataFrame($df, $this);
+    }
 }

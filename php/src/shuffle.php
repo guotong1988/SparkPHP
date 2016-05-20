@@ -182,11 +182,8 @@ class ExternalMerger extends Merger{
                 }
                 if (array_key_exists($key, $this->data)) {
                     $this->data[$key] = $comb($this->data[$key], $value[1]);
-
-
                 } else {
                     $this->data[$key] = $value[1];
-
                 }
             }
 
@@ -203,6 +200,9 @@ class ExternalMerger extends Merger{
                 }
             }
         }
+
+
+
         if(memory_get_usage()/1024/1024>$limit || $hasSpilled==True){
             $this->spill();
         }
@@ -310,6 +310,8 @@ class ExternalMerger extends Merger{
                 }
             }
         }
+
+
         if($limit!=-1) {
             if(memory_get_usage()/1024/1024 >= $limit||$hasSpilled==True) {
                 $this->spill();

@@ -343,11 +343,16 @@ class StructType extends DataType{
         if($obj==null){
             return;
         }
+        if(is_string($obj)){
+            $obj = explode(" ",$obj);
+            return $obj;
+        }
+
         if($this->needSerializeAnyField) {
             if(is_array($obj)) {
                 $re = array();
                 for($i=0;$i<sizeof($this->fields);$i++){
-                    array_push($re,$this->fields[$i]->toInternal($obj->get($this->names[$i])));
+                    array_push($re,$this->fields[$i]->toInternal($obj[$i]));
                 }
                 return $re;
             } else {
@@ -355,11 +360,12 @@ class StructType extends DataType{
             }
         }else{
             if(is_array($obj)) {
-                $re = array();
-                for($i=0;$i<sizeof($this->names);$i++){
-                    array_push($re,$obj->get($this->names[$i]));
-                }
-                return $re;
+                return array($obj);
+//                $re = array();
+//                for($i=0;$i<sizeof($this->names);$i++){
+//                    array_push($re,$obj[$i]);
+//                }
+//                return $re;
             }else{
                 throw new Exception("Unexpected tuple %r with StructType",$obj);
             }

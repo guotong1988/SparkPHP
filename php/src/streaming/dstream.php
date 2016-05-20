@@ -210,6 +210,55 @@ function foreachRDD($func)
 }
 
 
+function updateStateByKey($updateFunc, $numPartitions=null){
+
+    if($numPartitions==null) {
+        $numPartitions = 2;  #self . _sc . defaultParallelism
+    }
+
+    $reduceFunc = function($t,$a,$b) use ($numPartitions,$updateFunc) {
+        if($a==null){
+            $g = $b -> groupbyKey($numPartitions)->mapValues(
+                function ($vs){
+                    return array(array($vs),null);
+                }
+            );
+        }else{
+            $g = $a -> cogroup($b->partitionBy($numPartitions).$numPartitions);
+            $g = $g -> mapValues(
+                function ($ab){
+                    if (sizeof($ab[0])>0){
+                        return array(array($ab[1]),$ab[0][0]);
+                    }else{
+                        return array(array($ab[1]),null);
+                    }
+                }
+            );
+        }
+        $state = $g->mapValues(
+            function ($vs_s) use ($updateFunc){
+                return $updateFunc($vs_s[0],$vs_s[1]);
+            }
+        );
+
+        return $state->filter(
+            function($k_v){
+                return $k_v[1]!=null;
+            }
+        );
+    };
+
+    $jreduceFunc =new TransformFunction($this->sc,$reduceFunc,new utf8_deserializer());#TODO
+
+    $temp = java_closure($jreduceFunc, null, java("org.apache.spark.streaming.api.php.PhpTransformFunction"));
+
+    $dstream = $this->sc->php_call_java->PythonStateDStream($this->jdstream->dstream(), $temp);
+
+    return new DStream($dstream->asJavaDStream(), $this->ssc, new utf8_deserializer());#TODO
+}
+
+
+
 }
 
 

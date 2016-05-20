@@ -61,4 +61,9 @@ class streaming_context{
     function awaitTerminationOrTimeout($timeout){
         return $this->jssc->awaitTerminationOrTimeout(java_values($timeout * 1000));
     }
+
+    function checkpoint($directory)
+    {
+        $this->jssc->checkpoint($directory);
+    }
 }

@@ -33,7 +33,7 @@ class serializer {
 
 class utf8_serializer extends serializer{
     var $use_unicode;
-    function utf8_serializer($use_unicode=True){
+    function __construct($use_unicode=True){
         $this->use_unicode = $use_unicode;
     }
 
@@ -136,7 +136,7 @@ class utf8_deserializer extends serializer{
     var $use_unicode;
     var $is_array=False;
     var $need_check=True;
-    function utf8_deserializer($use_unicode=True){
+    function __construct($use_unicode=True){
         $this->use_unicode=$use_unicode;
     }
 
@@ -146,9 +146,7 @@ class utf8_deserializer extends serializer{
 
         $length_of_line = $stream->read_int();
 
-       file_put_contents("/home/".get_current_user()."/php_worker7.txt", $length_of_line."!!!\n", FILE_APPEND);
-
-
+     #  file_put_contents("/home/".get_current_user()."/php_worker7.txt", $length_of_line."!!!\n", FILE_APPEND);
 
         if($length_of_line == 4294967295){#TODO -1
             throw new Exception("end of data");
@@ -159,6 +157,7 @@ class utf8_deserializer extends serializer{
         }
         $string = $stream->read_fully($length_of_line);
 
+  #      file_put_contents("/home/".get_current_user()."/php_worker7.txt", $string."--!!!\n", FILE_APPEND);
 
 
  #      file_put_contents("/home/".get_current_user()."/php_worker9.txt", $string."!!!\n", FILE_APPEND);

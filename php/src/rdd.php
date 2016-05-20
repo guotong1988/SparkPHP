@@ -23,7 +23,7 @@ class rdd
     var $partitioner;
     var $s;
 
-    function rdd($jrdd, $ctx, $deserializer)
+    function __construct($jrdd, $ctx, $deserializer)
     {
 
         $this->jrdd = $jrdd;
@@ -39,6 +39,55 @@ class rdd
     function id()
     {
         return $this->id;
+    }
+
+    function union($other){
+
+        return new rdd($this->jrdd->union($other->jrdd), $this->ctx,
+            new utf8_deserializer());
+
+    }
+
+    function cogroup($other, $numPartitions=null)
+    {
+        #     For each key k in C{self} or C{other}, return a resulting RDD that
+        #     contains a tuple with the list of values for that key in C{self} as
+        #     well as C{other}.
+
+        #    >>> x = sc.parallelize([("a", 1), ("b", 4)])
+        #    >>> y = sc.parallelize([("a", 2)])
+        #    >>> [(x, tuple(map(list, y))) for x, y in sorted(list(x.cogroup(y).collect()))]
+        #    [('a', ([1], [2])), ('b', ([4], []))]
+
+        $make_mapper = function ($i) {
+            return function($v) use ($i) {
+                return array($i, $v);
+            };
+        };
+        $python_cogroup = function($rdds, $numPartitions) use ($make_mapper)
+        {
+//            $vrdds = array();
+//            foreach($rdds as $i=>$rdd){
+//                $temp = $rdd->mapValues($make_mapper($i));
+//                array_push($vrdds,$rdd);
+//            }
+
+            $union_vrdds = array_reduce($rdds,
+                function($acc,$other){
+                    if($acc==null){
+                        return $other;
+                    }
+                    return $acc->union($other);
+                }
+            );
+
+            $rdd_len = sizeof($rdds);
+
+            return $union_vrdds->groupByKey($numPartitions);
+        };
+
+
+        return $python_cogroup(array($this, $other), $numPartitions);
     }
 
     function count()
@@ -132,10 +181,16 @@ class rdd
         return $this->mapPartitionsWithIndex(
 
             function ($any, $iterator) use ($f,$is_list) {#TODO 注意$iterator的每个为kv的情况
+
+//                file_put_contents("/home/".get_current_user()."/php_worker9.txt", gettype($iterator)."!!!\n", FILE_APPEND);
+
+
                 if($iterator instanceof Generator){
                     $re = array();
                     foreach($iterator as $e){
                         if($e!="") {
+//                            file_put_contents("/home/".get_current_user()."/php_worker9.txt", $f($e)."!!!--\n", FILE_APPEND);
+
                             array_push($re, $f($e));
                         }
                     }
@@ -653,13 +708,29 @@ class rdd
         };
 
         $mergeValue=function($xs, $x) {
-            array_push($xs,$x);
-            return $xs;
+            if(is_string($xs)){
+                $temp = array();
+                array_push($temp,$xs);
+                array_push($temp,$x);
+                return $temp;
+            }elseif(is_array($xs)) {
+                array_push($xs, $x);
+                return $xs;
+            }
         };
 
         $mergeCombiners=function($a, $b) {
             if(is_string($a)){
-                return array($a,$b);
+                if(is_array($b)){
+                    $temp = array();
+                    array_push($temp,$a);
+                    foreach($b as $ele) {
+                        array_push($temp, $ele);
+                    }
+                    return $temp;
+                }else {
+                    return array($a, $b);
+                }
             }else{
                 if(is_array($b)){
                     foreach($b as $ele) {
@@ -711,7 +782,7 @@ class rdd
     function mapValues(callable $f){
 
         $map_values_func = function($input) use ($f){#$input不是iterator
-            if(is_array($input)){
+             if(is_array($input)){
                 $re = array();
                 $index = 0;
                 foreach($input as $k=>$v){

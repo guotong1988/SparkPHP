@@ -86,6 +86,8 @@ if($php_path_on_yarn=="NULL\n")
     require($spark_php_home . "src/files.php");
     require($spark_php_home . "src/broadcast.php");
     require($spark_php_home . "src/rddsampler.php");
+    require($spark_php_home . "src/sql/types.php");
+    require($spark_php_home . "src/sql/dataframe.php");
     set_include_path($spark_php_home."example/");
  #   read_all_dir($spark_php_home."example");
 }else{
@@ -99,6 +101,8 @@ if($php_path_on_yarn=="NULL\n")
     require($php_path_on_yarn . "src/files.php");
     require($php_path_on_yarn . "src/broadcast.php");
     require($php_path_on_yarn . "src/rddsampler.php");
+    require($php_path_on_yarn . "src/sql/types.php");
+    require($php_path_on_yarn . "src/sql/dataframe.php");
     set_include_path($php_path_on_yarn."example/");
  #   read_all_dir($php_path_on_yarn."example");
 }
@@ -245,7 +249,7 @@ if($profiler) {
     file_put_contents($spark_php_home."php_worker.txt", $split_index." -------------- \n", FILE_APPEND);
 
      $temp3 = $func($split_index, $iterator);#分布式计算
-     file_put_contents($spark_php_home."php_worker.txt",$split_index." output!\n", FILE_APPEND);
+     file_put_contents($spark_php_home."php_worker.txt","\n".$split_index."output!\n", FILE_APPEND);
 
 /*
     foreach ($temp3 as $key => $element) {

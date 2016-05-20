@@ -91,15 +91,65 @@ private[spark] object SerDeUtil extends Logging {
 
 
   /**
+   * 在php里直接被调用
    * Convert an RDD of Java objects to Array (no recursive conversions).
    * It is only used by pyspark.sql.
    */
   def toJavaArray(jrdd: JavaRDD[Any]): JavaRDD[Array[_]] = {
     jrdd.rdd.map {
-      case objs: JArrayList[_] =>
-        objs.toArray
-      case obj if obj.getClass.isArray =>
-        obj.asInstanceOf[Array[_]].toArray
+      case a: org.phprpc.util.AssocArray => {
+        val   file = new java.io.File("/home/gt/scala_worker4.txt")
+        val   fos = new java.io.FileWriter(file,true);
+        val   osw = new BufferedWriter(fos);
+        val temp = a.toArrayList
+        for(i<-0 to temp.size()-1) {
+          osw.write("#####" + temp.get(i))
+          //                val B = temp.get(i).asInstanceOf[Array[Byte]]
+          //                osw.write("#####" + new String(B))
+          osw.newLine()
+          osw.flush()
+        }
+        a.toArrayList.toArray
+      }
+
+      case objs: JArrayList[_] => {
+
+        val   file = new java.io.File("/home/gt/scala_worker54.txt")
+        val   fos = new java.io.FileWriter(file,true);
+        val   osw = new BufferedWriter(fos);
+        for(i<-0 to objs.size()-1) {
+          osw.write("#####" + objs.get(i))
+          osw.newLine()
+          osw.flush()
+        }
+
+        val temp = objs.toArray
+
+        osw.write(">>>>>" + temp)
+        osw.newLine()
+        osw.flush()
+
+        temp
+      }
+      case obj if obj.getClass.isArray => {
+
+        val   file = new java.io.File("/home/gt/scala_worker55.txt")
+        val   fos = new java.io.FileWriter(file,true);
+        val   osw = new BufferedWriter(fos);
+        osw.write("#####" + obj)
+        val bbb = obj.asInstanceOf[Array[Byte]]
+        osw.write("~~~~~" + new String(bbb))
+        osw.newLine()
+        osw.flush()
+        val temp = obj.asInstanceOf[Array[_]].toArray
+        temp.foreach(e=>{
+          osw.write(">>>>>" + e)
+          osw.newLine()
+          osw.flush()
+        })
+        osw.flush()
+        temp
+      }
     }.toJavaRDD()
   }
 
@@ -139,6 +189,8 @@ private[spark] object SerDeUtil extends Logging {
   }
 
   /**
+   * 在php里直接被调用
+   * 我理解是需要把php序列化的数据转成java数据，才能用sql
    * Convert an RDD of serialized Php objects to RDD of objects, that is usable by PySpark.
    */
   def phpToJava(phpRDD: JavaRDD[Array[Byte]], batched: Boolean): JavaRDD[Any] = {
@@ -150,6 +202,21 @@ private[spark] object SerDeUtil extends Logging {
         if (batched) {
           obj match {
             case array: Array[Any] => array.toSeq
+            case a: org.phprpc.util.AssocArray => {
+
+              val   file = new java.io.File("/home/gt/scala_worker3.txt")
+              val   fos = new java.io.FileWriter(file,true);
+              val   osw = new BufferedWriter(fos);
+              val temp = a.toArrayList
+              for(i<-0 to temp.size()-1) {
+                osw.write("#####" + temp.get(i))
+                val B = temp.get(i).asInstanceOf[Array[Byte]]
+                osw.write("#####" + new String(B))
+              }
+              osw.newLine()
+              osw.flush()
+              a.toArrayList.asScala
+            }
             case _ => obj.asInstanceOf[JArrayList[_]].asScala
           }
         } else {

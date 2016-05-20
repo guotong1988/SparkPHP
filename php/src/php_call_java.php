@@ -11,8 +11,12 @@ class php_call_java {
     var $PhpAccumulatorParam;
     var $PhpDStream;
     var $SerDeUtil;
+    var $functions;
+    var $PhpUtils;
     function php_call_java()
     {
+        $this->PhpUtils = new java("org.apache.spark.api.php.PhpUtils");
+        $this->functions=new java("org.apache.spark.sql.functions");
         $this->SerDeUtil=new java("org.apache.spark.api.php.SerDeUtil");
         $this->PhpDStream = new java("org.apache.spark.streaming.api.php.PhpDStream");
         $this->SparkConf = new java("org.apache.spark.SparkConf");
