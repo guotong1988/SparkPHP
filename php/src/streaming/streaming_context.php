@@ -10,6 +10,7 @@ class streaming_context{
     var $sc;
     var $php_call_java;
     var $jssc;
+    var $transformerSerializer;
     function __construct($spark_context, $batchDuration=null, $jssc=null){
         $this->sc = $spark_context;
         $this->php_call_java = $this->sc->php_call_java;
@@ -36,6 +37,13 @@ class streaming_context{
         if($this->php_call_java==null){
             $this->php_call_java=$this->sc->php_call_java;
         }
+        $this->transformerSerializer =new TransformFunctionSerializer(
+            streaming_context::$activeContext, new utf8_serializer(), $this->php_call_java);
+
+        $temp =  java_closure($this->transformerSerializer,null,java("org.apache.spark.streaming.api.php.PhpTransformFunctionSerializerInterface"));
+
+        $this->php_call_java->PhpDStream->registerSerializer($temp);
+        $this->php_call_java->PhpTransformFunctionSerializer->register($temp);
     }
 
     function textFileStream($directory)
@@ -65,5 +73,29 @@ class streaming_context{
     function checkpoint($directory)
     {
         $this->jssc->checkpoint($directory);
+    }
+
+
+    function socketTextStream($hostname, $port, $storageLevel=null)
+    {
+        if($storageLevel==null){
+
+            StorageLevel::$DISK_ONLY =new StorageLevel(True, False, False, False);
+            StorageLevel::$DISK_ONLY_2 =new StorageLevel(True, False, False, False, 2);
+            StorageLevel::$MEMORY_ONLY =new StorageLevel(False, True, False, True);
+            StorageLevel::$MEMORY_ONLY_2 =new StorageLevel(False, True, False, True, 2);
+            StorageLevel::$MEMORY_ONLY_SER =new StorageLevel(False, True, False, False);
+            StorageLevel::$MEMORY_ONLY_SER_2 =new StorageLevel(False, True, False, False, 2);
+            StorageLevel::$MEMORY_AND_DISK =new StorageLevel(True, True, False, True);
+            StorageLevel::$MEMORY_AND_DISK_2 =new StorageLevel(True, True, False, True, 2);
+            StorageLevel::$MEMORY_AND_DISK_SER =new StorageLevel(True, True, False, False);
+            StorageLevel::$MEMORY_AND_DISK_SER_2 =new StorageLevel(True, True, False, False, 2);
+            StorageLevel::$OFF_HEAP =new StorageLevel(False, False, True, False, 1);
+
+            $storageLevel=StorageLevel::$MEMORY_AND_DISK_SER_2;
+        }
+
+        $jlevel = $this->sc->getJavaStorageLevel($storageLevel);
+        return new DStream($this->jssc->socketTextStream($hostname, $port, $jlevel), $this, new utf8_deserializer());
     }
 }

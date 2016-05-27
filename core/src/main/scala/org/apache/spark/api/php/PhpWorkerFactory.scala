@@ -1,7 +1,7 @@
 package org.apache.spark.api.php
 import org.apache.spark.Logging
 
-import java.io.{DataOutputStream, DataInputStream, InputStream, OutputStreamWriter}
+import java.io._
 import java.net.{InetAddress, ServerSocket, Socket, SocketException}
 import java.util.Arrays
 
@@ -11,8 +11,6 @@ import scala.collection.JavaConverters._
 import org.apache.spark._
 import org.apache.spark.util.{RedirectThread, Utils}
 
-
-import java.io.File;
 
 /**
  * worker端用的
@@ -169,8 +167,24 @@ private[spark] class PhpWorkerFactory(phpExec: String, envVars: Map[String, Stri
       }
 
       try {
+
+        val pb = new ProcessBuilder()
+
+        val commands = new java.util.ArrayList[String]();
+        commands.add(sys.env.getOrElse("SPARKPHP_DRIVER_PHP","/home/map/php7/bin/php"));
+
+        if(phpSrcPath!=null) {
+          commands.add(phpSrcPath+"/src/daemon.php");
+        }else{
+          commands.add("daemon.php");
+          val tempPhpPath=new java.io.File(sys.env.getOrElse("SPARK_HOME","/home/gt/spark")+"/php/src/");
+          pb.directory(tempPhpPath);
+        }
+
+        pb.command(commands);
+
         // Create and start the daemon
-        val pb = new ProcessBuilder(Arrays.asList(phpExec, "-m", "src.daemon"))
+
         val workerEnv = pb.environment()
         workerEnv.putAll(envVars.asJava)
         workerEnv.put("PHPPATH", phpPath)
@@ -197,9 +211,9 @@ private[spark] class PhpWorkerFactory(phpExec: String, envVars: Map[String, Stri
           if (stderr != "") {
             val formattedStderr = stderr.replace("\n", "\n  ")
             val errorMessage = s"""
-                                  |Error from python worker:
+                                  |Error from php worker:
                                   |  $formattedStderr
-                |PYTHONPATH was:
+                |PHPPATH was:
                 |  $phpPath
                 |$e"""
 

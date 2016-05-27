@@ -7,6 +7,7 @@ import org.apache.spark._
 import org.apache.spark.api.java.JavaPairRDD
 import org.apache.spark.rdd.RDD
 import org.apache.spark.util.Utils
+import org.phprpc.util.PHPSerializer
 
 /**
  * Form an RDD[(Array[Byte], Array[Byte])] from key-value pairs returned from Php.
@@ -16,23 +17,21 @@ class PairwiseRDD(prev: RDD[Array[Byte]]) extends RDD[(Long, Array[Byte])](prev)
   override def getPartitions: Array[Partition] = prev.partitions
   override val partitioner: Option[Partitioner] = prev.partitioner
   override def compute(split: Partition, context: TaskContext): Iterator[(Long, Array[Byte])] = {
-  //  var file = new java.io.File("/home/gt/scala_worker11.txt")
-  //  var fos = new java.io.FileWriter(file);
-  //  var osw = new BufferedWriter(fos);
+//    var file = new java.io.File("/home/gt/scala_worker11.txt")
+//    var fos = new java.io.FileWriter(file,true);
+//    var osw = new BufferedWriter(fos);
     prev.iterator(split, context).grouped(2).map {
       case Seq(a, b) => {
 
-  //      osw.write("-----"+a)
-  //      osw.newLine()
-  //      osw.flush()
-
-   //     osw.write("+++++"+b)
-   //     osw.newLine()
-    //    osw.flush()
-
-    //    osw.write("====="+Utils.deserializeLongValue(a))
-    //    osw.newLine()
-    //    osw.flush()
+//        osw.write("-----"+a)
+//        osw.newLine()
+//        osw.flush()
+//        osw.write("+++++"+new String(b))
+//        osw.newLine()
+//        osw.flush()
+//        osw.write("====="+Utils.deserializeLongValue(a))
+//        osw.newLine()
+//        osw.flush()
 
         (Utils.deserializeLongValue(a), b)
       }

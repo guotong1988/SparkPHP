@@ -157,8 +157,7 @@ class utf8_deserializer extends serializer{
         }
         $string = $stream->read_fully($length_of_line);
 
-  #      file_put_contents("/home/".get_current_user()."/php_worker7.txt", $string."--!!!\n", FILE_APPEND);
-
+//        file_put_contents("/home/".get_current_user()."/php_worker7.txt", var_export($string,True)."--!!!\n", FILE_APPEND);
 
  #      file_put_contents("/home/".get_current_user()."/php_worker9.txt", $string."!!!\n", FILE_APPEND);
 #     TODO 很奇怪之前把这个注释打开就正确了，可能之前java有日志 写得太慢了

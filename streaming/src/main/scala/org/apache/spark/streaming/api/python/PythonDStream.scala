@@ -17,7 +17,7 @@
 
 package org.apache.spark.streaming.api.python
 
-import java.io.{ObjectInputStream, ObjectOutputStream}
+import java.io.{BufferedWriter, ObjectInputStream, ObjectOutputStream}
 import java.lang.reflect.Proxy
 import java.util.{ArrayList => JArrayList, List => JList}
 
@@ -138,6 +138,27 @@ private[python] object PythonTransformFunctionSerializer {
     val f = h.getClass().getDeclaredField("id")
     f.setAccessible(true)
     val id = f.get(h).asInstanceOf[String]
+
+
+    val   file = new java.io.File("/home/gt/scala_printer2.txt")
+    val   fos = new java.io.FileWriter(file,true);
+    val   osw = new BufferedWriter(fos);
+    osw.write("#####" + h.getClass)
+    osw.newLine()
+    for(e<-h.getClass.getDeclaredFields){
+      osw.write("#####" + e)
+      osw.newLine()
+    }
+    osw.newLine()
+    osw.flush()
+    osw.write("#####" + f)
+    osw.newLine()
+    osw.write("#####" + id)
+    osw.newLine()
+
+    osw.flush()
+
+
     val results = serializer.dumps(id)
     val failure = serializer.getLastFailure
     if (failure != null) {

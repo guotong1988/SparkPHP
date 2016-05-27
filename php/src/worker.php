@@ -22,7 +22,7 @@ error_reporting(E_ERROR | E_WARNING | E_PARSE);
 set_error_handler('displayErrorHandler');
 function displayErrorHandler($error, $error_string, $filename, $line, $symbols)
 {
-#    file_put_contents("/home/gt/php_worker15.txt", $error." ".$filename." ".$line." ".$error_string. "\n",FILE_APPEND);
+    file_put_contents("/home/gt/php_worker15.txt", $error." ".$filename." ".$line." ".$error_string. "\n",FILE_APPEND);
 }
 
 
@@ -125,7 +125,7 @@ if ($result == false) {
 $END_OF_DATA_SECTION = -1;
 $PHP_EXCEPTION_THROWN = -2;
 $TIMING_DATA = -3;
-$END_OF_STREAM = -4;
+$END_OF_STREAM = 4294967292;
 $NULL = -5;
 
 function report_times(sock_output_stream $out_stream, $boot, $init, $finish)
@@ -178,7 +178,7 @@ for($i=0;$i<$num_broadcast_variables;$i++) {
      $bid = $in_stream->read_long();
      if($bid >= 0) {
           $path = $in_stream->read_utf();
-          $broadcast0->broadcastRegistry[$bid] = new broadcast(null,null,$path);
+          $broadcast->broadcastRegistry[$bid] = new broadcast(null,null,$path);
      }else{
           $bid = -$bid - 1;
      #     $broadcast-> broadcastRegistry->pop(bid);
@@ -251,16 +251,11 @@ if($profiler) {
      $temp3 = $func($split_index, $iterator);#分布式计算
      file_put_contents($spark_php_home."php_worker.txt","\n".$split_index."output!\n", FILE_APPEND);
 
-/*
-    foreach ($temp3 as $key => $element) {
-             file_put_contents($spark_php_home . "php_worker.txt", $split_index."output " .$key." ".$element . "\n", FILE_APPEND);
-             if(is_array($element)){
-                 foreach($element as $k=>$v){
-                 file_put_contents($spark_php_home . "php_worker.txt", $split_index."output2 " .$k." ".$v . "\n", FILE_APPEND);
-                 }
-             }
-         }
-*/
+
+//    foreach ($temp3 as $key => $element) {
+//        file_put_contents($spark_php_home."php_worker.txt",var_export($temp3,True).$key."---------".var_export($element,True)."++++++++++\n", FILE_APPEND);
+//    }
+
     $serializer -> dump_stream($temp3, $out_stream);#显然是返回计算结果
 }
 
@@ -282,8 +277,12 @@ foreach(accumulator::$accumulatorRegistry as $aid=>$accum){
        $temp2 = serialize($temp);
        $out_stream->write_utf($temp2);
 }
+
+$ttt = $in_stream->read_int();
+
+file_put_contents($spark_php_home."php_worker.txt", $ttt."ttt-------------- \n", FILE_APPEND);
     # check end of stream
-if($in_stream->read_int() == $END_OF_STREAM){
+if($ttt == $END_OF_STREAM){
         $out_stream->write_int($END_OF_STREAM);
 } else {
         # write a different value to tell JVM to not reuse this worker

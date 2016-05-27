@@ -59,12 +59,12 @@ class rdd
         #    >>> [(x, tuple(map(list, y))) for x, y in sorted(list(x.cogroup(y).collect()))]
         #    [('a', ([1], [2])), ('b', ([4], []))]
 
-        $make_mapper = function ($i) {
-            return function($v) use ($i) {
-                return array($i, $v);
-            };
-        };
-        $python_cogroup = function($rdds, $numPartitions) use ($make_mapper)
+//        $make_mapper = function ($i) {
+//            return function($v) use ($i) {
+//                return array($i, $v);
+//            };
+//        };
+        $python_cogroup = function($rdds, $numPartitions)
         {
 //            $vrdds = array();
 //            foreach($rdds as $i=>$rdd){
@@ -77,14 +77,31 @@ class rdd
                     if($acc==null){
                         return $other;
                     }
-                    return $acc->union($other);
+//                    $acc->saveAsTextFile("/home/gt/php_tmp15/");
+//                    $other->saveAsTextFile("/home/gt/php_tmp16/");#会有FileAlreadyExistsException
+                    $temp = $acc->union($other);
+//                    $temp->saveAsTextFile("/home/gt/php_tmp17/");
+                    return $temp;
                 }
             );
 
             $rdd_len = sizeof($rdds);
 
-            return $union_vrdds->groupByKey($numPartitions);
+            return $union_vrdds->groupByKey2(2);
         };
+
+
+
+//        $union_vrdds = array_reduce(array($this, $other),
+//            function($acc,$other){
+//                if($acc==null){
+//                    return $other;
+//                }
+//                $temp = $acc->union($other);
+//                return $temp;
+//            }
+//        );
+//        return $union_vrdds->groupByKey2($numPartitions);
 
 
         return $python_cogroup(array($this, $other), $numPartitions);
@@ -360,6 +377,9 @@ class rdd
         $temp ->saveAsTextFile($path);
     }
 
+    function saveAsTextFile2($path){
+        $this->jrdd->saveAsTextFile($path);
+    }
 
 
     function combineByKey(callable $createCombinerFunc, callable $mergeValueFunc, callable $mergeCombinersFunc,
@@ -426,6 +446,7 @@ class rdd
         }
     }
 
+
     function partitionBy($numPartitions,callable $partitionFunc=null)
     {
         if ($partitionFunc == null) {
@@ -449,9 +470,9 @@ class rdd
         }
 
         $partitioner = new Partitioner($numPartitions, $partitionFunc);
-        if($this->partitioner != null && serialize($this->partitioner) == serialize($partitioner)) {
-            return $this;
-        }
+//        if($this->partitioner != null && serialize($this->partitioner) == serialize($partitioner)) {
+//            return $this;
+//        }
         $outputSerializer = $this->ctx->unbatched_serializer;#TODO
 
         $limit=256;
@@ -463,16 +484,15 @@ class rdd
                 $c=0;
                 $batch=min(10*$numPartitions,1000);
 
-
-
-                $result = array();
                 foreach($iterator as $key=>$value){#wordcount为例，这是word=>count
+
                     $temp = $partitionFunc($key) % $numPartitions;#相同的key汇集到一起
 
                     if($buckets[$temp]==null) {
                         $buckets[$temp] = array();
                     }
                     $buckets[$temp][$key]=$value;
+
                     $c++;
 
                     if ($c % 1000 == 0 && memory_get_usage()/1024/1024 > $limit || $c > $batch) {
@@ -523,6 +543,9 @@ class rdd
         $jrdd = $this->ctx->php_call_java->PhpRDD->valueOfPair($pairRDD->partitionBy($jpartitioner));
         $rdd = new rdd($jrdd, $this->ctx,$outputSerializer);#TODO $outputSerializer
         $rdd->partitioner = $partitioner;
+
+        $rdd->saveAsTextFile("/home/gt/php_tmp11");
+
         return $rdd;
 
     }
@@ -683,6 +706,7 @@ class rdd
     }
 
 
+
     function groupByKey($numPartitions=null, $partitionFunc=null){
         if($numPartitions==null){
             $numPartitions=$this->defaultReducePartitions();
@@ -708,19 +732,32 @@ class rdd
         };
 
         $mergeValue=function($xs, $x) {
-            if(is_string($xs)){
-                $temp = array();
-                array_push($temp,$xs);
-                array_push($temp,$x);
-                return $temp;
+
+            if(is_string($xs)||is_integer($xs)){
+                if(is_array($x)){
+                    array_push($x, $xs);
+                    return $x;
+                }else {
+                    $temp = array();
+                    array_push($temp,$xs);
+                    array_push($temp,$x);
+                    return $temp;
+                }
             }elseif(is_array($xs)) {
-                array_push($xs, $x);
-                return $xs;
+                if(is_array($x)){
+                    foreach($x as $ele) {
+                        array_push($xs, $ele);
+                    }
+                    return $xs;
+                }else {
+                    array_push($xs, $x);
+                    return $xs;
+                }
             }
         };
 
         $mergeCombiners=function($a, $b) {
-            if(is_string($a)){
+            if(is_string($a)||is_integer($a)){
                 if(is_array($b)){
                     $temp = array();
                     array_push($temp,$a);
@@ -786,7 +823,8 @@ class rdd
                 $re = array();
                 $index = 0;
                 foreach($input as $k=>$v){
-                        if($index==0){
+
+                    if($index==0){
                             array_push($re,$v);
                         }
                         if($index==1) {
@@ -883,7 +921,7 @@ class pipelined_rdd extends rdd{
     var $partitioner;
     var $jrdd;
 
-    function  pipelined_rdd($prev_rdd,callable $func, $preservesPartitioning=False) {
+    function  __construct($prev_rdd,callable $func, $preservesPartitioning=False) {
         $this->s = new Serializer();
         if(!($prev_rdd instanceof pipelined_rdd) || !$prev_rdd->is_pipelinable()) {
             $this->func = $func;

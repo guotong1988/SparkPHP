@@ -17,7 +17,7 @@
 
 package org.apache.spark.streaming.api.php
 
-import java.io.{ObjectInputStream, ObjectOutputStream}
+import java.io.{BufferedWriter, ObjectInputStream, ObjectOutputStream}
 import java.lang.reflect.Proxy
 import java.util.{ArrayList => JArrayList, List => JList}
 
@@ -53,7 +53,7 @@ trait PhpTransformFunction {
 /**
  * Interface for Php Serializer to serialize PhpTransformFunction
  */
-trait PhpTransformFunctionSerializer {
+trait PhpTransformFunctionSerializerInterface {
   def dumps(id: String): Array[Byte]
   def loads(bytes: Array[Byte]): PhpTransformFunction
 
@@ -122,12 +122,12 @@ object PhpTransformFunctionSerializer {
   /**
    * A serializer in Php, used to serialize PhpTransformFunction
     */
-  private var serializer: PhpTransformFunctionSerializer = _
+  private var serializer: PhpTransformFunctionSerializerInterface = _
 
   /*
    * Register a serializer from Php, should be called during initialization
    */
-  def register(ser: PhpTransformFunctionSerializer): Unit = synchronized {
+  def register(ser: PhpTransformFunctionSerializerInterface): Unit = synchronized {
     serializer = ser
   }
 
@@ -135,10 +135,35 @@ object PhpTransformFunctionSerializer {
     require(serializer != null, "Serializer has not been registered!")
     // get the id of PhpTransformFunction in py4j
     val h = Proxy.getInvocationHandler(func.asInstanceOf[Proxy])
-    val f = h.getClass().getDeclaredField("id")
+
+
+    val   file = new java.io.File("/home/gt/scala_printer1.txt")
+    val   fos = new java.io.FileWriter(file,true);
+    val   osw = new BufferedWriter(fos);
+    osw.write("#####" + h.getClass)
+    osw.newLine()
+    for(e<-h.getClass.getDeclaredFields){
+      osw.write("#####" + e)
+      osw.newLine()
+    }
+    osw.newLine()
+    osw.flush()
+
+
+    val f = h.getClass().getDeclaredField("name")
+
+    osw.write("#####" + f)
+    osw.newLine()
+
     f.setAccessible(true)
     val id = f.get(h).asInstanceOf[String]
-    val results = serializer.dumps(id)
+
+    osw.write("#####" + id)
+    osw.newLine()
+    osw.flush()
+
+
+    val results = serializer.dumps("0")
     val failure = serializer.getLastFailure
     if (failure != null) {
       throw new SparkException("An exception was raised by Php:\n" + failure)
@@ -163,10 +188,12 @@ object PhpTransformFunctionSerializer {
 object PhpDStream {
 
   /**
+   *
+   *
    * can not access PhpTransformFunctionSerializer.register() via Py4j
    * Py4JError: PhpTransformFunctionSerializerregister does not exist in the JVM
    */
-  def registerSerializer(ser: PhpTransformFunctionSerializer): Unit = {
+  def registerSerializer(ser: PhpTransformFunctionSerializerInterface): Unit = {
     PhpTransformFunctionSerializer.register(ser)
   }
 

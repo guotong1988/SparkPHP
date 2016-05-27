@@ -13,16 +13,18 @@ class php_call_java {
     var $SerDeUtil;
     var $functions;
     var $PhpUtils;
+    var $PhpTransformFunctionSerializer;
     function php_call_java()
     {
-        $this->PhpUtils = new java("org.apache.spark.api.php.PhpUtils");
-        $this->functions=new java("org.apache.spark.sql.functions");
-        $this->SerDeUtil=new java("org.apache.spark.api.php.SerDeUtil");
-        $this->PhpDStream = new java("org.apache.spark.streaming.api.php.PhpDStream");
+        $this->PhpUtils = java("org.apache.spark.api.php.PhpUtils");
+        $this->functions= java("org.apache.spark.sql.functions");
+        $this->SerDeUtil= java("org.apache.spark.api.php.SerDeUtil");
+        $this->PhpDStream = java("org.apache.spark.streaming.api.php.PhpDStream");
         $this->SparkConf = new java("org.apache.spark.SparkConf");
         $this->JavaSparkContext = new java("org.apache.spark.api.java.JavaSparkContext");
-        $this->PhpRDD = new java("org.apache.spark.api.php.PhpRDD");
+        $this->PhpRDD = java("org.apache.spark.api.php.PhpRDD");
         $this->StorageLevel = new java("org.apache.spark.storage.StorageLevel");
+        $this->PhpTransformFunctionSerializer = java("org.apache.spark.streaming.api.php.PhpTransformFunctionSerializer");
     }
 
     function newStorageLevel($useDisk,
@@ -35,6 +37,10 @@ class php_call_java {
             $useOffHeap,
             $deserialized,
             $replication);
+    }
+
+    function PhpStateDStream($d,$f){
+        return new java("org.apache.spark.streaming.api.php.PhpStateDStream",$d,$f);
     }
 
     function newSQLContext($s){

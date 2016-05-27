@@ -1,0 +1,539 @@
+socket_create()成功45442
+
+socket_connect()成功
+.---2here!
+socket_create()成功40749
+
+socket_connect()成功
+1here!
+1 -------------- 
+
+1output!
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+socket_create()成功35963
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+socket_create()成功35583
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功32836
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+socket_create()成功40538
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功36295
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功36849
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功44177
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功39766
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+socket_create()成功42805
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+socket_create()成功36244
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功46186
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+socket_create()成功45056
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功43460
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功44949
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功39456
+
+socket_connect()成功
+socket_create()成功42280
+
+socket_connect()成功
+.---2here!
+.---2here!
+0here!
+0 -------------- 
+1here!
+1 -------------- 
+
+1output!
+
+0output!
+socket_create()成功44340
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功34709
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+socket_create()成功35070
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功45229
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功44444
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功38771
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+4294967292ttt-------------- 
+socket_create()成功41844
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+4294967292ttt-------------- 
+socket_create()成功39361
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+4294967292ttt-------------- 
+socket_create()成功35032
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功46581
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+4294967292ttt-------------- 
+socket_create()成功36599
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功41309
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功43087
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功34899
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+4294967292ttt-------------- 
+socket_create()成功35158
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+4294967292ttt-------------- 
+socket_create()成功46411
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+4294967292ttt-------------- 
+socket_create()成功41737
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功33945
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+4294967292ttt-------------- 
+socket_create()成功37058
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功45343
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功33632
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功46141
+
+socket_connect()成功
+socket_create()成功34009
+
+socket_connect()成功
+.---2here!
+.---2here!
+1here!
+1 -------------- 
+0here!
+0 -------------- 
+
+1output!
+
+0output!
+4294967292ttt-------------- 
+4294967292ttt-------------- 
+socket_create()成功40265
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功36439
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+4294967292ttt-------------- 
+socket_create()成功41051
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功36550
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功38935
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功36868
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功43636
+
+4294967292ttt-------------- 
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+4294967292ttt-------------- 
+socket_create()成功34857
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+4294967292ttt-------------- 
+socket_create()成功42620
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+socket_create()成功33634
+
+socket_connect()成功
+.---2here!
+socket_create()成功35535
+
+socket_connect()成功
+0here!
+0 -------------- 
+
+0output!
+4294967292ttt-------------- 
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+4294967292ttt-------------- 
+socket_create()成功43816
+
+socket_connect()成功
+.---2here!
+socket_create()成功40760
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+0here!
+0 -------------- 
+
+1output!
+4294967292ttt-------------- 
+
+0output!
+4294967292ttt-------------- 
+socket_create()成功36143
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+4294967292ttt-------------- 
+socket_create()成功40434
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+4294967292ttt-------------- 
+socket_create()成功45056
+
+socket_connect()成功
+.---2here!
+socket_create()成功38983
+
+0here!
+0 -------------- 
+
+0output!
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+4294967292ttt-------------- 
+
+1output!
+socket_create()成功33569
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+4294967292ttt-------------- 
+socket_create()成功36208
+
+socket_connect()成功
+socket_create()成功40577
+
+socket_connect()成功
+.---2here!
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+4294967292ttt-------------- 
+socket_create()成功34639
+
+socket_connect()成功
+2here!
+2 -------------- 
+
+2output!
+4294967292ttt-------------- 
+.---2here!
+3here!
+3 -------------- 
+
+3output!
+4294967292ttt-------------- 
+socket_create()成功37392
+
+socket_connect()成功
+.---2here!
+0here!
+0 -------------- 
+
+0output!
+4294967292ttt-------------- 
+socket_create()成功36221
+
+socket_connect()成功
+.---2here!
+1here!
+1 -------------- 
+
+1output!
+4294967292ttt-------------- 

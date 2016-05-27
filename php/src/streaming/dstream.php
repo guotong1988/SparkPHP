@@ -190,9 +190,14 @@ function saveAsTextFiles($prefix,$suffix=null){
         }
     };
 
-    $saveAsTextFile = function ($t,$rdd) use ($rddToFileName,$prefix,$suffix){
+    $saveAsTextFile = function ($t,$rdd,$rdd2) use ($rddToFileName,$prefix,$suffix){
         $path = $rddToFileName($prefix,$suffix,$t);
-        $rdd->saveAsTextFile($path);
+        if($rdd!=null){
+            $rdd->saveAsTextFile($path);
+        }
+        if($rdd2!=null){
+            $rdd2->saveAsTextFile($path);
+        }
     };
 
     $this->foreachRDD($saveAsTextFile);
@@ -217,47 +222,79 @@ function updateStateByKey($updateFunc, $numPartitions=null){
     }
 
     $reduceFunc = function($t,$a,$b) use ($numPartitions,$updateFunc) {
-        if($a==null){
-            $g = $b -> groupbyKey($numPartitions)->mapValues(
-                function ($vs){
-                    return array(array($vs),null);
-                }
-            );
-        }else{
-            $g = $a -> cogroup($b->partitionBy($numPartitions).$numPartitions);
-            $g = $g -> mapValues(
-                function ($ab){
-                    if (sizeof($ab[0])>0){
-                        return array(array($ab[1]),$ab[0][0]);
-                    }else{
-                        return array(array($ab[1]),null);
-                    }
-                }
-            );
-        }
-        $state = $g->mapValues(
-            function ($vs_s) use ($updateFunc){
-                return $updateFunc($vs_s[0],$vs_s[1]);
-            }
-        );
 
-        return $state->filter(
-            function($k_v){
-                return $k_v[1]!=null;
-            }
-        );
+        file_put_contents("/home/".get_current_user()."/php_worker18.txt", $t."!!!\n", FILE_APPEND);
+        file_put_contents("/home/".get_current_user()."/php_worker18.txt", gettype($a)."!!!\n", FILE_APPEND);
+        file_put_contents("/home/".get_current_user()."/php_worker18.txt", gettype($b)."!!!\n", FILE_APPEND);
+
+
+        $b->saveAsTextFile("/home/gt/php_tmp2/");
+
+//        if($a==null){
+//            $g = $b -> groupbyKey($numPartitions)->mapValues(
+//                function ($vs){
+//
+//                    file_put_contents("/home/".get_current_user()."/php_worker118.txt", $vs."!!!\n", FILE_APPEND);
+//
+//                    return array(array($vs),null);
+//                }
+//            );
+        if($a==null) {
+            $g = $b->groupbyKey($numPartitions);
+            $state = $g->mapValues(
+                function ($vs_s) use ($updateFunc) {
+                    return $updateFunc($vs_s, null);
+                }
+            );
+            return $state;
+        }else{
+            $g = $a -> cogroup($b,$numPartitions);#应该是累加逻辑
+
+            $state = $g->mapValues(
+                function ($vs_s) use ($updateFunc) {
+
+                    file_put_contents("/home/".get_current_user()."/php_worker119.txt", var_export($vs_s,true)."!!!\n", FILE_APPEND);
+
+                    return $updateFunc($vs_s[0], $vs_s[1]);
+                }
+            );
+
+            return $state;
+
+//            $g = $g -> mapValues(
+//                function ($ab){
+//                    file_put_contents("/home/".get_current_user()."/php_worker119.txt", $ab."!!!\n", FILE_APPEND);
+//                    if (sizeof($ab[0])>0){
+//                        return array(array($ab[1]),$ab[0][0]);
+//                    }else{
+//                        return array(array($ab[1]),null);
+//                    }
+//                }
+//            );
+
+        }
+
+
+//
+//        return $state->filter(
+//            function($k_v){
+//                return $k_v[1]!=null;
+//            }
+//        );
     };
 
     $jreduceFunc =new TransformFunction($this->sc,$reduceFunc,new utf8_deserializer());#TODO
 
+    dstream::$theFunc = $reduceFunc;
+
     $temp = java_closure($jreduceFunc, null, java("org.apache.spark.streaming.api.php.PhpTransformFunction"));
 
-    $dstream = $this->sc->php_call_java->PythonStateDStream($this->jdstream->dstream(), $temp);
+    $dstream = $this->sc->php_call_java->PhpStateDStream($this->jdstream->dstream(), $temp);
 
     return new DStream($dstream->asJavaDStream(), $this->ssc, new utf8_deserializer());#TODO
 }
 
-
+static $theFunc;
 
 }
 

@@ -165,9 +165,7 @@ class ExternalMerger extends Merger{
         $batch = $this->batch;
         $limit = $this->memory_limit;
         foreach($iterator as $key=>$value){#key是第几个，value是pair/array，这个pair是word和count
-
             $key = $value[0];
-
             if (sizeof($this->pdata)>0) {#spill到硬盘之后就>0了
                 if (array_key_exists($key,  $this->pdata[$hash_func($key)])) {
                     $this->pdata[$hash_func($key)][$key] = $comb($this->pdata[$hash_func($key)][$key] , $value[1]);
@@ -201,7 +199,9 @@ class ExternalMerger extends Merger{
             }
         }
 
-
+//        foreach($this->data as $k=>$v) {
+//            file_put_contents("/home/" . get_current_user() . "/php_worker800.txt", $k . "-" . var_export($v,True) . "!!!\n\n", FILE_APPEND);
+//        }
 
         if(memory_get_usage()/1024/1024>$limit || $hasSpilled==True){
             $this->spill();
@@ -240,6 +240,8 @@ class ExternalMerger extends Merger{
         $c = 0;
         $batch = $this->batch;
         foreach($iterator as $k => $v){
+
+
             if(is_array($v)){
                 foreach($v as $key=>$value) {
 
@@ -279,7 +281,7 @@ class ExternalMerger extends Merger{
             }else{
                 if (sizeof($this->pdata)>0) {
                     if (array_key_exists($k,  $this->pdata[$hash_func($k)])) {
-                        $this->pdata[$hash_func($k)][$k] = $comb($d[$k], $v);
+                        $this->pdata[$hash_func($k)][$k] = $comb($this->pdata[$hash_func($k)][$k], $v);
                     } else {
                         $this->pdata[$hash_func($k)][$k] = $v;
                     }
@@ -311,6 +313,9 @@ class ExternalMerger extends Merger{
             }
         }
 
+//        foreach($this->data as $k=>$v) {
+//            file_put_contents("/home/" . get_current_user() . "/php_worker77.txt", $k . "-" . var_export($v,True) . "!!!\n", FILE_APPEND);
+//        }
 
         if($limit!=-1) {
             if(memory_get_usage()/1024/1024 >= $limit||$hasSpilled==True) {

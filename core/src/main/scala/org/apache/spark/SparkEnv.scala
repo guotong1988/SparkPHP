@@ -144,6 +144,7 @@ class SparkEnv (
     synchronized {
       val key = (phpExec, envVars)
       phpWorkers.getOrElseUpdate(key, new PhpWorkerFactory(phpExec, envVars)).create()
+      //new PhpWorkerFactory(phpExec, envVars).create()
     }
   }
 

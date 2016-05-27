@@ -128,7 +128,12 @@ private[spark] class PhpRunner4worker(
         }
 
         try {
-          val temp = stream.readInt()
+          var temp = 0
+          try {
+            temp = stream.readInt()
+          }catch{
+            case e: Exception  => return null//为了解决两次以上shuffle的问题
+          }
 //          osw.write("#####"+temp)
 //          osw.newLine()
 //          osw.flush()
@@ -168,19 +173,36 @@ private[spark] class PhpRunner4worker(
               // We've finished the data section of the output, but we can still
               // read some accumulator updates:
               val numAccumulatorUpdates = stream.readInt()
+
+//              osw.write("!!!!!"+numAccumulatorUpdates)
+//              osw.newLine()
+//              osw.flush()
+
+
               (1 to numAccumulatorUpdates).foreach { _ =>
                 val updateLen = stream.readInt()
                 val update = new Array[Byte](updateLen)
                 stream.readFully(update)
                 accumulator += Collections.singletonList(update)
               }
+
+
+
               // Check whether the worker is ready to be re-used.
               if (stream.readInt() == SpecialLengths.END_OF_STREAM) {
                 if (reuse_worker) {
+
+//                  osw.write("!!!!!!!!!!")
+//                  osw.newLine()
+//                  osw.flush()
+
                   env.releasePhpWorker(phpExec, envVars.asScala.toMap, socket2worker)
                   released = true
                 }
               }
+//              osw.write("!!....")
+//              osw.newLine()
+//              osw.flush()
               null
           }
         } catch {
@@ -240,10 +262,27 @@ private[spark] class PhpRunner4worker(
         TaskContext.setTaskContext(context)
         val stream = new BufferedOutputStream(socket2worker.getOutputStream, bufferSize)
         val dataOut = new DataOutputStream(stream)
+
+//        var file:java.io.File=null
+//        var fos:FileWriter=null
+//        var osw:BufferedWriter=null
+//        file = new java.io.File("/home/gt/scala_worker100.txt")
+//        fos = new java.io.FileWriter(file,true)
+//        osw = new BufferedWriter(fos)
+
+//        osw.write(1)
+//        osw.newLine()
+//        osw.flush()
+
         // Partition index
         dataOut.writeInt(partitionIndex)
+
+
+
         // Php version of driver
         PhpRDD.writeUTF(phpVer, dataOut)
+
+
         // sparkFilesDir
         PhpRDD.writeUTF(SparkFiles.getRootDirectory(), dataOut)
         // Php includes (*.zip and *.egg files)
@@ -271,6 +310,8 @@ private[spark] class PhpRunner4worker(
             oldBids.add(broadcast.id)
           }
         }
+
+
         dataOut.flush()
         // Serialized command:
         val bytes = command.getBytes(UTF_8)
@@ -281,6 +322,8 @@ private[spark] class PhpRunner4worker(
         dataOut.writeInt(SpecialLengths.END_OF_DATA_SECTION)
         dataOut.writeInt(SpecialLengths.END_OF_STREAM)
         dataOut.flush()
+
+
       } catch {
         case e: Exception if context.isCompleted || context.isInterrupted =>
           logDebug("Exception thrown after task completion (likely due to cleanup)", e)
