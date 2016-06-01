@@ -31,7 +31,7 @@ class rdd
         $this->is_checkpointed = False;
         $this->ctx = $ctx;
         $this->deserializer = $deserializer;
-        $this->id = $jrdd->setName("!!!");
+    //    $this->id = $jrdd->setName("!!--!!");
         $this->partitioner = null;
         $this->s = new Serializer();
     }
@@ -72,6 +72,7 @@ class rdd
 //                array_push($vrdds,$rdd);
 //            }
 
+
             $union_vrdds = array_reduce($rdds,
                 function($acc,$other){
                     if($acc==null){
@@ -85,9 +86,7 @@ class rdd
                 }
             );
 
-            $rdd_len = sizeof($rdds);
-
-            return $union_vrdds->groupByKey2(2);
+            return $union_vrdds->groupByKey($numPartitions);
         };
 
 
@@ -156,6 +155,8 @@ class rdd
 
             function ($split, $iterator) use ($f) {
 
+                file_put_contents("/home/".get_current_user()."/php_printer99.txt", var_export($iterator,TRUE)."---!!!???\n", FILE_APPEND);
+
                 $sub_is_array = False;
                 foreach($iterator as $key=>$value){
                     $temp = $f($value);
@@ -199,19 +200,18 @@ class rdd
 
             function ($any, $iterator) use ($f,$is_list) {#TODO 注意$iterator的每个为kv的情况
 
-//                file_put_contents("/home/".get_current_user()."/php_worker9.txt", gettype($iterator)."!!!\n", FILE_APPEND);
+                file_put_contents("/home/".get_current_user()."/php_worker19.txt", var_export($iterator,TRUE)."!!!\n", FILE_APPEND);
 
 
                 if($iterator instanceof Generator){
                     $re = array();
                     foreach($iterator as $e){
-                        if($e!="") {
-//                            file_put_contents("/home/".get_current_user()."/php_worker9.txt", $f($e)."!!!--\n", FILE_APPEND);
-
+                            file_put_contents("/home/".get_current_user()."/php_worker9.txt", $f($e)."!!!--\n", FILE_APPEND);
                             array_push($re, $f($e));
-                        }
                     }
                     return $re;
+                }elseif(is_array($iterator)&&sizeof($iterator)==0){
+                    return array();
                 }elseif($is_list($iterator)) {
                     return array_map($f, $iterator);
                 }else {
@@ -229,6 +229,48 @@ class rdd
             , $preservesPartitioning);
     }
 
+
+    function map2(callable $f, $preservesPartitioning = False)
+    {
+        $is_list = function ($arr){
+            return is_array($arr) && ($arr == array() || array_keys($arr) === range(0,count($arr)-1) );
+        };
+
+        return $this->mapPartitionsWithIndex(
+
+            function ($any, $iterator) use ($f,$is_list) {#TODO 注意$iterator的每个为kv的情况
+
+                file_put_contents("/home/".get_current_user()."/php_worker9.txt", var_export($iterator,true)."!!!\n", FILE_APPEND);
+
+
+                if($iterator instanceof Generator){
+                    $re = array();
+                    foreach($iterator as $e){
+                        if($e!="") {
+//                            file_put_contents("/home/".get_current_user()."/php_worker9.txt", $f($e)."!!!--\n", FILE_APPEND);
+
+                            array_push($re, $f($e));
+                        }
+                    }
+                    return $re;
+                }elseif(is_array($iterator)&&sizeof($iterator)==0){
+                    return array();
+                }elseif($is_list($iterator)) {
+                    return array_map($f, $iterator);
+                }else {
+                    $re = array();
+                    foreach ($iterator as $k => $v) {
+                        $temp = array();
+                        array_push($temp, $k);
+                        array_push($temp, $v);
+                        array_push($re, $f($temp));
+                    }
+                    return $re;
+                }
+            }
+
+            , $preservesPartitioning);
+    }
 
 
     function mapPartitions(callable $f, $preservesPartitioning = False)
@@ -543,9 +585,6 @@ class rdd
         $jrdd = $this->ctx->php_call_java->PhpRDD->valueOfPair($pairRDD->partitionBy($jpartitioner));
         $rdd = new rdd($jrdd, $this->ctx,$outputSerializer);#TODO $outputSerializer
         $rdd->partitioner = $partitioner;
-
-        $rdd->saveAsTextFile("/home/gt/php_tmp11");
-
         return $rdd;
 
     }
@@ -816,9 +855,44 @@ class rdd
     }
 
 
+    function mapValues2(callable $f){
+
+        $map_values_func = function($input) use ($f){#$input不是iterator
+
+            file_put_contents("/home/".get_current_user()."/php_worker120.txt", var_export($input,true)."!!!\n", FILE_APPEND);
+
+            if(is_array($input)){
+                $re = array();
+                $index = 0;
+                foreach($input as $k=>$v){
+
+                    if($index==0){
+                        array_push($re,$v);
+                    }
+                    if($index==1) {
+                        array_push($re,$f($v));
+                    }
+                    $index++;
+                    if($index==2){
+                        $index=0;
+                    }
+                }
+                return $re;
+            }else{
+                return $f($input);
+            }
+        };
+
+        return $this->map2($map_values_func, True);
+    }
+
+
     function mapValues(callable $f){
 
         $map_values_func = function($input) use ($f){#$input不是iterator
+
+            file_put_contents("/home/".get_current_user()."/php_worker121.txt", var_export($input,true)."!!!\n", FILE_APPEND);
+
              if(is_array($input)){
                 $re = array();
                 $index = 0;

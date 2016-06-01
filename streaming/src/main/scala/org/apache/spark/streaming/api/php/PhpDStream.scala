@@ -40,7 +40,7 @@ import org.apache.spark.util.Utils
  * Interface for Php callback function which is used to transform RDDs
  */
 trait PhpTransformFunction {
-  def call(time: Long, rdds: JList[_]): JavaRDD[Array[Byte]]
+  def call(time: Long, rdds: JList[_], size:Int): Any
 
   /**
    * Get the failure, if any, in the last call to `call`.
@@ -54,7 +54,7 @@ trait PhpTransformFunction {
  * Interface for Php Serializer to serialize PhpTransformFunction
  */
 trait PhpTransformFunctionSerializerInterface {
-  def dumps(id: String): Array[Byte]
+  def dumps(id: String): Any
   def loads(bytes: Array[Byte]): PhpTransformFunction
 
   /**
@@ -89,25 +89,74 @@ class TransformFunction(@transient var pfunc: PhpTransformFunction)
   }
 
   private def callPhpTransformFunction(time: Long, rdds: JList[_]): JavaRDD[Array[Byte]] = {
-    val resultRDD = pfunc.call(time, rdds)
+
+    val   file = new java.io.File("/home/gt/scala_printer123.txt")
+    val   fos = new java.io.FileWriter(file,true)
+    val   osw = new BufferedWriter(fos)
+    if(rdds!=null) {
+      for(i<-0 to rdds.size()-1) {
+        osw.write(">>>>>" + rdds.get(i))
+        osw.newLine()
+      }
+    }else{
+      osw.write("#####@@@")
+      osw.newLine()
+    }
+    osw.flush()
+
+    var resultRDD: Any = null
+    try {
+       resultRDD = pfunc.call(time, rdds, rdds.size())
+    }catch{
+      case e:Exception => {
+        osw.write("!!!!!!!!!!!!!"+e.getStackTraceString)
+        osw.newLine()
+        osw.flush()
+        return null
+      }
+    }
+
+    if(resultRDD!=null) {
+      osw.write("#####" + resultRDD)
+      osw.newLine()
+    }else{
+      osw.write("#####$$$")
+      osw.newLine()
+      osw.flush()
+      return null
+    }
+    osw.flush()
+
+    if(resultRDD.isInstanceOf[String]){
+      return null
+    }
+
     val failure = pfunc.getLastFailure
     if (failure != null) {
       throw new SparkException("An exception was raised by Php:\n" + failure)
     }
-    resultRDD
+    resultRDD.asInstanceOf[JavaRDD[Array[Byte]]]
   }
 
   private def writeObject(out: ObjectOutputStream): Unit = Utils.tryOrIOException {
-    val bytes = PhpTransformFunctionSerializer.serialize(pfunc)
-    out.writeInt(bytes.length)
-    out.write(bytes)
+    try {
+      val bytes = PhpTransformFunctionSerializer.serialize(pfunc)
+      out.writeInt(bytes.length)
+      if (bytes.length > 0) {
+        out.write(bytes)
+      }
+    }catch {
+      case e:Exception=>return;
+    }
   }
 
   private def readObject(in: ObjectInputStream): Unit = Utils.tryOrIOException {
     val length = in.readInt()
-    val bytes = new Array[Byte](length)
-    in.readFully(bytes)
-    pfunc = PhpTransformFunctionSerializer.deserialize(bytes)
+    if(length>0) {
+      val bytes = new Array[Byte](length)
+      in.readFully(bytes)
+      pfunc = PhpTransformFunctionSerializer.deserialize(bytes)
+    }
   }
 }
 
@@ -134,41 +183,68 @@ object PhpTransformFunctionSerializer {
   def serialize(func: PhpTransformFunction): Array[Byte] = synchronized {
     require(serializer != null, "Serializer has not been registered!")
     // get the id of PhpTransformFunction in py4j
-    val h = Proxy.getInvocationHandler(func.asInstanceOf[Proxy])
+ //   val h = Proxy.getInvocationHandler(func.asInstanceOf[Proxy])
 
 
     val   file = new java.io.File("/home/gt/scala_printer1.txt")
     val   fos = new java.io.FileWriter(file,true);
     val   osw = new BufferedWriter(fos);
-    osw.write("#####" + h.getClass)
+//    osw.write("#####" + h.getClass)
+//    osw.newLine()
+//    for(e<-h.getClass.getDeclaredFields){
+//      osw.write("#####" + e)
+//      osw.newLine()
+//    }
+//    osw.flush()
+//
+//
+//    val f = h.getClass().getDeclaredField("name")
+//
+//    osw.write("$$$$$" + f)
+//    osw.newLine()
+//
+//    f.setAccessible(true)
+//    val id = f.get(h).asInstanceOf[String]
+//
+//    osw.write("#####" + id)
+//    osw.newLine()
+//    osw.flush()
+    osw.write("<<<<<***")
     osw.newLine()
-    for(e<-h.getClass.getDeclaredFields){
-      osw.write("#####" + e)
-      osw.newLine()
+    osw.flush()
+    var results:Any = null;
+    try {
+   //   results = serializer.dumps("0")
+      return new Array[Byte](0)
+    }catch{
+      case e:Exception => {
+        osw.write("!!!!!!!"+e.getStackTraceString)
+        osw.newLine()
+        osw.flush()
+        return new Array[Byte](0)}
     }
-    osw.newLine()
-    osw.flush()
 
 
-    val f = h.getClass().getDeclaredField("name")
+    if(results!=null) {
+      osw.write(">>>>>" + results)
+      osw.newLine()
+      osw.flush()
+    }else{
+      osw.write(">>>>>***")
+      osw.newLine()
+      osw.flush()
+      return new Array[Byte](0)
+    }
 
-    osw.write("#####" + f)
-    osw.newLine()
-
-    f.setAccessible(true)
-    val id = f.get(h).asInstanceOf[String]
-
-    osw.write("#####" + id)
-    osw.newLine()
-    osw.flush()
-
-
-    val results = serializer.dumps("0")
     val failure = serializer.getLastFailure
     if (failure != null) {
       throw new SparkException("An exception was raised by Php:\n" + failure)
     }
-    results
+
+    if(results.isInstanceOf[String]){
+      return results.asInstanceOf[String].getBytes
+    }
+    results.asInstanceOf[Array[Byte]]
   }
 
   def deserialize(bytes: Array[Byte]): PhpTransformFunction = synchronized {

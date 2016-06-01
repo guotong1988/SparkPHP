@@ -252,11 +252,13 @@ if($profiler) {
      file_put_contents($spark_php_home."php_worker.txt","\n".$split_index."output!\n", FILE_APPEND);
 
 
-//    foreach ($temp3 as $key => $element) {
-//        file_put_contents($spark_php_home."php_worker.txt",var_export($temp3,True).$key."---------".var_export($element,True)."++++++++++\n", FILE_APPEND);
-//    }
-
-    $serializer -> dump_stream($temp3, $out_stream);#显然是返回计算结果
+  //  foreach ($temp3 as $key => $element) {
+        file_put_contents($spark_php_home."php_worker.txt",var_export($temp3,True)."++++++++++\n", FILE_APPEND);
+  //  }
+    if(is_array($temp3)&&sizeof($temp3)==0){}
+    else {
+        $serializer->dump_stream($temp3, $out_stream);#显然是返回计算结果
+    }
 }
 
 

@@ -41,6 +41,8 @@ function map($f, $preservesPartitioning=False)
                 }
             }
             return $re;
+        }elseif(is_array($iterator)&&sizeof($iterator)==0){
+            return array();
         }elseif($is_list($iterator)) {
             return array_map($f, $iterator);
         }else {
@@ -70,6 +72,10 @@ function mapPartitions($f, $preservesPartitioning=False)
 function flatMap($f, $preservesPartitioning=False)
 {
     $func = function ($split, $iterator) use ($f){
+
+
+        file_put_contents("/home/".get_current_user()."/php_printer88.txt", var_export($iterator,TRUE)."---!!!???\n", FILE_APPEND);
+
         $sub_is_array = False;
         foreach($iterator as $key=>$value){
             $temp = $f($value);
@@ -190,17 +196,20 @@ function saveAsTextFiles($prefix,$suffix=null){
         }
     };
 
-    $saveAsTextFile = function ($t,$rdd,$rdd2) use ($rddToFileName,$prefix,$suffix){
+    $saveAsTextFile = function ($t,$rdd) use ($rddToFileName,$prefix,$suffix){
         $path = $rddToFileName($prefix,$suffix,$t);
-        if($rdd!=null){
+
+ //       file_put_contents("/home/".get_current_user()."/php_printer1111.txt", gettype($rdd)."---!!!???\n", FILE_APPEND);
+//        if($rdd!=null ){
+//            $rdd->saveAsTextFile($path);
+//        }else{
             $rdd->saveAsTextFile($path);
-        }
-        if($rdd2!=null){
-            $rdd2->saveAsTextFile($path);
-        }
+//        }
+
+
     };
 
-    $this->foreachRDD($saveAsTextFile);
+    return $this->foreachRDD($saveAsTextFile);
 }
 
 
@@ -210,7 +219,7 @@ function foreachRDD($func)
     $temp =  java_closure($jfunc,null,java("org.apache.spark.streaming.api.php.PhpTransformFunction"));
 
     $api = $this-> ssc ->php_call_java-> PhpDStream;
-    $api -> callForeachRDD($this->jdstream, $temp);
+    return $api -> callForeachRDD($this->jdstream, $temp);
 
 }
 
@@ -222,65 +231,53 @@ function updateStateByKey($updateFunc, $numPartitions=null){
     }
 
     $reduceFunc = function($t,$a,$b) use ($numPartitions,$updateFunc) {
+        file_put_contents("/home/".get_current_user()."/php_printer111.txt", gettype($a)."---!!!???\n", FILE_APPEND);
+        file_put_contents("/home/".get_current_user()."/php_printer111.txt", gettype($b)."$$$!!!???\n", FILE_APPEND);
+//        file_put_contents("/home/".get_current_user()."/php_printer111.txt", var_export(java_is_null($b),TRUE)."===!!!???", FILE_APPEND);
+//        file_put_contents("/home/".get_current_user()."/php_printer111.txt", var_export(java_is_true($b),TRUE)."===!!!???\n\n\n\n", FILE_APPEND);
+            if ($a == null) {
+//                $b->saveAsTextFile("/home/gt/php_tmp25/");
+                $g = $b->groupbyKey($numPartitions);
+//                $g->saveAsTextFile("/home/gt/php_tmp26/");
+                $state = $g->mapValues(
+                    function ($everyValue) use ($updateFunc) {
 
-        file_put_contents("/home/".get_current_user()."/php_worker18.txt", $t."!!!\n", FILE_APPEND);
-        file_put_contents("/home/".get_current_user()."/php_worker18.txt", gettype($a)."!!!\n", FILE_APPEND);
-        file_put_contents("/home/".get_current_user()."/php_worker18.txt", gettype($b)."!!!\n", FILE_APPEND);
+                        file_put_contents("/home/" . get_current_user() . "/php_worker888.txt", var_export($everyValue,TRUE) . "---!!!\n", FILE_APPEND);
 
+                        if(!is_array($everyValue)){
+                            $temp = array();
+                            array_push($temp,$everyValue);
+                            return $updateFunc($temp, null);
+                        }
 
-        $b->saveAsTextFile("/home/gt/php_tmp2/");
+                        return $updateFunc($everyValue, null);
+                    }
+                );
+//                $state->saveAsTextFile("/home/gt/php_tmp27/");
+                return $state;
+            } else {
+//                $a->saveAsTextFile("/home/gt/php_tmp23/".time());
+//                $b->saveAsTextFile("/home/gt/php_tmp24/");
+                $g = $a->cogroup($b, $numPartitions);
 
-//        if($a==null){
-//            $g = $b -> groupbyKey($numPartitions)->mapValues(
-//                function ($vs){
-//
-//                    file_put_contents("/home/".get_current_user()."/php_worker118.txt", $vs."!!!\n", FILE_APPEND);
-//
-//                    return array(array($vs),null);
-//                }
-//            );
-        if($a==null) {
-            $g = $b->groupbyKey($numPartitions);
-            $state = $g->mapValues(
-                function ($vs_s) use ($updateFunc) {
-                    return $updateFunc($vs_s, null);
-                }
-            );
-            return $state;
-        }else{
-            $g = $a -> cogroup($b,$numPartitions);#应该是累加逻辑
+//                $g->saveAsTextFile2("/home/gt/php_tmp21/".time());
 
-            $state = $g->mapValues(
-                function ($vs_s) use ($updateFunc) {
+                $state = $g->mapValues2(
+                    function ($everyValue) use ($updateFunc) {
+                     #   file_put_contents("/home/" . get_current_user() . "/php_worker119.txt", var_export($everyValue, true) . "!!!\n", FILE_APPEND);
+                        file_put_contents("/home/" . get_current_user() . "/php_worker999.txt", var_export($everyValue,TRUE) . "---!!!\n", FILE_APPEND);
+                        $temp = array();
+                        for ($i = 1; $i < sizeof($everyValue); $i++) {
+                            array_push($temp, $everyValue[$i]);
+                        }
 
-                    file_put_contents("/home/".get_current_user()."/php_worker119.txt", var_export($vs_s,true)."!!!\n", FILE_APPEND);
+                        return $updateFunc($temp, $everyValue[0]);
+                    }
+                );
+//                $state->saveAsTextFile2("/home/gt/php_tmp22/".time());
+                return $state;
 
-                    return $updateFunc($vs_s[0], $vs_s[1]);
-                }
-            );
-
-            return $state;
-
-//            $g = $g -> mapValues(
-//                function ($ab){
-//                    file_put_contents("/home/".get_current_user()."/php_worker119.txt", $ab."!!!\n", FILE_APPEND);
-//                    if (sizeof($ab[0])>0){
-//                        return array(array($ab[1]),$ab[0][0]);
-//                    }else{
-//                        return array(array($ab[1]),null);
-//                    }
-//                }
-//            );
-
-        }
-
-
-//
-//        return $state->filter(
-//            function($k_v){
-//                return $k_v[1]!=null;
-//            }
-//        );
+            }
     };
 
     $jreduceFunc =new TransformFunction($this->sc,$reduceFunc,new utf8_deserializer());#TODO
