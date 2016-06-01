@@ -1,8 +1,8 @@
 <?php
 $SPARK_HOME = "/home/gt/spark/";
-require_once($SPARK_HOME . "/php/src/context.php");
-require_once($SPARK_HOME . "/php/src/streaming/streaming_context.php");
-include_once($SPARK_HOME."/php/src/report_error.php");
+require($SPARK_HOME . "/php/src/context.php");
+require($SPARK_HOME . "/php/src/streaming/streaming_context.php");
+include_once($SPARK_HOME . "/php/src/report_error.php");
 
 $sc = new context();
 $ssc = new streaming_context($sc,10);

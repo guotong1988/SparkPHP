@@ -48,18 +48,18 @@ function call($milliseconds, $jrdds,$size){
 
 
     #    $sizeVal = java_values($size);
-        file_put_contents("/home/".get_current_user()."/php_printer111.txt", "start!!!\n", FILE_APPEND);
-        file_put_contents("/home/".get_current_user()."/php_printer111.txt",$size."-----\n", FILE_APPEND);
-        file_put_contents("/home/".get_current_user()."/php_printer111.txt",gettype($size)."-----\n", FILE_APPEND);
-        file_put_contents("/home/".get_current_user()."/php_printer111.txt",$jrdds->get(0)."---()()---\n", FILE_APPEND);
+//        file_put_contents("/home/".get_current_user()."/php_printer111.txt", "start!!!\n", FILE_APPEND);
+//        file_put_contents("/home/".get_current_user()."/php_printer111.txt",$size."-----\n", FILE_APPEND);
+//        file_put_contents("/home/".get_current_user()."/php_printer111.txt",gettype($size)."-----\n", FILE_APPEND);
+//        file_put_contents("/home/".get_current_user()."/php_printer111.txt",$jrdds->get(0)."---()()---\n", FILE_APPEND);
         //   file_put_contents("/home/" . get_current_user() . "/php_printer111.txt", var_export($size,TRUE) . "---\n", FILE_APPEND);
 
         //file_put_contents("/home/".get_current_user()."/php_printer111.txt",$size->intValue()."-----\n", FILE_APPEND);
 
         if(java_cast($size,"integer")==2){
 
-            file_put_contents("/home/".get_current_user()."/php_printer111.txt",$jrdds->get(0)."=====\n", FILE_APPEND);
-            file_put_contents("/home/".get_current_user()."/php_printer111.txt",$jrdds->get(1)."=====\n", FILE_APPEND);
+//            file_put_contents("/home/".get_current_user()."/php_printer111.txt",$jrdds->get(0)."=====\n", FILE_APPEND);
+//            file_put_contents("/home/".get_current_user()."/php_printer111.txt",$jrdds->get(1)."=====\n", FILE_APPEND);
 
             if($jrdds->get(0).""==""){
                 array_push($rdds,null);
@@ -76,11 +76,11 @@ function call($milliseconds, $jrdds,$size){
         }
         if(java_cast($size,"integer")==1){
 
-            file_put_contents("/home/".get_current_user()."/php_printer111.txt",$jrdds->get(0)."=====\n", FILE_APPEND);
-
-            if(is_array($jrdds->get(0))){
-                file_put_contents("/home/".get_current_user()."/php_printer111.txt",gettype($jrdds->get(0))."=====\n", FILE_APPEND);
-            }
+//            file_put_contents("/home/".get_current_user()."/php_printer111.txt",$jrdds->get(0)."=====\n", FILE_APPEND);
+//
+//            if(is_array($jrdds->get(0))){
+//                file_put_contents("/home/".get_current_user()."/php_printer111.txt",gettype($jrdds->get(0))."=====\n", FILE_APPEND);
+//            }
 
             if($jrdds->get(0).""=="" || is_array($jrdds->get(0))){
                 array_push($rdds,null);
@@ -121,12 +121,12 @@ function call($milliseconds, $jrdds,$size){
 
  //       file_put_contents("/home/".get_current_user()."/php_printer111.txt", var_export($rdds,TRUE)."&&&???\n", FILE_APPEND);
 
-        file_put_contents("/home/".get_current_user()."/php_printer111.txt", sizeof($rdds)."?????\n", FILE_APPEND);
-
-        if(sizeof($rdds)==0){
-            file_put_contents("/home/".get_current_user()."/php_printer111.txt", var_export($size,TRUE)."?????\n", FILE_APPEND);
-            array_push($rdds,null);
-        }
+//        file_put_contents("/home/".get_current_user()."/php_printer111.txt", sizeof($rdds)."?????\n", FILE_APPEND);
+//
+//        if(sizeof($rdds)==0){
+//            file_put_contents("/home/".get_current_user()."/php_printer111.txt", var_export($size,TRUE)."?????\n", FILE_APPEND);
+//            array_push($rdds,null);
+//        }
 
 //        $saveAsTextFile = function ($t,$rdds){
 //            foreach($rdds as $rdd) {
@@ -151,7 +151,7 @@ function call($milliseconds, $jrdds,$size){
                     //file_put_contents("/home/".get_current_user()."/php_printer111.txt", var_export($r)."---!!!!!!???\n\n\n", FILE_APPEND);
 
 
-                    if ($r != null) {
+                    if ($r != null) {//其实每次都有东西返回的
                         return $r->jrdd;
                     }
 //                }
@@ -168,7 +168,7 @@ function call($milliseconds, $jrdds,$size){
           //  file_put_contents("/home/".get_current_user()."/php_printer111.txt", $r->jrdd."%%%---!!!!!!???\n\n\n", FILE_APPEND);
 
 
-            if ($r != null) {
+            if ($r != null) {//其实每次都有东西返回的
                 return $r->jrdd;
             }
         }

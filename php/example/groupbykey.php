@@ -1,6 +1,6 @@
 <?php
 $SPARK_HOME = "/home/gt/spark/";
-require_once($SPARK_HOME . "/php/src/context.php");
+require($SPARK_HOME . "/php/src/context.php");
 
 $sc = new context();
 
@@ -11,8 +11,27 @@ $temp = $rdd->keyBy(
       return strlen($x);
   }
 );
+/*
+foreach($temp->collect() as $element) {
+    echo $element."? ";
+    foreach ($element as $e) {
+        echo " ";
+        echo $e;
+    }
+    echo "!!!\n";
+}
+
+*/
 $result= $temp->groupByKey()->collect();
 foreach($result as $element) {
-    echo $element;
+    foreach($element as $ele){
+        echo " ??";
+        echo $ele;
+        if(is_array($ele)){
+            foreach($ele as $e){
+                echo " ".$e;
+            }
+        }
+    }
     echo "!!!\n";
 }

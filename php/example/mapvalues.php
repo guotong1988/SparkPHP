@@ -1,6 +1,6 @@
 <?php
 $SPARK_HOME = "/home/gt/spark/";
-require_once($SPARK_HOME . "/php/src/context.php");
+require($SPARK_HOME . "/php/src/context.php");
 #include_once($SPARK_HOME."/php/src/report_error.php");
 $sc = new context();
 
@@ -26,7 +26,7 @@ $temp3 = $temp2->mapValues(
     }
 );
 
-foreach($temp3->collect() as $value){
+foreach($temp3->collect() as $key=>$value){
     foreach($value as $ele){
         echo $ele." ";
     }

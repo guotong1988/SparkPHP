@@ -1,6 +1,6 @@
 <?php
 $SPARK_HOME = "/home/gt/spark/";
-require_once($SPARK_HOME . "/php/src/context.php");
+require($SPARK_HOME . "/php/src/context.php");
 include_once($SPARK_HOME."/php/src/report_error.php");
 $sc = new context();
 
@@ -28,15 +28,16 @@ $temp3 = $temp2 -> reduceByKey(
     }
 );
 
-$temp4 = $temp3 -> map(#去掉这行输出是array->toString()
+$temp4 = $temp3 -> map(
     function ($x) {
-        $re = "";
-        foreach($x as $e){
-            $re = $re." ".$e;
-        }
-        return $re;
+	$re = "";
+	foreach($x as $e){
+	$re = $re." ".$e;
+	}
+	return $re;
     }
 );
 
 
 $temp4->saveAsTextFile("/home/gt/result");
+

@@ -18,11 +18,20 @@ $rdd2 = $rdd2->keyBy(
         return strlen($row);
     }
 );
+$rdd3 = $rdd2->groupbyKey(2);
+#$rdd4 = $rdd3->groupbyKey2(2)->collect();
 
-$re = $rdd->cogroup($rdd2,2)->collect();
+
+
+//foreach($rdd3 as $k=>$e){
+//    print_r($e);
+//}
+
+$re = $rdd3 -> cogroup($rdd,2)->collect();;
 
 foreach($re as $k=>$e){
     print_r($e);
 }
 
 $sc->stop();
+

@@ -74,8 +74,6 @@ function flatMap($f, $preservesPartitioning=False)
     $func = function ($split, $iterator) use ($f){
 
 
-        file_put_contents("/home/".get_current_user()."/php_printer88.txt", var_export($iterator,TRUE)."---!!!???\n", FILE_APPEND);
-
         $sub_is_array = False;
         foreach($iterator as $key=>$value){
             $temp = $f($value);
@@ -232,7 +230,7 @@ function updateStateByKey($updateFunc, $numPartitions=null){
 
     $reduceFunc = function($t,$a,$b) use ($numPartitions,$updateFunc) {
         file_put_contents("/home/".get_current_user()."/php_printer111.txt", gettype($a)."---!!!???\n", FILE_APPEND);
-        file_put_contents("/home/".get_current_user()."/php_printer111.txt", gettype($b)."$$$!!!???\n", FILE_APPEND);
+        file_put_contents("/home/".get_current_user()."/php_printer111.txt", gettype($b)."$$$!!!???\n\n", FILE_APPEND);
 //        file_put_contents("/home/".get_current_user()."/php_printer111.txt", var_export(java_is_null($b),TRUE)."===!!!???", FILE_APPEND);
 //        file_put_contents("/home/".get_current_user()."/php_printer111.txt", var_export(java_is_true($b),TRUE)."===!!!???\n\n\n\n", FILE_APPEND);
             if ($a == null) {
@@ -242,7 +240,7 @@ function updateStateByKey($updateFunc, $numPartitions=null){
                 $state = $g->mapValues(
                     function ($everyValue) use ($updateFunc) {
 
-                        file_put_contents("/home/" . get_current_user() . "/php_worker888.txt", var_export($everyValue,TRUE) . "---!!!\n", FILE_APPEND);
+//                        file_put_contents("/home/" . get_current_user() . "/php_worker888.txt", var_export($everyValue,TRUE) . "---!!!\n", FILE_APPEND);
 
                         if(!is_array($everyValue)){
                             $temp = array();
@@ -258,20 +256,27 @@ function updateStateByKey($updateFunc, $numPartitions=null){
             } else {
 //                $a->saveAsTextFile("/home/gt/php_tmp23/".time());
 //                $b->saveAsTextFile("/home/gt/php_tmp24/");
-                $g = $a->cogroup($b, $numPartitions);
+                $g = $a->cogroup($b, $numPartitions);#合并老数据和新数据
 
 //                $g->saveAsTextFile2("/home/gt/php_tmp21/".time());
 
-                $state = $g->mapValues2(
+                $state = $g->mapValues(
                     function ($everyValue) use ($updateFunc) {
-                     #   file_put_contents("/home/" . get_current_user() . "/php_worker119.txt", var_export($everyValue, true) . "!!!\n", FILE_APPEND);
-                        file_put_contents("/home/" . get_current_user() . "/php_worker999.txt", var_export($everyValue,TRUE) . "---!!!\n", FILE_APPEND);
-                        $temp = array();
-                        for ($i = 1; $i < sizeof($everyValue); $i++) {
-                            array_push($temp, $everyValue[$i]);
+
+                        if(is_array($everyValue)) {
+
+                            #   file_put_contents("/home/" . get_current_user() . "/php_worker119.txt", var_export($everyValue, true) . "!!!\n", FILE_APPEND);
+//                            file_put_contents("/home/" . get_current_user() . "/php_worker999.txt", var_export($everyValue, TRUE) . "---!!!\n", FILE_APPEND);
+                            $temp = array();
+                            for ($i = 1; $i < sizeof($everyValue); $i++) {
+                                array_push($temp, $everyValue[$i]);
+                            }
+
+                            return $updateFunc($temp, $everyValue[0]);//[0]是cogroup的老数据
+                        }else{
+                            return $updateFunc(array(), $everyValue);
                         }
 
-                        return $updateFunc($temp, $everyValue[0]);
                     }
                 );
 //                $state->saveAsTextFile2("/home/gt/php_tmp22/".time());
